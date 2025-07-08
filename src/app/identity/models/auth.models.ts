@@ -32,16 +32,17 @@ export interface IAuthResponse {
   accessToken?: string;
   userName?: string;
   email?: string;
-  roles?: string[];
+  phoneNumber?: string;
+  imageUrl:string,
 }
 
 export interface IRegisterRequest {
   userName: string;
   email: string;
   password: string;
-
   phoneNumber?: string;
   acceptTerms: boolean;
+  profileImage?: File;
 }
 
 export interface ILoginRequest {
@@ -72,7 +73,12 @@ export interface IChangePasswordRequest {
 export interface IResendEmailConfirmationRequest {
   email: string;
 }
-
+export interface UserData{
+  userName?: string;
+  email?: string;
+  phoneNumber?: string;
+  imageUrl:string,
+}
 export interface IUpdateProfileRequest {
   userName?: string;
   email?: string;
@@ -144,17 +150,15 @@ export class AuthValidators {
     };
   }
 
-  static phoneNumberFormat(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const phoneNumber = control.value;
-      if (!phoneNumber) return null;
-
-      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-      return phoneRegex.test(phoneNumber) ? null : { invalidPhoneNumber: true };
-    };
-  }
+  
 }
-
+export interface CountryCode {
+  name: string;
+  arabicName:string
+  code: string;
+  dialCode: string;
+  flag: string;
+}
 // Error Models
 export enum AuthErrorCode {
   Unknown = 'Unknown',
@@ -194,4 +198,24 @@ export const AUTH_CONSTANTS = {
   LOCKOUT_DURATION_MINUTES: 15,
   TWO_FACTOR_CODE_LENGTH: 6,
   TWO_FACTOR_CODE_EXPIRY_MINUTES: 5
-} as const; 
+} as const;
+
+// User Details DTO for comprehensive user information
+export interface UserDetailsDto {
+  id: string;
+  userName?: string;
+  email?: string;
+  phoneNumber?: string;
+  imageUrl?: string;
+  emailConfirmed: boolean;
+  phoneNumberConfirmed: boolean;
+  twoFactorEnabled: boolean;
+  lockoutEnabled: boolean;
+  isBlocked: boolean;
+  lockoutEnd?: string;
+  accessFailedCount: number;
+  roles: string[];
+  totalAds: number;
+  activeAds: number;
+  inactiveAds: number;
+} 

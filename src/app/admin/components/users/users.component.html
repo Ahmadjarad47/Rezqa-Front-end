@@ -1,0 +1,448 @@
+<div class=" bg-gray-50 dark:bg-gray-800 min-h-screen">
+    <div class=" mx-auto">
+        <!-- Loading State -->
+        <div *ngIf="loading" class="flex justify-center items-center py-16">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                <p class="mt-4 text-gray-600 dark:text-gray-300 text-lg font-medium">Loading users...</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">Please wait while we fetch your data</p>
+            </div>
+        </div>
+
+        <!-- Content when not loading -->
+        <div *ngIf="!loading">
+            <!-- Send Notification to All Users Button -->
+            <div class="mb-6 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">إدارة المستخدمين</h2>
+                <button type="button" (click)="openAllUsersNotificationModal()"
+                    class="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-transform duration-100 hover:scale-105 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-5 5v-5zM11 19H6a2 2 0 01-2-2V7a2 2 0 012-2h5m5 0v5" />
+                    </svg>
+                    إرسال إشعار لجميع المستخدمين
+                </button>
+            </div>
+
+            <table id="export-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="User ID">
+                                id
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="Profile Image">
+                                image
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="User Name">
+                                UserName
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="Email Address">
+                                email
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="Phone Number">
+                                phoneNumber
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="Email Confirmed?">
+                                isConfirmeEmail
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3" data-type="date" data-format="YYYY/DD/MM">
+                            <span class="flex items-center" title="Lockout End Date">
+                                lockout End
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="Blocked Status">
+                                isBlocked
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="User Roles">
+                                Role
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            <span class="flex items-center" title="Actions">
+                                Action
+                                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+                                </svg>
+                            </span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (item of allUsers; track $index) {
+                    <tr
+                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-gray-600 cursor-pointer transition-colors duration-150 group">
+                        <td (click)="openNotificationModal(item)"
+                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{item.id}}
+                        </td>
+                        <td (click)="openNotificationModal(item)"
+                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <img [src]="item.imageUrl || 'https://ui-avatars.com/api/?name=' + (item.userName || 'U')"
+                                width="40" height="40" alt="User Image"
+                                class="rounded-full border-2 object-cover shadow-sm"
+                                [ngClass]="{
+                                    'border-green-500': (signalR.usersOnline$|async)?.includes(item.id),
+                                    'border-gray-200 dark:border-gray-600': !(signalR.usersOnline$|async)?.includes(item.id)
+                                }"
+                                (error)="item.imageUrl = 'https://ui-avatars.com/api/?name=' + (item.userName || 'U')">
+                        </td>
+                        <td class="px-6 py-4">{{item.userName}} </td>
+                        <td class="px-6 py-4">{{item.email}}</td>
+                        <td class="px-6 py-4">{{item.phoneNumber}}</td>
+                        <td class="px-6 py-4">
+                            <span *ngIf="item.isConfirmeEmail"
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Yes
+                            </span>
+                            <span *ngIf="!item.isConfirmeEmail"
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                No
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">{{item.lockoutEnd|date}}</td>
+                        <td class="px-6 py-4">
+                            <span *ngIf="item.isBlocked"
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Blocked
+                            </span>
+                            <span *ngIf="!item.isBlocked"
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Active
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <ng-container *ngIf="item.roles && item.roles.length">
+                                <span
+                                    class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full px-2 py-0.5 text-xs font-semibold mr-1 mb-1">{{item.roles}}</span>
+                            </ng-container>
+                        </td>
+                        <td class="px-6 py-4" [ngClass]="{'block-buttons': true}">
+                            <ng-container *ngIf="item.isBlocked">
+                                <button type="button" (click)="openBlockModal(item)"
+                                    class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 transition-transform duration-100 hover:scale-105"
+                                    aria-label="Unblock User" title="Unblock User">
+                                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor"
+                                        stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    Unblock User</button>
+                            </ng-container>
+                            <ng-container *ngIf="!item.isBlocked">
+                                <button type="button" (click)="openBlockModal(item)"
+                                    class="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 transition-transform duration-100 hover:scale-105"
+                                    aria-label="Block User" title="Block User">
+                                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor"
+                                        stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M18.364 5.636l-1.414 1.414M6.343 17.657l-1.414 1.414M12 8v4l3 3" />
+                                    </svg>
+                                    Block User</button>
+                            </ng-container>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Block User Modal -->
+            @if (showBlockModal && selectedUser) {
+            <div id="block-modal" tabindex="-1" aria-hidden="true"
+                class="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center backdrop-blur-sm">
+                <div class="relative w-full max-w-md max-h-full">
+                    <!-- Modal content -->
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <!-- Modal header -->
+                        <div
+                            class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                                <svg *ngIf="selectedUser.isBlocked" class="w-6 h-6 mr-2 text-red-500" fill="none"
+                                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <svg *ngIf="!selectedUser.isBlocked" class="w-6 h-6 mr-2 text-yellow-500" fill="none"
+                                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01" />
+                                </svg>
+                                {{ selectedUser.isBlocked ? 'Unblock User' : 'Block User' }}
+                            </h3>
+                            <button type="button" (click)="closeBlockModal()"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                aria-label="Close modal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-5 space-y-4">
+                            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400 flex items-center">
+                                <svg *ngIf="selectedUser.isBlocked" class="w-5 h-5 mr-2 text-red-500" fill="none"
+                                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <svg *ngIf="!selectedUser.isBlocked" class="w-5 h-5 mr-2 text-yellow-500" fill="none"
+                                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01" />
+                                </svg>
+                                {{ selectedUser.isBlocked ?
+                                'Are you sure you want to unblock this user?' :
+                                'Please select until when you want to block this user:' }}
+                            </p>
+                            @if (!selectedUser.isBlocked) {
+                            <div class="mb-4">
+                                <label for="block-until"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Block
+                                    Until</label>
+                                <input type="datetime-local" id="block-until" [(ngModel)]="blockUntil"
+                                    [min]="minDate.toISOString().slice(0, 16)"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            </div>
+                            }
+                        </div>
+                        <!-- Modal footer -->
+                        <div
+                            class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600 gap-2">
+                            <button type="button" (click)="handleBlockUser()"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 flex items-center gap-2">
+                                <svg *ngIf="selectedUser.isBlocked" class="w-4 h-4" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <svg *ngIf="!selectedUser.isBlocked" class="w-4 h-4" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01" />
+                                </svg>
+                                {{ selectedUser.isBlocked ? 'Unblock' : 'Block' }}
+                            </button>
+                            <button type="button" (click)="closeBlockModal()"
+                                class="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-40 backdrop-blur-sm"></div>
+            }
+
+            <!-- Notification Modal -->
+            @if (showNotificationModal && selectedUser) {
+            <div id="notification-modal" tabindex="-1" aria-hidden="true"
+                class="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center backdrop-blur-sm">
+                <div class="relative w-full max-w-md max-h-full">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <div
+                            class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                                <svg class="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01" />
+                                </svg>
+                                إرسال إشعار للمستخدم
+                            </h3>
+                            <button type="button" (click)="closeNotificationModal()"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                aria-label="إغلاق النافذة">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                </svg>
+                                <span class="sr-only">إغلاق النافذة</span>
+                            </button>
+                        </div>
+                        <form (ngSubmit)="sendNotification()">
+                            <div class="p-4 md:p-5 space-y-4">
+                                <div>
+                                    <label for="notification-title"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">عنوان
+                                        الإشعار</label>
+                                    <input id="notification-title" [(ngModel)]="notificationTitle"
+                                        name="notificationTitle" required maxlength="100"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="notification-message"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">نص
+                                        الإشعار</label>
+                                    <textarea id="notification-message" [(ngModel)]="notificationMessage"
+                                        name="notificationMessage" required maxlength="500" rows="4"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600 gap-2">
+                                <button type="submit"
+                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M13 16h-1v-4h-1m1-4h.01" />
+                                    </svg>
+                                    إرسال
+                                </button>
+                                <button type="button" (click)="closeNotificationModal()"
+                                    class="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-40 backdrop-blur-sm"></div>
+            }
+
+            <!-- Send Notification to All Users Modal -->
+            @if (showAllUsersNotificationModal) {
+            <div id="all-users-notification-modal" tabindex="-1" aria-hidden="true"
+                class="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center backdrop-blur-sm">
+                <div class="relative w-full max-w-md max-h-full">
+                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                        <div
+                            class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                                <svg class="w-6 h-6 mr-2 text-purple-500" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-5 5v-5zM11 19H6a2 2 0 01-2-2V7a2 2 0 012-2h5m5 0v5" />
+                                </svg>
+                                إرسال إشعار لجميع المستخدمين
+                            </h3>
+                            <button type="button" (click)="closeAllUsersNotificationModal()"
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                aria-label="إغلاق النافذة">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                </svg>
+                                <span class="sr-only">إغلاق النافذة</span>
+                            </button>
+                        </div>
+                        <form (ngSubmit)="sendAllUsersNotification()">
+                            <div class="p-4 md:p-5 space-y-4">
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 dark:bg-blue-900/20 dark:border-blue-800">
+                                    <div class="flex items-center">
+                                        <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <p class="text-sm text-blue-700 dark:text-blue-300">
+                                            سيتم إرسال هذا الإشعار إلى جميع المستخدمين المسجلين في النظام
+                                        </p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="all-users-notification-title"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">عنوان
+                                        الإشعار</label>
+                                    <input id="all-users-notification-title" [(ngModel)]="allUsersNotificationTitle"
+                                        name="allUsersNotificationTitle" required maxlength="100"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="all-users-notification-message"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">نص
+                                        الإشعار</label>
+                                    <textarea id="all-users-notification-message" [(ngModel)]="allUsersNotificationMessage"
+                                        name="allUsersNotificationMessage" required maxlength="500" rows="4"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600 gap-2">
+                                <button type="submit"
+                                    class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15 17h5l-5 5v-5zM11 19H6a2 2 0 01-2-2V7a2 2 0 012-2h5m5 0v5" />
+                                    </svg>
+                                    إرسال للجميع
+                                </button>
+                                <button type="button" (click)="closeAllUsersNotificationModal()"
+                                    class="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-40 backdrop-blur-sm"></div>
+            }
+        </div>
+    </div>

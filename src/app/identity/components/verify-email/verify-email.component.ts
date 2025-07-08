@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID, AfterViewInit, Component, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { IVerifyEmailRequest } from '../../models/auth.models';
@@ -12,6 +13,7 @@ import { IVerifyEmailRequest } from '../../models/auth.models';
 export class VerifyEmailComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
+  isError = false;
   successMessage = '';
   emailFromQuery: string | null = null;
   tokenFromQuery: string | null = null;
@@ -19,21 +21,26 @@ export class VerifyEmailComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
     // Get email and token from query parameters
-    this.route.queryParams.subscribe((params) => {
-      this.emailFromQuery = params['email'] || null;
-      this.tokenFromQuery = params['token'] || null;
-      if (this.emailFromQuery && this.tokenFromQuery) {
-        this.verifyEmailFromUrl();
-      } else {
-        this.errorMessage = 'رابط التحقق غير صالح';
-        this.isLoading = false;
-      }
-    });
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.route.queryParams.subscribe((params) => {
+        this.emailFromQuery = params['email'] || null;
+        this.tokenFromQuery = params['token'] || null;
+        if (this.emailFromQuery && this.tokenFromQuery) {
+          this.verifyEmailFromUrl();
+        } else {
+          this.errorMessage = 'رابط التحقق غير صالح';
+          this.isLoading = false;
+          this.isError = true;
+        }
+      });
+    }
   }
 
   private verifyEmailFromUrl(): void {
@@ -42,28 +49,22 @@ export class VerifyEmailComponent implements OnInit {
       token: this.tokenFromQuery!,
     };
 
-    debugger
     this.authService.verifyEmail(verifyRequest).subscribe({
       next: (response) => {
-        debugger
         this.successMessage = 'تم التحقق من البريد الإلكتروني بنجاح';
+        this.isLoading = false;
+        this.isError = false;
         // Redirect to login after 3 seconds
         setTimeout(() => {
           this.router.navigate(['/identity/login'], {
             queryParams: { verified: true },
           });
-        }, 3000);
-        return
+        }, 2000);
       },
-      error: (error:any) => {
-        
-        this.errorMessage =
-          error.message || 'حدث خطأ أثناء التحقق من البريد الإلكتروني';
+      error: () => {
+        this.errorMessage = 'حدث خطأ أثناء التحقق من البريد الإلكتروني';
         this.isLoading = false;
-        return
-      },
-      complete: () => {
-        this.isLoading = false;
+        this.isError = true;
       },
     });
   }

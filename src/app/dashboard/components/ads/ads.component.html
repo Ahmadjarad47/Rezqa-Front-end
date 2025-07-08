@@ -1,0 +1,741 @@
+<div class="container mx-auto px-4 py-6 min-h-screen bg-white dark:bg-gray-800">
+    <!-- Header with Theme Toggle -->
+    <div class="mb-6 flex justify-between items-start dark">
+        <div class="dark">
+            <h1 class="text-3xl font-bold header-gradient mb-2 dark">My Ads</h1>
+            <p class="text-gray-600 dark:text-gray-400 dark">Manage your advertisements and track their performance</p>
+        </div>
+
+        <!-- Theme Toggle -->
+        <div class="flex items-center gap-4 dark">
+
+
+            <!-- Refresh Button -->
+            <button (click)="refreshAds()" [disabled]="isRefreshing"
+                class="btn-secondary px-3 py-2 rounded-lg focus-visible:focus dark" title="Refresh ads">
+                <svg class="w-5 h-5 refresh-icon" [class.spinning]="isRefreshing" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Error Alert -->
+    <div *ngIf="error"
+        class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg backdrop-blur-sm">
+        <div class="flex">
+            <svg class="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span>{{ error }}</span>
+        </div>
+    </div>
+
+    <!-- Success Alert -->
+    <div *ngIf="successMessage"
+        class="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg backdrop-blur-sm">
+        <div class="flex">
+            <svg class="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span>{{ successMessage }}</span>
+        </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="control-card rounded-lg p-6 mb-6  bg-white dark:bg-gray-800">
+        <!-- Search and Filters Row -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 ">
+            <!-- Search -->
+            <div class="md:col-span-2">
+                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Search
+                    Ads</label>
+                <div class="relative">
+                    <input type="text" id="search" [(ngModel)]="searchTerm" (input)="onSearch()"
+                        placeholder="Search by title, description, category, or location..."
+                        class="advanced-input w-full pl-10 pr-4 py-2 rounded-lg">
+                    <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+                <label for="status"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                <select id="status" [(ngModel)]="statusFilter" (change)="onStatusFilterChange()"
+                    class="advanced-input w-full px-3 py-2 rounded-lg">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <!-- Sort -->
+            <div>
+                <label for="sort" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort
+                    By</label>
+                <select id="sort" [(ngModel)]="sortBy" (change)="applyFilters()"
+                    class="advanced-input w-full px-3 py-2 rounded-lg">
+                    <option value="createdAt">Date Created</option>
+                    <option value="title">Title</option>
+                    <option value="price">Price</option>
+                    <option value="category">Category</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Advanced Controls Row -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex items-center gap-4">
+                <!-- Sort Order Toggle -->
+                <button (click)="onSort(sortBy)"
+                    class="btn-secondary px-3 py-2 text-sm font-medium rounded-lg focus-visible:focus">
+                    <svg *ngIf="sortOrder === 'asc'" class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                    <svg *ngIf="sortOrder === 'desc'" class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                    {{ sortOrder === 'asc' ? 'Ascending' : 'Descending' }}
+                </button>
+
+                <!-- View Mode Toggle -->
+                <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                    <button (click)="toggleViewMode('table')"
+                        [class]="viewMode === 'table' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'"
+                        class="p-2 rounded-md transition-all duration-200 focus-visible:focus" title="Table view">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button (click)="toggleViewMode('grid')"
+                        [class]="viewMode === 'grid' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'"
+                        class="p-2 rounded-md transition-all duration-200 focus-visible:focus" title="Grid view">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button (click)="toggleViewMode('cards')"
+                        [class]="viewMode === 'cards' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'"
+                        class="p-2 rounded-md transition-all duration-200 focus-visible:focus" title="Card view">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Results Count -->
+                <span class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ filteredAds.length }} of {{ ads.length }} ads
+                </span>
+            </div>
+
+            <!-- Bulk Actions -->
+            <div class="flex items-center gap-2" *ngIf="selectedAds.length > 0">
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ selectedAds.length }} selected</span>
+                <button (click)="deleteSelectedAds()"
+                    class="btn-primary px-3 py-2 text-sm font-medium rounded-lg focus-visible:focus">
+                    Delete Selected
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center py-12">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Table View -->
+    <div *ngIf="!loading && viewMode === 'table' && paginatedAds.length > 0"
+        class="advanced-table dark:bg-gray-700 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-500 dark:divide-gray-700">
+                <thead class="table-header">
+                    <tr>
+                        <th class="px-6 py-3 text-left">
+                            <input type="checkbox"
+                                [checked]="selectedAds.length === paginatedAds.length && paginatedAds.length > 0"
+                                (change)="onSelectAll($event)"
+                                class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400">
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Ad
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Category
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Price
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Created
+                        </th>
+                        <th
+                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr *ngFor="let ad of paginatedAds" class="table-row">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" [checked]="isSelected(ad.id)" (change)="onSelectAd(ad.id, $event)"
+                                class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400">
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-16 w-16 relative">
+                                    <img [src]="getImageUrl(ad)" [alt]="ad.title"
+                                        class="ad-image h-16 w-16 object-cover"
+                                        onerror="this.src='assets/placeholder-image.jpg'">
+                                    <div *ngIf="hasMultipleImages(ad)" class="image-overlay">
+                                        <span class="text-white text-xs font-medium">+{{ getImageCount(ad) - 1 }}</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white line-clamp-2">{{
+                                        ad.title }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{{ ad.description
+                                        }}</div>
+                                    <div class="text-sm text-gray-400 dark:text-gray-500">{{ ad.location }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300">
+                                {{ ad.categoryTitle }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            {{ formatPrice(ad.price) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            <!-- Status Toggle -->
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" [checked]="ad.isActive" (change)="toggleAdStatus(ad)" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    {{ ad.isActive ? 'Active' : 'Inactive' }}
+                                </span>
+                            </label>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {{ formatDate(ad.createdAt) }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end gap-2">
+                                <button (click)="viewAd(ad)"
+                                    class="action-btn text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                                    title="View Ad">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <button (click)="editAd(ad)"
+                                    class="action-btn text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300"
+                                    title="Edit Ad">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                        </path>
+                                    </svg>
+                                </button>
+
+                                <button (click)="confirmDelete(ad.id)"
+                                    class="action-btn text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                                    title="Delete Ad">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Grid View -->
+    <div *ngIf="!loading && viewMode === 'grid' && paginatedAds.length > 0" class="grid-view">
+        <div *ngFor="let ad of paginatedAds" class="grid-card">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" [checked]="isSelected(ad.id)" (change)="onSelectAd(ad.id, $event)"
+                        class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    <!-- Status Toggle for Grid View -->
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" [checked]="ad.isActive" (change)="toggleAdStatus(ad)" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                            {{ ad.isActive ? 'Active' : 'Inactive' }}
+                        </span>
+                    </label>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button (click)="viewAd(ad)" class="action-btn text-blue-600 dark:text-blue-400" title="View">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button (click)="editAd(ad)" class="action-btn text-green-600 dark:text-green-400" title="Edit">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button (click)="confirmDelete(ad.id)" class="action-btn text-red-600 dark:text-red-400"
+                        title="Delete">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative mb-4">
+                <img [src]="getImageUrl(ad)" [alt]="ad.title" class="ad-image w-full h-48 object-cover"
+                    onerror="this.src='assets/placeholder-image.jpg'">
+                <div *ngIf="hasMultipleImages(ad)" class="image-overlay">
+                    <span class="text-white text-sm font-medium">+{{ getImageCount(ad) - 1 }} more</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">{{ ad.title }}</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">{{ ad.description }}</p>
+
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ formatPrice(ad.price) }}</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ ad.location }}</span>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300">
+                    {{ ad.categoryTitle }}
+                </span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(ad.createdAt) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && paginatedAds.length === 0" class="empty-state">
+        <svg class="empty-state-icon text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+            </path>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No ads found</h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-6">
+            {{ filteredAds.length === 0 && ads.length > 0 ? 'Try adjusting your search or filters.' : 'Get started by
+            creating your first ad.' }}
+        </p>
+        <button routerLink="/ads/create"
+            class="btn-primary inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg focus-visible:focus">
+            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                </path>
+            </svg>
+            Create New Ad
+        </button>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && totalPages > 1" class="mt-6 flex items-center justify-between">
+        <div class="flex-1 flex justify-between sm:hidden">
+            <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                class="pagination-btn relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md disabled:opacity-50 disabled:cursor-not-allowed focus-visible:focus">
+                Previous
+            </button>
+            <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+                class="pagination-btn ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md disabled:opacity-50 disabled:cursor-not-allowed focus-visible:focus">
+                Next
+            </button>
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                    Showing
+                    <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+                    to
+                    <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredAds.length) }}</span>
+                    of
+                    <span class="font-medium">{{ filteredAds.length }}</span>
+                    results
+                </p>
+            </div>
+            <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+
+                    <!-- Previous Button -->
+                    <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">
+                        <span class="sr-only">Previous</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Page Numbers -->
+                    <button *ngFor="let page of pageNumbers" (click)="onPageChange(page)" [ngClass]="{
+              'z-10 bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900 dark:text-white': page === currentPage,
+              'bg-white text-gray-500 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700': page !== currentPage
+            }" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium focus:z-20 dark:border-gray-700">
+                        {{ page }}
+                    </button>
+
+                    <!-- Next Button -->
+                    <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+                        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">
+                        <span class="sr-only">Next</span>
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+
+                </nav>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteConfirm"
+    class="modal-overlay dark:bg-gray-800 bg-white dark:bg-gray-800  fixed inset-0 overflow-y-auto h-full w-full z-50">
+    <div class="modal-content relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/50">
+                <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+                    </path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900  dark:text-white mt-4">Delete Ad</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Are you sure you want to delete this ad? This action cannot be undone.
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button (click)="deleteAd()" [disabled]="isDeleting"
+                    class="btn-primary px-4 py-2 text-base font-medium rounded-md w-full focus-visible:focus disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    <svg *ngIf="isDeleting" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    <svg *ngIf="!isDeleting" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
+                    </svg>
+                    {{ isDeleting ? 'Deleting...' : 'Delete' }}
+                </button>
+                <button (click)="cancelDelete()" [disabled]="isDeleting"
+                    class="btn-secondary mt-3 px-4 py-2 text-base font-medium rounded-md w-full focus-visible:focus disabled:opacity-50 disabled:cursor-not-allowed">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Modal -->
+<div *ngIf="showUpdateModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="modal-content w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-full">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Update Advertisement</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Edit your ad details and images</p>
+                </div>
+            </div>
+            <button (click)="closeUpdateModal()"
+                class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Error Alert -->
+        <div *ngIf="updateError"
+            class="mx-6 mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+            <div class="flex">
+                <svg class="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                <span>{{ updateError }}</span>
+            </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6">
+            <form [formGroup]="updateForm" (ngSubmit)="updateAd()" class="space-y-6">
+                <!-- Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Title <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="title" formControlName="title"
+                        class="advanced-input w-full px-4 py-3 rounded-lg"
+                        placeholder="Enter ad title (5-200 characters)"
+                        [class.form-field-error]="updateForm.get('title')?.invalid && updateForm.get('title')?.touched">
+                    <div *ngIf="updateForm.get('title')?.invalid && updateForm.get('title')?.touched"
+                        class="error-message mt-1">
+                        <span *ngIf="updateForm.get('title')?.errors?.['required']">Title is required</span>
+                        <span *ngIf="updateForm.get('title')?.errors?.['minlength']">Title must be at least 5
+                            characters</span>
+                        <span *ngIf="updateForm.get('title')?.errors?.['maxlength']">Title cannot exceed 200
+                            characters</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Description <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="description" formControlName="description" rows="4"
+                        class="advanced-input w-full px-4 py-3 rounded-lg resize-none"
+                        placeholder="Enter detailed description (10-2000 characters)"
+                        [class.form-field-error]="updateForm.get('description')?.invalid && updateForm.get('description')?.touched"></textarea>
+                    <div *ngIf="updateForm.get('description')?.invalid && updateForm.get('description')?.touched"
+                        class="error-message mt-1">
+                        <span *ngIf="updateForm.get('description')?.errors?.['required']">Description is required</span>
+                        <span *ngIf="updateForm.get('description')?.errors?.['minlength']">Description must be at least
+                            10 characters</span>
+                        <span *ngIf="updateForm.get('description')?.errors?.['maxlength']">Description cannot exceed
+                            2000 characters</span>
+                    </div>
+                </div>
+
+                <!-- Price and Location Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Price -->
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Price <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                            <input type="number" id="price" formControlName="price" min="0" step="0.01"
+                                class="advanced-input w-full pl-8 pr-4 py-3 rounded-lg" placeholder="0.00"
+                                [class.form-field-error]="updateForm.get('price')?.invalid && updateForm.get('price')?.touched">
+                        </div>
+                        <div *ngIf="updateForm.get('price')?.invalid && updateForm.get('price')?.touched"
+                            class="error-message mt-1">
+                            <span *ngIf="updateForm.get('price')?.errors?.['required']">Price is required</span>
+                            <span *ngIf="updateForm.get('price')?.errors?.['min']">Price must be greater than or equal
+                                to 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Location <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="location" formControlName="location"
+                            class="advanced-input w-full px-4 py-3 rounded-lg" placeholder="Enter location"
+                            [class.form-field-error]="updateForm.get('location')?.invalid && updateForm.get('location')?.touched">
+                        <div *ngIf="updateForm.get('location')?.invalid && updateForm.get('location')?.touched"
+                            class="error-message mt-1">
+                            <span *ngIf="updateForm.get('location')?.errors?.['required']">Location is required</span>
+                            <span *ngIf="updateForm.get('location')?.errors?.['maxlength']">Location cannot exceed 100
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Phone -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Phone Number <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" id="phone" formControlName="phone"
+                            class="advanced-input w-full px-4 py-3 rounded-lg" placeholder="+1 (555) 123-4567"
+                            [class.form-field-error]="updateForm.get('phone')?.invalid && updateForm.get('phone')?.touched">
+                        <div *ngIf="updateForm.get('phone')?.invalid && updateForm.get('phone')?.touched"
+                            class="error-message mt-1">
+                            <span *ngIf="updateForm.get('phone')?.errors?.['required']">Phone number is required</span>
+                            <span *ngIf="updateForm.get('phone')?.errors?.['pattern']">Please enter a valid phone
+                                number</span>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Email <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" id="email" formControlName="email"
+                            class="advanced-input w-full px-4 py-3 rounded-lg" placeholder="your@email.com"
+                            [class.form-field-error]="updateForm.get('email')?.invalid && updateForm.get('email')?.touched">
+                        <div *ngIf="updateForm.get('email')?.invalid && updateForm.get('email')?.touched"
+                            class="error-message mt-1">
+                            <span *ngIf="updateForm.get('email')?.errors?.['required']">Email is required</span>
+                            <span *ngIf="updateForm.get('email')?.errors?.['email']">Please enter a valid email
+                                address</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Images Section -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Images
+                    </label>
+
+                    <!-- Current Images -->
+                    <div *ngIf="imagePreviewUrls.length > 0" class="mb-4">
+                        <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Current Images</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div *ngFor="let imageUrl of imagePreviewUrls; let i = index" class="relative group">
+                                <img [src]="imageUrl" [alt]="'Ad image ' + (i + 1)"
+                                    class="w-full h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-600">
+                                <button type="button" (click)="removeImage(i)"
+                                    class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add New Images -->
+                    <div
+                        class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
+                        <input type="file" multiple accept="image/*" (change)="onFileSelected($event)" class="hidden"
+                            id="imageUpload">
+                        <label for="imageUpload" class="cursor-pointer">
+                            <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                </path>
+                            </svg>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                <span class="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500">Click to
+                                    upload</span>
+                                or drag and drop
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">PNG, JPG, GIF up to 10MB each</p>
+                        </label>
+                    </div>
+
+                    <!-- New Image Previews -->
+                    <div *ngIf="selectedFiles.length > 0" class="mt-4">
+                        <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">New Images</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div *ngFor="let preview of imagePreviewUrls.slice(adToUpdate?.imageUrl?.length || 0); let i = index"
+                                class="relative group">
+                                <img [src]="preview" [alt]="'New image ' + (i + 1)"
+                                    class="w-full h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-600">
+                                <button type="button" (click)="removeImage((adToUpdate?.imageUrl?.length || 0) + i)"
+                                    class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" (click)="closeUpdateModal()" class="btn-secondary px-6 py-3 rounded-lg"
+                        [disabled]="isUpdating">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-primary px-6 py-3 rounded-lg flex items-center gap-2"
+                        [disabled]="updateForm.invalid || isUpdating">
+                        <svg *ngIf="isUpdating" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <svg *ngIf="!isUpdating" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        {{ isUpdating ? 'Updating...' : 'Update Ad' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

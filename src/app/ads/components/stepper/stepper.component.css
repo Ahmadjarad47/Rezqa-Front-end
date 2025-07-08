@@ -1,0 +1,140 @@
+/* Progress Bar Animation */
+.progress-bar-fill {
+  transition: width 0.5s ease-out;
+}
+
+/* Step Icon Animations */
+.step-icon-completed {
+  animation: checkmark 0.3s ease-in-out;
+}
+
+.step-icon-current {
+  animation: pulse 2s infinite;
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Step Item Hover Effects */
+.step-item {
+  transition: all 0.2s ease-in-out;
+  position: relative;
+}
+
+.step-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Clickable Step Enhancements */
+.step-item.cursor-pointer {
+  cursor: pointer;
+}
+
+.step-item.cursor-pointer:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.step-item.cursor-pointer:active {
+  transform: translateY(0) scale(0.98);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Click Indicator Animation */
+.step-item.cursor-pointer:hover .opacity-0 {
+  opacity: 1 !important;
+  transform: translateX(-2px);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Connector Line Animation */
+.connector-line {
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Dark Mode Enhancements */
+.dark .step-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark .step-item.cursor-pointer:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .step-content {
+    font-size: 0.875rem;
+  }
+  
+  .step-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .step-item.cursor-pointer:hover {
+    transform: translateY(-1px) scale(1.01);
+  }
+}
+
+/* Smooth Transitions for All Elements */
+* {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+/* Focus States for Accessibility */
+.step-item.cursor-pointer:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.step-item.cursor-pointer:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Loading State for Navigation */
+.step-item.navigating {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.step-item.navigating::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #3b82f6;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -1,0 +1,134 @@
+<div class="notification-container">
+  <!-- Header -->
+  <div class="notification-header">
+    <div class="header-content">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">الإشعارات</h2>
+      
+      <!-- Connection Status -->
+      <div class="connection-status" [class.connected]="isConnected">
+        <div class="status-indicator"></div>
+        <span class="status-text">{{ isConnected ? 'متصل' : 'غير متصل' }}</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="header-actions" *ngIf="(notifications$ | async) as notifications">
+      <ng-container *ngIf="notifications && notifications.length > 0">
+      <button 
+        class="btn btn-secondary"
+        (click)="onMarkAllAsRead()"
+        [disabled]="(unreadCount$ | async) === 0">
+        <i class="fas fa-check-double"></i>
+        تحديد الكل كمقروء
+      </button>
+      
+              <button 
+          class="btn btn-danger"
+          (click)="onClearAll()">
+          <i class="fas fa-trash"></i>
+          حذف الكل
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="filter-controls">
+      <label class="filter-label">تصفية حسب:</label>
+      <select 
+        class="filter-select"
+        (change)="onStatusChange($event)">
+        <option 
+          *ngFor="let option of statusOptions" 
+          [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+
+    <div class="notification-stats">
+      <span class="stat-item">
+        <i class="fas fa-bell"></i>
+        إجمالي: {{ (notifications$ | async)?.length || 0 }}
+      </span>
+      <span class="stat-item unread">
+        <i class="fas fa-circle"></i>
+        غير مقروء: {{ unreadCount$ | async }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading$ | async">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">جاري تحميل الإشعارات...</p>
+  </div>
+
+  <!-- Notifications List -->
+  <div class="notifications-list" *ngIf="!(loading$ | async)">
+    <div 
+      *ngIf="(notifications$ | async)?.length === 0" 
+      class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-bell-slash"></i>
+      </div>
+      <h3 class="empty-title">لا توجد إشعارات</h3>
+      <p class="empty-description">
+        {{ (selectedStatus$ | async) === 'all' ? 'لا توجد إشعارات حتى الآن' : 'لا توجد إشعارات بهذه الحالة' }}
+      </p>
+    </div>
+
+    <div 
+      *ngFor="let notification of notifications$ | async; trackBy: trackByNotificationId"
+      class="notification-item"
+      [class]="getStatusClass(notification.status)">
+      
+      <!-- Notification Content -->
+      <div class="notification-content">
+        <div class="notification-header-row">
+          <h4 class="notification-title">{{ notification.title }}</h4>
+          <div class="notification-meta">
+            <span class="notification-time">{{ formatDate(notification.createdAt) }}</span>
+            <span class="notification-status" [class]="getStatusClass(notification.status)">
+              {{ getStatusText(notification.status) }}
+            </span>
+          </div>
+        </div>
+        
+        <p class="notification-message">{{ notification.message }}</p>
+      </div>
+
+      <!-- Notification Actions -->
+      <div class="notification-actions">
+        <button 
+          *ngIf="notification.status === 'Unread'"
+          class="action-btn mark-read"
+          (click)="onMarkAsRead(notification.id.toString())"
+          title="تحديد كمقروء">
+          <i class="fas fa-check"></i>
+        </button>
+        
+        <button 
+          *ngIf="isAdmin()"
+          class="action-btn delete"
+          (click)="onDeleteNotification(notification.id)"
+          title="حذف الإشعار">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connection Error -->
+  <div class="connection-error" *ngIf="!isConnected && !(loading$ | async)">
+    <div class="error-content">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>فشل في الاتصال</h3>
+      <p>لا يمكن الاتصال بخادم الإشعارات. يرجى المحاولة مرة أخرى.</p>
+      <button class="btn btn-primary" (click)="notificationService.startConnection()">
+        إعادة الاتصال
+      </button>
+    </div>
+  </div>
+</div>

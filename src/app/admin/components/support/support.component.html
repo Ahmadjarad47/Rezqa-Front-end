@@ -1,0 +1,437 @@
+<div
+  class="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-slate-800 chat-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading && isBrowser"
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="bg-white/95 backdrop-blur-sm p-8 rounded-2xl shadow-2xl border border-white/20">
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 border-t-blue-600"></div>
+          <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-400 animate-ping"></div>
+        </div>
+        <div>
+          <span class="text-gray-800 font-medium">Loading users...</span>
+          <div class="text-xs text-gray-500 mt-1">Please wait while we connect</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users List Sidebar -->
+  <div
+    class="w-96 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-r border-gray-200/50 dark:border-gray-700/50 flex flex-col sidebar shadow-lg">
+    <!-- Header -->
+    <div class="p-6 border-b border-gray-200/50 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold">Support Hub</h2>
+          <p class="text-blue-100 text-sm mt-1">Customer conversations</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
+          <span class="text-xs text-blue-100">Live</span>
+        </div>
+      </div>
+
+      <!-- Connection Status -->
+      <div *ngIf="isBrowser" class="mt-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-2 h-2 rounded-full" [class]="connectionReady ? 'bg-green-400 animate-pulse' : 'bg-red-400'">
+          </div>
+          <span class="text-xs" [class]="connectionReady ? 'text-green-200' : 'text-red-200'">
+            {{ connectionReady ? 'Connected' : 'Connecting...' }}
+          </span>
+        </div>
+        <div class="text-xs text-blue-200">
+          {{ getOnlineUsersCount() }} online • {{ getUserWithMessages().length }} active
+        </div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="p-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50">
+      <div class="relative group">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg
+            class="h-5 w-5 text-gray-400 dark:text-gray-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input type="text"
+          class="block w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl leading-5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-400/50 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200 text-sm shadow-sm dark:text-gray-100"
+          placeholder="Search users...">
+      </div>
+    </div>
+
+    <!-- Users List -->
+    <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+      <div class="p-3">
+        <!-- Online Users -->
+        <div *ngIf="getOnlineUsers().length > 0" class="mb-6">
+          <div class="flex items-center space-x-2 mb-3 px-2">
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <h3 class="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Online Users
+            </h3>
+            <span
+              class="ml-auto text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full font-medium">{{
+              getOnlineUsers().length }}</span>
+          </div>
+          <div class="space-y-2">
+            <div *ngFor="let user of getOnlineUsers(); trackBy: trackByUserId"
+              (click)="isBrowser ? selectUser(user) : null"
+              class="group flex items-center p-4 rounded-xl transition-all duration-300 user-item cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 hover:shadow-md transform hover:scale-[1.02]"
+              [class.bg-gradient-to-r]="selectedUser?.id === user.id"
+              [class.from-blue-100]="selectedUser?.id === user.id" [class.to-purple-100]="selectedUser?.id === user.id"
+              [class.dark:from-blue-900]="selectedUser?.id === user.id"
+              [class.dark:to-purple-900]="selectedUser?.id === user.id" [class.shadow-lg]="selectedUser?.id === user.id"
+              [class.ring-2]="selectedUser?.id === user.id" [class.ring-blue-200]="selectedUser?.id === user.id"
+              [class.dark:ring-blue-600]="selectedUser?.id === user.id">
+
+              <!-- User Avatar -->
+              <div class="flex-shrink-0 relative">
+                <div class="relative">
+                  <img [src]="user.imageUrl || 'assets/images/default-avatar.png'" [alt]="user.userName"
+                    class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md">
+                  <div
+                    class="absolute -bottom-1 -right-1 h-5 w-5 bg-green-400 border-3 border-white rounded-full animate-pulse">
+                  </div>
+                </div>
+                <div *ngIf="isUserSentMessageAndNotRead(user)"
+                  class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
+                  <span class="text-xs text-white font-bold">{{ getUnreadCount(user) }}</span>
+                </div>
+              </div>
+
+              <!-- User Info -->
+              <div class="ml-4 flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <p
+                    class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {{ user.userName }}</p>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{
+                    formatMessageTime(getUserLastMessageTime(user)) }}</span>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">{{ user.email }}</p>
+                <div class="flex items-center mt-2">
+                  <div class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                  <span class="text-xs text-green-600 dark:text-green-400 font-medium">Online</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Users with messages -->
+        <div *ngIf="getUserWithMessages().length > 0" class="mb-6">
+          <div class="flex items-center space-x-2 mb-3 px-2">
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <h3 class="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Active Conversations
+            </h3>
+            <span
+              class="ml-auto text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded-full font-medium">{{
+              getUserWithMessages().length }}</span>
+          </div>
+          <div class="space-y-2">
+            <div *ngFor="let user of getUserWithMessages(); trackBy: trackByUserId"
+              (click)="isBrowser ? selectUser(user) : null"
+              class="group flex items-center p-4 rounded-xl transition-all duration-300 user-item cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 hover:shadow-md transform hover:scale-[1.02]"
+              [class.bg-gradient-to-r]="selectedUser?.id === user.id"
+              [class.from-blue-100]="selectedUser?.id === user.id" [class.to-purple-100]="selectedUser?.id === user.id"
+              [class.dark:from-blue-900]="selectedUser?.id === user.id"
+              [class.dark:to-purple-900]="selectedUser?.id === user.id" [class.shadow-lg]="selectedUser?.id === user.id"
+              [class.ring-2]="selectedUser?.id === user.id" [class.ring-blue-200]="selectedUser?.id === user.id"
+              [class.dark:ring-blue-600]="selectedUser?.id === user.id">
+
+              <!-- User Avatar -->
+              <div class="flex-shrink-0 relative">
+                <div class="relative">
+                  <img [src]="user.imageUrl || 'assets/images/default-avatar.png'" [alt]="user.userName"
+                    class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md">
+                  <div
+                    class="absolute -bottom-1 -right-1 h-5 w-5 bg-green-400 border-3 border-white rounded-full animate-pulse">
+                  </div>
+                </div>
+                <div *ngIf="isUserSentMessageAndNotRead(user)"
+                  class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
+                  <span class="text-xs text-white font-bold">{{ getUnreadCount(user) }}</span>
+                </div>
+              </div>
+
+              <!-- User Info -->
+              <div class="ml-4 flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <p
+                    class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {{ user.userName }}</p>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{
+                    formatMessageTime(getUserLastMessageTime(user)) }}</span>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">{{ user.email }}</p>
+                <div class="flex items-center mt-2">
+                  <div class="w-2 h-2 rounded-full mr-2" [class]="isUserOnline(user) ? 'bg-green-400 animate-pulse' : 'bg-gray-400'"></div>
+                  <span class="text-xs font-medium" [class]="isUserOnline(user) ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'">
+                    {{ isUserOnline(user) ? 'Online' : 'Offline' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- All users -->
+        <div>
+          <div class="flex items-center space-x-2 mb-3 px-2">
+            <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+            <h3 class="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">All Users</h3>
+            <span
+              class="ml-auto text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full font-medium">{{
+              allUsers.length }}</span>
+          </div>
+          <div class="space-y-2">
+            <div *ngFor="let user of allUsers; trackBy: trackByUserId" (click)="isBrowser ? selectUser(user) : null"
+              class="group flex items-center p-4 rounded-xl transition-all duration-300 user-item cursor-pointer hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:shadow-md transform hover:scale-[1.02]"
+              [class.bg-gradient-to-r]="selectedUser?.id === user.id"
+              [class.from-blue-100]="selectedUser?.id === user.id" [class.to-purple-100]="selectedUser?.id === user.id"
+              [class.shadow-lg]="selectedUser?.id === user.id" [class.ring-2]="selectedUser?.id === user.id"
+              [class.ring-blue-200]="selectedUser?.id === user.id">
+
+              <!-- User Avatar -->
+              <div class="flex-shrink-0 relative">
+                <img [src]="user.imageUrl || 'assets/images/default-avatar.png'" [alt]="user.userName"
+                  class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md">
+                <div class="absolute -bottom-1 -right-1 h-5 w-5 bg-gray-400 border-3 border-white rounded-full"></div>
+              </div>
+
+              <!-- User Info -->
+              <div class="ml-4 flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">{{
+                    user.userName }}</p>
+                </div>
+                <p class="text-xs text-gray-500 truncate mt-1">{{ user.email }}</p>
+                <div class="flex items-center mt-2">
+                  <div class="w-2 h-2 rounded-full mr-2" [class]="user.isBlocked ? 'bg-red-400' : (isUserOnline(user) ? 'bg-green-400 animate-pulse' : 'bg-gray-400')"></div>
+                  <span class="text-xs font-medium" [class]="user.isBlocked ? 'text-red-600' : (isUserOnline(user) ? 'text-green-600' : 'text-gray-600')">
+                    {{ user.isBlocked ? 'Blocked' : (isUserOnline(user) ? 'Online' : 'Offline') }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Status indicator -->
+              <div class="flex-shrink-0 ml-3">
+                <span
+                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200"
+                  [class]="user.isBlocked ? 'bg-red-100 text-red-700 ring-1 ring-red-200' : 'bg-green-100 text-green-700 ring-1 ring-green-200'">
+                  {{ user.isBlocked ? 'Blocked' : 'Active' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="flex-1 flex flex-col chat-area bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm">
+    <!-- Chat Header -->
+    <div *ngIf="selectedUser"
+      class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 p-6 shadow-sm">
+      <div class="flex items-center">
+        <div class="relative">
+          <img [src]="selectedUser.imageUrl || 'assets/images/default-avatar.png'" [alt]="selectedUser.userName"
+            class="h-14 w-14 rounded-full object-cover ring-3 ring-white shadow-lg">
+          <div
+            class="absolute -bottom-1 -right-1 h-5 w-5 bg-green-400 border-3 border-white rounded-full animate-pulse">
+          </div>
+        </div>
+        <div class="ml-4 flex-1">
+          <div class="flex items-center space-x-3">
+            <h3 class="text-xl font-bold text-gray-900">{{ selectedUser.userName }}</h3>
+            <span
+              class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200"
+              [class]="selectedUser.isBlocked ? 'bg-red-100 text-red-700 ring-1 ring-red-200' : 'bg-green-100 text-green-700 ring-1 ring-green-200'">
+              {{ selectedUser.isBlocked ? 'Blocked' : 'Active' }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-600 mt-1">{{ selectedUser.email }}</p>
+          <div class="flex items-center mt-2">
+            <div class="w-2 h-2 rounded-full mr-2" [class]="selectedUser && isUserOnline(selectedUser) ? 'bg-green-400 animate-pulse' : 'bg-gray-400'"></div>
+            <span class="text-xs font-medium" [class]="selectedUser && isUserOnline(selectedUser) ? 'text-green-600' : 'text-gray-600'">
+              {{ selectedUser && isUserOnline(selectedUser) ? 'Online now' : 'Offline' }}
+            </span>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+            </svg>
+          </button>
+          <button class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
+              </path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- No User Selected -->
+    <div *ngIf="!selectedUser"
+      class="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
+      <div class="text-center max-w-md">
+        <div class="relative mb-6">
+          <div
+            class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto shadow-2xl">
+            <svg class="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+              </path>
+            </svg>
+          </div>
+          <div class="absolute -top-2 -right-2 w-8 h-8 bg-green-400 rounded-full animate-ping"></div>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">
+          {{ isBrowser ? 'Welcome to Support Hub' : 'Loading Support Chat' }}
+        </h3>
+        <p class="text-gray-600 leading-relaxed">
+          {{ isBrowser ? 'Select a customer from the list to start providing support and manage conversations
+          effectively.' : 'Please wait while we initialize the chat interface for you.' }}
+        </p>
+        <div class="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
+          <div class="flex items-center space-x-2">
+            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+            <span>Real-time messaging</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+            <span>File sharing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Area -->
+    <div *ngIf="selectedUser"
+      class="flex-1 overflow-y-auto p-6 space-y-4 messages-scrollbar bg-gradient-to-b from-transparent to-gray-50/30">
+      <div *ngFor="let message of messages; trackBy: trackByMessageId" class="flex animate-fade-in"
+        [class.justify-end]="isMessageFromCurrentUser(message)"
+        [class.justify-start]="!isMessageFromCurrentUser(message)">
+        @if (message.message) {
+
+
+        <div class="relative group">
+          <div
+            class="max-w-xs lg:max-w-md px-6 py-4 rounded-2xl message-bubble shadow-sm transition-all duration-300 hover:shadow-md"
+            [class]="isMessageFromCurrentUser(message) 
+                        ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white' 
+                        : 'bg-white text-gray-900 border border-gray-200'">
+
+            <p class="text-sm leading-relaxed">{{ message.message }}</p>
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/20">
+              <p class="text-xs opacity-75">
+                {{ formatMessageTime(message.sentAt) }}
+              </p>
+              <div class="flex items-center space-x-1">
+                <span *ngIf="!isMessageFromCurrentUser(message) && !message.isRead"
+                  class="text-xs bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">
+                  Unread
+                </span>
+                <svg *ngIf="isMessageFromCurrentUser(message)" class="h-4 w-4 opacity-75" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete button - shows on hover for all messages -->
+          <button (click)="deleteMessage(message)"
+            class="absolute -top-2 -right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg"
+            title="Delete message">
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+              </path>
+            </svg>
+          </button>
+        </div>
+        }
+      </div>
+
+      <!-- No messages -->
+      <div *ngIf="messages.length === 0" class="text-center py-12">
+        <div
+          class="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+            </path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Start the conversation!</h3>
+        <p class="text-gray-600">Send your first message to begin supporting this customer.</p>
+      </div>
+    </div>
+
+    <!-- Message Input -->
+    <div *ngIf="selectedUser"
+      class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-t border-gray-200/50 dark:border-gray-700/50 p-6 shadow-lg">
+      <div class="flex items-end space-x-4">
+        <div class="flex-1 relative">
+          <div class="relative">
+            <textarea [(ngModel)]="newMessage" (keydown.enter)="isBrowser ? sendMessage($event) : null"
+              [disabled]="!isBrowser || !connectionReady" rows="1"
+              class="block w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-2xl leading-5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 dark:focus:ring-blue-400/50 dark:focus:border-blue-400 transition-all duration-200 text-sm resize-none disabled:opacity-50 disabled:cursor-not-allowed shadow-sm dark:text-gray-100"
+              [placeholder]="connectionReady ? 'Type your message...' : 'Connecting...'"
+              style="min-height: 48px; max-height: 120px;">
+            </textarea>
+            <div class="absolute bottom-2 right-2 flex items-center space-x-2">
+              <button
+                class="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
+                  </path>
+                </svg>
+              </button>
+              <button (click)="toggleEmojiPicker()"
+                class="emoji-button p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                title="Add emoji">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button (click)="isBrowser ? sendMessage() : null"
+          [disabled]="!newMessage.trim() || !isBrowser || !connectionReady"
+          class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-2xl shadow-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 active:scale-95">
+          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8">
+            </path>
+          </svg>
+          Send
+        </button>
+      </div>
+
+      <!-- Emoji Picker -->
+      <div *ngIf="showEmojiPicker"
+        class="emoji-picker-container absolute bottom-full right-0 mb-2 z-50 bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-xs">
+        <div class="grid grid-cols-8 gap-1">
+          <button *ngFor="let emoji of commonEmojis" (click)="addEmoji(emoji)"
+            class="p-2 hover:bg-gray-100 rounded text-lg transition-colors">
+            {{ emoji }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

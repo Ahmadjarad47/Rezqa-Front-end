@@ -1,3 +1,20 @@
-
-
+<app-navbar></app-navbar>
 <router-outlet />
+
+
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" [fullScreen]="true" >
+
+  <!-- From Uiverse.io by Tsiangana -->
+
+  <div class="dot-spinner">
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+    <div class="dot-spinner__dot"></div>
+  </div>
+  <span>loading...</span>
+</ngx-spinner>

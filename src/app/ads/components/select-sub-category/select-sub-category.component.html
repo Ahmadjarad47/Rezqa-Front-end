@@ -1,0 +1,133 @@
+<!-- Header -->
+<div class="text-center mb-8">
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">اختيار الفئة الفرعية</h1>
+  <p class="text-lg text-gray-600 dark:text-gray-400">
+    اختر الفئة الفرعية المناسبة لإعلانك
+  </p>
+</div>
+
+<!-- Main Content -->
+<div class="text-center space-y-2">
+    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">ما الذي تود بيعه أو الإعلان عنه؟</h2>
+    <p class="text-gray-600 dark:text-gray-300">اختر القسم المناسب لإضافة الإعلان</p>
+</div>
+
+<!-- Search Bar with focus effect -->
+<div class="relative max-w-2xl mx-auto">
+    <input 
+        type="text" 
+        placeholder="ابحث عن قسم فرعي..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange($event)"
+        class="w-full pl-12 pr-5 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 shadow-sm" />
+    <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+</div>
+
+<!-- Loading State -->
+@if (isLoading) {
+<div class="text-center py-8">
+    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <p class="mt-2 text-gray-600 dark:text-gray-300">جاري تحميل الأقسام الفرعية...</p>
+</div>
+}
+
+<!-- Results Info -->
+@if (!isLoading && SubCategoryDto.length > 0) {
+<div class="text-center py-4">
+    <p class="text-gray-600 dark:text-gray-300">
+        تم العثور على {{ totalCount }} قسم فرعي
+        @if (searchTerm) {
+        لـ "{{ searchTerm }}"
+        }
+    </p>
+</div>
+}
+
+<!-- No Results -->
+@if (!isLoading && SubCategoryDto.length === 0 && searchTerm) {
+<div class="text-center py-8">
+    <p class="text-gray-600 dark:text-gray-300">لم يتم العثور على أقسام فرعية تطابق البحث</p>
+</div>
+}
+
+<!-- Sub-Categories List with better hover effects -->
+@if (!isLoading && SubCategoryDto.length > 0) {
+<div class="space-y-3">
+    @for (item of SubCategoryDto; track $index) {
+    <div 
+        (click)="selectSubCategory(item)"
+        class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-all duration-200 group">
+        <span
+            class="font-medium flex items-center gap-3 text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+            {{item.title}}
+        </span>
+        <span class="text-gray-400 dark:text-gray-300 group-hover:text-blue-500">→</span>
+    </div>
+    }
+</div>
+}
+
+<!-- Pagination Controls -->
+@if (!isLoading && totalPages > 1) {
+<div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 rounded-xl mt-6">
+    <div class="flex items-center justify-between">
+        <!-- Page Size Selector -->
+        <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-700 dark:text-gray-300">عرض:</span>
+            <select
+                [value]="pageSize"
+                (change)="onPageSizeChange($event)"
+                class="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>
+            <span class="text-sm text-gray-700 dark:text-gray-300">لكل صفحة</span>
+        </div>
+
+        <!-- Pagination Info -->
+        <div class="text-sm text-gray-700 dark:text-gray-300">
+            عرض {{ (currentPage - 1) * pageSize + 1 }} إلى {{ Math.min(currentPage * pageSize, totalCount) }} من {{ totalCount }} نتيجة
+        </div>
+
+        <!-- Pagination Navigation -->
+        <div class="flex items-center space-x-2">
+            <!-- Previous Button -->
+            <button
+                (click)="onPageChange(currentPage - 1)"
+                [disabled]="!hasPreviousPage"
+                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
+                السابق
+            </button>
+
+            <!-- Page Numbers -->
+            <div class="flex items-center space-x-1">
+                @for (page of getPageNumbers(); track page) {
+                @if (page === '...') {
+                <span class="px-3 py-2 text-sm text-gray-500">...</span>
+                } @else {
+                <button
+                    (click)="onPageButtonClick(page)"
+                    [class]="page === currentPage ? 'px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg' : 'px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700'">
+                    {{ page }}
+                </button>
+                }
+                }
+            </div>
+
+            <!-- Next Button -->
+            <button
+                (click)="onPageChange(currentPage + 1)"
+                [disabled]="!hasNextPage"
+                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
+                التالي
+            </button>
+        </div>
+    </div>
+</div>
+}

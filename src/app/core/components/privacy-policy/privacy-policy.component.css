@@ -1,0 +1,106 @@
+/* تحسين مظهر صفحة سياسة الخصوصية */
+.container {
+  direction: rtl;
+}
+
+/* تأثيرات التمرير */
+.container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+  background: #ea580c;
+}
+
+/* تحسين مظهر العناوين */
+h1, h2, h3 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* تأثيرات الأزرار */
+button {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* تحسين مظهر القوائم */
+ul {
+  line-height: 1.8;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+/* تحسين مظهر الأقسام */
+section {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* تحسين مظهر معلومات الاتصال */
+.bg-gray-50 {
+  border: 1px solid #e5e7eb;
+}
+
+/* تحسين مظهر النص */
+.text-gray-600 {
+  line-height: 1.7;
+}
+
+/* تأثيرات التحميل */
+.container {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* تحسين مظهر للشاشات الصغيرة */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+  }
+}
