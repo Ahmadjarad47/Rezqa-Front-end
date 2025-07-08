@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './core/components/home/home.component';
 import { AdsHomeComponent } from './core/components/ads/ads-home/ads-home.component';
 import { AdsDetailsComponent } from './core/components/ads/ads-details/ads-details.component';
-import { RenderMode } from '@angular/ssr';
 import { PrivacyPolicyComponent } from './core/components/privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
@@ -52,7 +51,7 @@ const routes: Routes = [
     path: 'ads',
     loadChildren: () => import('./ads/ads.module').then((m) => m.AdsModule),
   },
-  { path: '**', redirectTo: 'identity', pathMatch: 'full', },
+  { path: '**', redirectTo: '/', pathMatch: 'full', },
 ];
 
 @NgModule({
