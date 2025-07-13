@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { AdsService } from '../../services/ads.service';
 import { PaginatedResult } from '@models/paginated-result.model';
 import { AdDto } from '@models/ad.dto';

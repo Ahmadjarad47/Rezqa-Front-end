@@ -195,7 +195,7 @@
                   <div class="flex-shrink-0">
                     <div class="relative">
                       <div class="w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-gray-600 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-colors duration-200" *ngIf="category.image">
-                        <img loading="lazy" class="w-full h-full object-cover" [src]="category.image" [alt]="category.title">
+                        <img loading="lazy" class="w-full h-full object-cover" [src]="category.image" [alt]="category.title" decoding="async">
                       </div>
                       <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 rounded-xl flex items-center justify-center border-2 border-gray-200 dark:border-gray-600 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-colors duration-200" *ngIf="!category.image">
                         <svg class="h-8 w-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,7 +396,7 @@
               <!-- Category Image -->
               <div class="flex-shrink-0">
                 <div class="w-16 h-16 rounded-xl overflow-hidden border-2 border-gray-200 dark:border-gray-600" *ngIf="deletingCategory?.image">
-                  <img class="w-full h-full object-cover" [src]="deletingCategory?.image" [alt]="deletingCategory?.title">
+                  <img loading="lazy" class="w-full h-full object-cover" [src]="deletingCategory?.image" [alt]="deletingCategory?.title" decoding="async">
                 </div>
                 <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 rounded-xl flex items-center justify-center border-2 border-gray-200 dark:border-gray-600" *ngIf="!deletingCategory?.image">
                   <svg class="h-8 w-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

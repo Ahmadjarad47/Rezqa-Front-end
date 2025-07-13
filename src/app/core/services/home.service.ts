@@ -2,7 +2,6 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '@environments/environment.development';
-import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { TransferState, makeStateKey } from '@angular/core';
 

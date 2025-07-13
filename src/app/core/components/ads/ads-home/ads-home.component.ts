@@ -22,7 +22,6 @@ import {
 } from '../../../../models/governorates-data';
 import {
   BehaviorSubject,
-  Subject,
   combineLatest,
   of,
   Subscription,
@@ -33,8 +32,6 @@ import {
   switchMap,
   catchError,
   tap,
-  filter as rxFilter,
-  map,
 } from 'rxjs/operators';
 import { HomeService } from '@app/core/services/home.service';
 import { WishlistService } from '@app/dashboard/components/wishlist/wishlist.service';

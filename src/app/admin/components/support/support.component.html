@@ -93,7 +93,7 @@
               <div class="flex-shrink-0 relative">
                 <div class="relative">
                   <img [src]="user.imageUrl || 'assets/images/default-avatar.png'" [alt]="user.userName"
-                    class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md">
+                    class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md" loading="lazy" decoding="async">
                   <div
                     class="absolute -bottom-1 -right-1 h-5 w-5 bg-green-400 border-3 border-white rounded-full animate-pulse">
                   </div>
@@ -148,7 +148,7 @@
               <div class="flex-shrink-0 relative">
                 <div class="relative">
                   <img [src]="user.imageUrl || 'assets/images/default-avatar.png'" [alt]="user.userName"
-                    class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md">
+                    class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md" loading="lazy" decoding="async">
                   <div
                     class="absolute -bottom-1 -right-1 h-5 w-5 bg-green-400 border-3 border-white rounded-full animate-pulse">
                   </div>
@@ -200,7 +200,7 @@
               <!-- User Avatar -->
               <div class="flex-shrink-0 relative">
                 <img [src]="user.imageUrl || 'assets/images/default-avatar.png'" [alt]="user.userName"
-                  class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md">
+                  class="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-md" loading="lazy" decoding="async">
                 <div class="absolute -bottom-1 -right-1 h-5 w-5 bg-gray-400 border-3 border-white rounded-full"></div>
               </div>
 
@@ -242,7 +242,7 @@
       <div class="flex items-center">
         <div class="relative">
           <img [src]="selectedUser.imageUrl || 'assets/images/default-avatar.png'" [alt]="selectedUser.userName"
-            class="h-14 w-14 rounded-full object-cover ring-3 ring-white shadow-lg">
+            class="h-14 w-14 rounded-full object-cover ring-3 ring-white shadow-lg" loading="lazy" decoding="async">
           <div
             class="absolute -bottom-1 -right-1 h-5 w-5 bg-green-400 border-3 border-white rounded-full animate-pulse">
           </div>

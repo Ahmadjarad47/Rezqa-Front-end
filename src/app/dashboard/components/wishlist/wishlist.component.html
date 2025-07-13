@@ -65,7 +65,9 @@
           [src]="getImageUrl(item.imageUrl)" 
           [alt]="item.title || 'Ad Image'"
           class="w-full h-full object-cover"
-          (error)="onImageError($event)">
+          (error)="onImageError($event)"
+          loading="lazy"
+          decoding="async">
         
         <!-- Remove Button -->
         <button 

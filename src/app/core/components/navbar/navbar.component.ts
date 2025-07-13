@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter, Subscription, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { filter, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { AuthService } from 'src/app/identity/services/auth.service';
 import { UserData } from 'src/app/identity/models/auth.models';
 import { WishlistService } from '@app/dashboard/components/wishlist/wishlist.service';

@@ -135,6 +135,7 @@
                             <img [src]="item.imageUrl || 'https://ui-avatars.com/api/?name=' + (item.userName || 'U')"
                                 width="40" height="40" alt="User Image"
                                 class="rounded-full border-2 object-cover shadow-sm"
+                                loading="lazy" decoding="async"
                                 [ngClass]="{
                                     'border-green-500': (signalR.usersOnline$|async)?.includes(item.id),
                                     'border-gray-200 dark:border-gray-600': !(signalR.usersOnline$|async)?.includes(item.id)

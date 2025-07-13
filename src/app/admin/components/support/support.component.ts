@@ -9,7 +9,6 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { SupportService } from '@app/admin/services/support.service';
 import { UsersService } from '../users/users.service';
-import { SignalRService } from '@app/core/services/signalr.service';
 import { GetAllUsers } from '@app/admin/models/users/Crud';
 import {
   Message,
@@ -26,7 +25,6 @@ import { Subscription } from 'rxjs';
 export class SupportComponent implements OnInit, OnDestroy {
   supService = inject(SupportService);
   userService = inject(UsersService);
-  signalRService = inject(SignalRService);
 
   allUsers: GetAllUsers[] = [];
   usersWithMessages: UserLastMessage[] = [];
@@ -120,7 +118,6 @@ export class SupportComponent implements OnInit, OnDestroy {
         await this.startChatConnection();
         this.subscribeToMessages();
         this.setupClickOutsideHandler();
-        this.startSignalRConnection();
         this.subscribeToOnlineUsers();
       }, 100);
     }
@@ -360,26 +357,15 @@ export class SupportComponent implements OnInit, OnDestroy {
     });
   }
 
-  private async startSignalRConnection() {
-    if (!this.isBrowser) return;
-
-    try {
-      await this.signalRService.startConnection();
-    } catch (error) {
-      console.error('Error starting SignalR connection:', error);
-    }
-  }
-
   private subscribeToOnlineUsers() {
     if (!this.isBrowser) return;
 
-    const onlineUsersSub = this.signalRService.usersOnline$.subscribe(
-      (users) => {
-        this.onlineUserIds = users;
-        console.log('Online users updated:', users);
-      }
-    );
-
-    this.subscriptions.push(onlineUsersSub);
+    // Remove the online users subscription since it doesn't exist on SupportService
+    // const onlineUsersSub = this.supService.usersOnline$.subscribe(
+    //   (users) => {
+    //     this.onlineUserIds = users;
+    //   }
+    // );
+    // this.subscriptions.push(onlineUsersSub);
   }
 }

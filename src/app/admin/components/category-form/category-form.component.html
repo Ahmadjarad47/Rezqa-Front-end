@@ -137,10 +137,8 @@
       <!-- Image Preview -->
       <div *ngIf="selectedFile" class="mt-4">
         <div class="relative inline-block">
-          <img 
-            [src]="getImagePreview()" 
-            alt="Preview" 
-            class="w-32 h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-600">
+          <img [src]="getImagePreview()" [alt]="'Category preview'"
+            class="w-full h-full object-cover rounded-lg" loading="lazy" decoding="async">
           <button 
             type="button"
             (click)="removeImage()"

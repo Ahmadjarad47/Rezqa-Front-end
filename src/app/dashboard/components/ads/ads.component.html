@@ -214,7 +214,7 @@
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-16 w-16 relative">
                                     <img [src]="getImageUrl(ad)" [alt]="ad.title"
-                                        class="ad-image h-16 w-16 object-cover"
+                                        class="ad-image h-16 w-16 object-cover" loading="lazy" decoding="async"
                                         onerror="this.src='assets/placeholder-image.jpg'">
                                     <div *ngIf="hasMultipleImages(ad)" class="image-overlay">
                                         <span class="text-white text-xs font-medium">+{{ getImageCount(ad) - 1 }}</span>
@@ -336,7 +336,7 @@
             </div>
 
             <div class="relative mb-4">
-                <img [src]="getImageUrl(ad)" [alt]="ad.title" class="ad-image w-full h-48 object-cover"
+                <img [src]="getImageUrl(ad)" [alt]="ad.title" class="ad-image w-full h-48 object-cover" loading="lazy" decoding="async"
                     onerror="this.src='assets/placeholder-image.jpg'">
                 <div *ngIf="hasMultipleImages(ad)" class="image-overlay">
                     <span class="text-white text-sm font-medium">+{{ getImageCount(ad) - 1 }} more</span>

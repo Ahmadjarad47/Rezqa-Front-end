@@ -1,10 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AdsService } from '../../service/ads.service';
 import { IPage, ICategory, PaginatedRequest } from '../../models/Category';
-import { Observable, of } from 'rxjs';
 import { CreateAdDto } from '../../models/Ads';
 import { Router } from '@angular/router';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, Observable, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-select-category',
@@ -62,24 +62,51 @@ export class SelectCategoryComponent implements OnInit {
     const request: PaginatedRequest = {
       pageNumber: this.currentPage,
       pageSize: this.pageSize,
-      search: this.searchTerm || search,
+      search: search || this.searchTerm || undefined,
     };
 
-    const result = this.adsService.getCategoey(request);
-    if (result) {
-      return result;
-    } else {
-      // Return empty result if service returns null (e.g., not in browser)
-      return of({
-        items: [],
-        pageNumber: this.currentPage,
-        pageSize: this.pageSize,
-        totalCount: 0,
-        totalPages: 0,
-        hasPreviousPage: false,
-        hasNextPage: false,
-      });
+    if (this.adsService.getCategoey) {
+      const obs = this.adsService.getCategoey(request);
+      if (obs) {
+        return obs.pipe(
+          tap((result) => {
+            const page = result as IPage;
+            this.categories = page.items;
+            this.currentPage = page.pageNumber;
+            this.pageSize = page.pageSize;
+            this.totalCount = page.totalCount;
+            this.totalPages = page.totalPages;
+            this.hasPreviousPage = page.hasPreviousPage;
+            this.hasNextPage = page.hasNextPage;
+            this.loading = false;
+          }),
+          catchError((error) => {
+            this.error = 'Error loading categories';
+            this.loading = false;
+            console.error('Error loading categories:', error);
+            return of({
+              items: [],
+              pageNumber: this.currentPage,
+              pageSize: this.pageSize,
+              totalCount: 0,
+              totalPages: 0,
+              hasPreviousPage: false,
+              hasNextPage: false,
+            });
+          })
+        );
+      }
     }
+    // Return empty result if service returns null (e.g., not in browser)
+    return of({
+      items: [],
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize,
+      totalCount: 0,
+      totalPages: 0,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    });
   }
 
   loadCategories(search?: string): void {

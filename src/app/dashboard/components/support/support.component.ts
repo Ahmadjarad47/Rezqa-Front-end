@@ -7,7 +7,6 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
-import { AuthService } from 'src/app/identity/services/auth.service';
 import {
   SupportSignalRService,
   SupportMessage,

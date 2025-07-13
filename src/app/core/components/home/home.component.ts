@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CategoryDto, HomeService } from '@app/core/services/home.service';
 import { AuthService } from '@app/identity/services/auth.service';
@@ -67,11 +67,6 @@ export class HomeComponent implements OnInit {
     } else {
       this.router.navigate(['/all']);
     }
-  }
-
-  onLearnMore(): void {
-    // Implement learn more functionality
-    console.log('Learn more clicked');
   }
 
   // App download methods

@@ -53,10 +53,28 @@ export class UsersComponent implements AfterViewInit, OnInit {
   allUsersNotificationMessage = '';
 
   ngOnInit(): void {
+    this.loadSimpleDatatablesScript().then(() => {
+      // يمكنك الآن استخدام simple-datatables هنا
+    });
     if (isPlatformBrowser(this.platformId)) {
       this.loadUsers();
     }
   }
+
+  private loadSimpleDatatablesScript(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if ((window as any).simpleDatatables) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3';
+      script.onload = () => resolve();
+      script.onerror = () => reject();
+      document.body.appendChild(script);
+    });
+  }
+
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       // document.documentElement.classList.toggle('dark');

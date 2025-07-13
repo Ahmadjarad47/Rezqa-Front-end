@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { SubCategoryDto, ISubCategoryPage } from '../../models/subCategory';
 import { PaginatedRequest } from '../../models/Category';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-select-sub-category',

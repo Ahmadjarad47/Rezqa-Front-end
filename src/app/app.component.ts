@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FlowbiteService } from './core/services/flowbite.service';
 import { initFlowbite } from 'flowbite';
 import { AuthService } from './identity/services/auth.service';
@@ -8,7 +8,7 @@ import { SignalRService } from './core/services/signalr.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: false,
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'syria-open-store';

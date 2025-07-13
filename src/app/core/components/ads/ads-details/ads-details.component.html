@@ -48,7 +48,8 @@
             <!-- Main Image -->
             <div class="relative aspect-video bg-gray-100 dark:bg-gray-700">
               <img [src]="post.imageUrl[currentImageIndex] || 'assets/placeholder.jpg'"
-                [alt]="post.title || 'صورة الإعلان'" class="w-full h-full object-cover" (error)="onImageError($event)">
+                [alt]="post.title + ' - صورة ' + (currentImageIndex + 1)"
+                class="w-full h-full object-cover rounded-lg transition-all duration-300" loading="lazy" decoding="async">
 
               <!-- Image Navigation -->
               <div *ngIf="post?.imageUrl && post.imageUrl.length > 1"
@@ -99,8 +100,9 @@
                 <div *ngFor="let image of post.imageUrl; let i = index" (click)="selectImage(i)"
                   class="flex-shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all thumbnail-item"
                   [class.border-green-500]="i === currentImageIndex" [class.border-gray-300]="i !== currentImageIndex">
-                  <img [src]="image" [alt]="(post.title || 'صورة') + ' - صورة ' + (i + 1)"
-                    class="w-20 h-16 object-cover" (error)="onImageError($event)">
+                  <img [src]="image" [alt]="(post.title || 'صورة') + ' - صورة ' + (i + 1)" 
+                    class="w-full h-full object-cover rounded cursor-pointer transition-all duration-200 hover:opacity-80"
+                    loading="lazy" decoding="async">
                 </div>
               </div>
             </div>
