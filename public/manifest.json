@@ -1,0 +1,76 @@
+{
+  "name": "سوق سوريا المفتوح",
+  "short_name": "سوق سوريا",
+  "description": "منصة رقمية متطورة للبيع والشراء في سوريا، نوفر لك تجربة تسوق آمنة وسهلة مع آلاف الإعلانات المتنوعة",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/Photo_1751890456601.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Photo_1751890456601.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Photo_1751890456601.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["shopping", "business", "marketplace"],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot2.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "إضافة إعلان",
+      "short_name": "إضافة إعلان",
+      "description": "أضف إعلان جديد",
+      "url": "/ads",
+      "icons": [
+        {
+          "src": "/Photo_1751890456601.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "تصفح الإعلانات",
+      "short_name": "تصفح",
+      "description": "تصفح جميع الإعلانات",
+      "url": "/all",
+      "icons": [
+        {
+          "src": "/Photo_1751890456601.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+} 

@@ -1,0 +1,41 @@
+User-agent: *
+Allow: /
+
+# Allow all search engines to crawl the site
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Disallow admin and sensitive areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /identity/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Allow important pages
+Allow: /all/
+Allow: /ads/
+Allow: /privacy-policy/
+Allow: /terms-of-service/
+
+# Sitemap location
+Sitemap: https://syriaopenstore.com/sitemap.xml
+
+# Crawl delay (optional - be respectful to server)
+Crawl-delay: 1 
