@@ -7,6 +7,9 @@ import { AdsComponent } from './components/ads/ads.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { authAdsGuardAndDashboard } from '@app/ads/guards/auth-ads.guard';
 import { SupportComponent } from './components/support/support.component';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
+import { Inject } from '@angular/core';
 
 const routes: Routes = [
   {
@@ -28,5 +31,10 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
+  providers: [
+    { provide: PLATFORM_ID, useValue: 'server' },
+  ],
 })
-export class DashboardRoutingModule {}
+export class DashboardRoutingModule {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+}

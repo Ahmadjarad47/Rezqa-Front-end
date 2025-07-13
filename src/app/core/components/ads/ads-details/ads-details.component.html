@@ -1,7 +1,7 @@
 <!-- Loading State -->
 <div *ngIf="loading" class="min-h-screen flex items-center justify-center">
   <div class="text-center">
-    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
     <p class="text-gray-600 text-lg">جاري تحميل الإعلان...</p>
   </div>
 </div>
@@ -32,11 +32,11 @@
 
         <!-- Breadcrumb -->
         <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
-          <a href="/" class="hover:text-blue-600 transition">الرئيسية</a>
+          <a href="/" class="hover:text-green-600 transition">الرئيسية</a>
           <span>/</span>
-          <a href="/all" class="hover:text-blue-600 transition">جميع الإعلانات</a>
+          <a href="/all" class="hover:text-green-600 transition">جميع الإعلانات</a>
           <span>/</span>
-          <a [href]="'/all/' + encodeURIComponent(category)" class="hover:text-blue-600 transition">{{ category ||
+          <a [href]="'/all/' + encodeURIComponent(category)" class="hover:text-green-600 transition">{{ category ||
             'القسم' }}</a>
           <span>/</span>
           <span class="text-gray-900 dark:text-white">{{ post!.title || adsTitle || 'الإعلان' }}</span>
@@ -98,7 +98,7 @@
               <div class="flex space-x-2 overflow-x-auto">
                 <div *ngFor="let image of post.imageUrl; let i = index" (click)="selectImage(i)"
                   class="flex-shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all thumbnail-item"
-                  [class.border-blue-500]="i === currentImageIndex" [class.border-gray-300]="i !== currentImageIndex">
+                  [class.border-green-500]="i === currentImageIndex" [class.border-gray-300]="i !== currentImageIndex">
                   <img [src]="image" [alt]="(post.title || 'صورة') + ' - صورة ' + (i + 1)"
                     class="w-20 h-16 object-cover" (error)="onImageError($event)">
                 </div>
@@ -175,7 +175,7 @@
             <span class="text-sm text-gray-600 dark:text-gray-400">
               رقم الإعلان: <strong class="text-gray-900 dark:text-white">#{{ post!.id || adsId }}</strong>
             </span>
-            <button class="text-red-600 hover:text-red-700 flex items-center gap-2 text-sm font-medium transition">
+            <button routerLink="/dashboard/support" [queryParams]="{ad:post.title}" class="text-red-600 hover:text-red-700 flex items-center gap-2 text-sm font-medium transition">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd"
                   d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -196,7 +196,7 @@
 
           <!-- Phone Number -->
           <button (click)="copyPhoneNumber()"
-            class="w-full flex items-center justify-center bg-blue-600 text-white py-4 rounded-xl hover:bg-blue-700 transition font-semibold text-lg phone-button"
+            class="w-full flex items-center justify-center bg-green-600 text-white py-4 rounded-xl hover:bg-green-700 transition font-semibold text-lg phone-button"
             [disabled]="!post.phonNumber">
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -253,7 +253,7 @@
             </div>
           </div>
           <button
-            class="w-full mt-4 text-center text-blue-600 hover:text-blue-700 text-sm font-medium underline transition">
+            class="w-full mt-4 text-center text-green-600 hover:text-green-700 text-sm font-medium underline transition">
             عرض على الخريطة
           </button>
         </section>
@@ -261,8 +261,8 @@
         <!-- Boost Ad -->
         <section class="boost-gradient p-6 rounded-2xl shadow-lg text-white">
           <h3 class="text-xl font-bold mb-4">هل تريد مشاهدات أكثر لإعلانك؟</h3>
-          <p class="text-blue-100 mb-4">ميز إعلانك واحصل على المزيد من المشاهدات والتفاعل</p>
-          <button class="w-full bg-white text-blue-600 py-3 rounded-xl font-semibold hover:bg-gray-100 transition">
+          <p class="text-green-100 mb-4">ميز إعلانك واحصل على المزيد من المشاهدات والتفاعل</p>
+          <button class="w-full bg-white text-green-600 py-3 rounded-xl font-semibold hover:bg-gray-100 transition">
             ميز إعلانك الآن
           </button>
         </section>

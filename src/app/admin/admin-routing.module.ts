@@ -9,6 +9,7 @@ import { DynamicFieldsComponent } from './components/dynamic-fields/dynamic-fiel
 import { AdsComponent } from './components/ads/ads.component';
 import { ReportComponent } from './components/report/report.component';
 import { SupportComponent } from './components/support/support.component';
+import { NotificationComponent } from './components/notification/notification.component';
 
 const routes: Routes = [
   {
@@ -43,6 +44,10 @@ const routes: Routes = [
       {
         path: 'support',
         component: SupportComponent,
+      },
+      {
+        path: 'notifications',
+        component: NotificationComponent,
       },
       
       {

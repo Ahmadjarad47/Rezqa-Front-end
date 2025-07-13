@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import {
   Notification,
-  NotificationStatus,
 } from '../../../models/notification.model';
 import { AuthService } from '../../../identity/services/auth.service';
 import { NotificationService } from '@app/core/services/notification.service';
@@ -19,13 +18,15 @@ export class NotificationComponent implements OnInit, OnDestroy {
   unreadCount$: Observable<number>;
   selectedStatus$: Observable<string>;
 
+  statusOptions = [
+    { value: 'all', label: 'الكل' },
+    { value: '0', label: 'غير مقروء' },
+    { value: '1', label: 'مقروء' },
+  ];
+
   private subscriptions = new Subscription();
   isConnected = false;
-  statusOptions = [
-    { value: 'all', label: 'جميع الإشعارات' },
-    { value: NotificationStatus.Unread, label: 'غير مقروءة' },
-    { value: NotificationStatus.Read, label: 'مقروءة' },
-  ];
+ 
 
   constructor(
     public notificationService: NotificationService,
@@ -39,9 +40,11 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeNotifications();
+    
   }
 
   ngOnDestroy(): void {
+    this.onMarkAllAsRead();
     this.subscriptions.unsubscribe();
   }
 
@@ -73,9 +76,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
     return notification.id;
   }
 
-  onMarkAsRead(notificationId: string): void {
-    this.notificationService.markAsRead(notificationId);
-  }
 
   onDeleteNotification(notificationId: number): void {
     if (confirm('هل أنت متأكد من حذف هذا الإشعار؟')) {
@@ -93,13 +93,11 @@ export class NotificationComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusClass(status: NotificationStatus): string {
-    return status === NotificationStatus.Unread ? 'unread' : 'read';
+  // Add method to change notification status
+  onChangeStatus(notificationId: number, status: number): void {
+    this.notificationService.changeNotificationStatus(notificationId, status);
   }
 
-  getStatusText(status: NotificationStatus): string {
-    return status === NotificationStatus.Unread ? 'غير مقروء' : 'مقروء';
-  }
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -119,8 +117,12 @@ export class NotificationComponent implements OnInit, OnDestroy {
     }
   }
 
-  isAdmin(): boolean {
-    const user = this.authService.getCurrentUser();
-    return user?.roles?.includes('Admin') || false;
+  // Add getStatusText method for UI
+  getStatusText(status: number | string): string {
+    if (status === 0 || status === '0') return 'غير مقروء';
+    if (status === 1 || status === '1') return 'مقروء';
+    return '';
   }
+
+ 
 }

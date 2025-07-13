@@ -96,7 +96,6 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
     // React to route changes for category param
     this.handleRouteParams();
     // Reactively load posts when filter/page changes
-    debugger
     this.filter$.next({ categoryId: this.homeService.getCategory()?.id });
     this.setupReactivePostsLoading();
   }
@@ -208,7 +207,7 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
   }
 
   selectCategory(category: AdCategory) {
-    debugger;
+  
     this.updateFilter({ categoryId: category.id, subCategoryId: undefined });
     this.subcategories = [];
     this.isSubcategoriesExpanded = false;

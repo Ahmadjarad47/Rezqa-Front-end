@@ -23,7 +23,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="text-center">
-        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ getUploadedCount() }}</div>
+        <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ getUploadedCount() }}</div>
         <div class="text-sm text-gray-600 dark:text-gray-400">الصور المرفوعة</div>
       </div>
       <div class="text-center">
@@ -31,7 +31,7 @@
         <div class="text-sm text-gray-600 dark:text-gray-400">الصور المتبقية</div>
       </div>
       <div class="text-center">
-        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ getTotalSize() }}</div>
+        <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ getTotalSize() }}</div>
         <div class="text-sm text-gray-600 dark:text-gray-400">إجمالي الحجم</div>
       </div>
     </div>
@@ -43,10 +43,10 @@
       <div class="relative">
         <!-- Upload Box -->
         <div 
-          class="upload-box bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 h-48 flex flex-col items-center justify-center transition-all duration-200 hover:border-blue-400 dark:hover:border-blue-500"
-          [class.border-blue-500]="isDragging"
-          [class.bg-blue-50]="isDragging"
-          [class.dark:bg-blue-900]="isDragging"
+          class="upload-box bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 h-48 flex flex-col items-center justify-center transition-all duration-200 hover:border-green-400 dark:hover:border-green-500"
+          [class.border-green-500]="isDragging"
+          [class.bg-green-50]="isDragging"
+          [class.dark:bg-green-900]="isDragging"
           [class.border-yellow-400]="box.id === 1"
           [class.bg-yellow-50]="box.id === 1"
           [class.dark:bg-yellow-900]="box.id === 1"
@@ -138,16 +138,16 @@
   </div>
 
   <!-- Upload Guidelines -->
-  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 mb-8">
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6 mb-8">
     <div class="flex items-start">
       <div class="flex-shrink-0">
-        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
       </div>
       <div class="mr-3">
-        <h3 class="text-lg font-medium text-blue-800 dark:text-blue-200 mb-2">نصائح لرفع الصور</h3>
-        <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+        <h3 class="text-lg font-medium text-green-800 dark:text-green-200 mb-2">نصائح لرفع الصور</h3>
+        <ul class="text-sm text-green-700 dark:text-green-300 space-y-1">
           <li>• <strong>الصورة الأولى ستكون الصورة المصغرة للإعلان</strong></li>
           <li>• استخدم صور عالية الجودة وواضحة</li>
           <li>• الحد الأقصى لحجم كل صورة: 5 ميجابايت</li>
@@ -164,7 +164,7 @@
     <button 
       (click)="savePhotos()"
       [disabled]="!hasUploadedFiles() || isSaving"
-      class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+      class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
       
       @if (isSaving) {
         <svg class="w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">

@@ -1,0 +1,128 @@
+<div class="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <!-- Header Section -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">Manage and monitor all system notifications</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+          <svg class="w-4 h-4 mr-1.5 text-blue-800 dark:text-blue-300" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+          </svg>
+          <span *ngIf="notificationService.allNotifications$ | async as notifications">
+            {{ notifications.length }} notifications
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="notificationService.loading$ | async" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="(notificationService.allNotifications$ | async)?.length === 0 && !(notificationService.loading$ | async)" 
+       class="text-center py-12">
+    <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+      <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+      </svg>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No notifications yet</h3>
+    <p class="text-gray-500 dark:text-gray-400">When new notifications arrive, they will appear here.</p>
+  </div>
+
+  <!-- Notifications List -->
+  <div *ngIf="(notificationService.allNotifications$ | async)!.length > 0" class="space-y-4">
+    <div *ngFor="let notification of notificationService.allNotifications$ | async; trackBy: trackByNotificationId" 
+         class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 transform hover:-translate-y-1">
+      
+      <div class="p-6">
+        <div class="flex items-start justify-between">
+          <!-- Notification Content -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center space-x-3 mb-3">
+              <!-- Status Indicator -->
+              <div class="flex-shrink-0">
+                <div *ngIf="notification.status === 0" 
+                     class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <div *ngIf="notification.status === 1" 
+                     class="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
+              
+              <!-- Title -->
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                {{ notification.title }}
+              </h3>
+              
+              <!-- Status Badge -->
+              <span *ngIf="notification.status === 0" 
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                Unread
+              </span>
+              <span *ngIf="notification.status === 1" 
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                Read
+              </span>
+            </div>
+            
+            <!-- Message -->
+            <p class="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+              {{ notification.message }}
+            </p>
+            
+            <!-- Metadata -->
+            <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+              <div class="flex items-center space-x-1">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>{{ notification.createdAt | date:'MMM dd, yyyy - HH:mm' }}</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <span>ID: {{ notification.id }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex items-center space-x-2 ml-4">
+            <!-- Delete Button -->
+            <button (click)="deleteNotification(notification.id)" 
+                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/30">
+              <svg class="w-4 h-4 mr-1.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Actions (if needed) -->
+  <div *ngIf="(notificationService.allNotifications$ | async)!.length > 0" 
+       class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-gray-500 dark:text-gray-400">
+        Showing all notifications
+      </div>
+      <button (click)="clearAllNotifications()" 
+              class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/30">
+        <svg class="w-4 h-4 mr-1.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+        Clear All
+      </button>
+    </div>
+  </div>
+</div>

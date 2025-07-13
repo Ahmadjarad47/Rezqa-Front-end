@@ -1,15 +1,29 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  AfterViewChecked,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { AuthService } from 'src/app/identity/services/auth.service';
-import { SupportSignalRService, SupportMessage } from './support-signalr.service';
+import {
+  SupportSignalRService,
+  SupportMessage,
+} from './support-signalr.service';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-support',
   standalone: false,
   templateUrl: './support.component.html',
-  styleUrl: './support.component.css'
+  styleUrl: './support.component.css',
 })
-export class SupportComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
+export class SupportComponent
+  implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked
+{
   message: string = '';
   sending: boolean = false;
   sent: boolean = false;
@@ -26,7 +40,7 @@ export class SupportComponent implements OnInit, OnDestroy, AfterViewInit, After
 
   constructor(
     private supportSignalR: SupportSignalRService,
-    private authService: AuthService
+    private route: ActivatedRoute
   ) {}
 
   ngAfterViewChecked(): void {
@@ -38,73 +52,54 @@ export class SupportComponent implements OnInit, OnDestroy, AfterViewInit, After
 
   ngAfterViewInit(): void {
     this.scrollToBottom();
-    
-    // Mark messages as read when component becomes visible
-    this.markMessagesAsRead();
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.supportSignalR.stopConnection();
   }
 
   ngOnInit(): void {
-    this.initializeSupport();
+    // Delay initialization to avoid hydration issues
+    setTimeout(() => {
+      this.initializeSupport();
+    }, 100);
   }
 
   private async initializeSupport(): Promise<void> {
     try {
-    
-      // Start SignalR connection
+      // Start SignalR connection and wait for it to be ready
       await this.supportSignalR.startConnection();
+      
+      // Now get messages after connection is established
+      await this.supportSignalR.getMessagesWithUser('other user id');
 
+      if (this.route.snapshot.queryParams['ad']) {
+        this.message =
+          this.route.snapshot.queryParams['ad'] + ' الأعلان هذا' + '\n';
+      }
       // Subscribe to connection status
       this.subscriptions.push(
         this.supportSignalR.connectionStatus$.subscribe(
-          status => this.isConnected = status
+          (status) => (this.isConnected = status)
         )
       );
 
       // Subscribe to messages
       this.subscriptions.push(
-        this.supportSignalR.messages$.subscribe(
-          messages => {
-            this.messages = messages;
-            this.shouldScroll = true;
-            
-            // Mark messages as read when new messages arrive and user is viewing the chat
-            if (messages.length > 0) {
-              this.markMessagesAsRead();
-            }
+        this.supportSignalR.messages$.subscribe((messages) => {
+          this.messages = messages;
+          this.shouldScroll = true;
+
+          // Mark messages as read when new messages arrive and user is viewing the chat
+          if (messages.length > 0) {
+            // this.markMessagesAsRead();
           }
-        )
+        })
       );
-
-      // Load existing messages
-      await this.loadMessages();
-
     } catch (error) {
       console.error('Error initializing support:', error);
       this.error = 'فشل في الاتصال بخدمة الدعم الفني';
-    }
-  }
-
-  private async loadMessages(): Promise<void> {
-  
-    this.loadingMessages = true;
-    this.messagesError = null;
-
-    try {
-      // For user side, we don't need to specify receiverId as it will be handled by the backend
-      await this.supportSignalR.getMessagesWithUser('');
-      
-      // Mark messages as read when user opens the chat
-      await this.markMessagesAsRead();
-    } catch (error) {
-      console.error('Error loading messages:', error);
-      this.messagesError = 'فشل في تحميل الرسائل';
-    } finally {
-      this.loadingMessages = false;
     }
   }
 
@@ -128,15 +123,14 @@ export class SupportComponent implements OnInit, OnDestroy, AfterViewInit, After
     try {
       // For user side, we don't need to specify receiverId as it will be handled by the backend
       await this.supportSignalR.sendMessage(this.message.trim(), '');
-      
+
       this.message = '';
       this.sent = true;
-      
+
       // Reset sent status after 2 seconds
       setTimeout(() => {
         this.sent = false;
       }, 2000);
-
     } catch (error) {
       console.error('Error sending message:', error);
       this.error = 'فشل في إرسال الرسالة';
@@ -148,9 +142,9 @@ export class SupportComponent implements OnInit, OnDestroy, AfterViewInit, After
   private scrollToBottom(): void {
     if (this.lastMessageDiv) {
       this.lastMessageDiv.nativeElement.scrollIntoView({ behavior: 'smooth' });
-      
+
       // Mark messages as read when user scrolls to bottom (indicating they've read the messages)
-      this.markMessagesAsRead();
+      // this.markMessagesAsRead();
     }
   }
 
@@ -162,9 +156,9 @@ export class SupportComponent implements OnInit, OnDestroy, AfterViewInit, After
 
   formatMessageTime(timestamp: string): string {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString('ar-SA', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString('ar-SA', {
+      hour: '2-digit',
+      minute: '2-digit',
     });
   }
 
@@ -184,7 +178,7 @@ export class SupportComponent implements OnInit, OnDestroy, AfterViewInit, After
     const textarea = event.target;
     textarea.style.height = 'auto';
     textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-    
+
     // Limit message length to 500 characters
     if (this.message.length > 500) {
       this.message = this.message.substring(0, 500);
@@ -204,6 +198,6 @@ export class SupportComponent implements OnInit, OnDestroy, AfterViewInit, After
 
   onChatFocus(): void {
     // Mark messages as read when user focuses on the chat
-    this.markMessagesAsRead();
+    // this.markMessagesAsRead();
   }
 }

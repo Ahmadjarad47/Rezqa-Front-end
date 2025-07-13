@@ -4,31 +4,26 @@ import {
   HubConnectionBuilder,
   LogLevel,
 } from '@microsoft/signalr';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { environment } from '@environments/environment';
+import { BehaviorSubject, Observable, Subject, take } from 'rxjs';
 import { Notification } from '../../models/notification.model';
-import { AuthService } from '../../identity/services/auth.service';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '@environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SignalRService {
   private hubConnection: HubConnection | null = null;
-  
+
   private connectionEstablished = new BehaviorSubject<boolean>(false);
   private notificationReceived = new Subject<Notification>();
   private usersOnline = new Subject<string[]>();
-
-
 
   public connectionEstablished$ = this.connectionEstablished.asObservable();
   public notificationReceived$ = this.notificationReceived.asObservable();
   public usersOnline$ = this.usersOnline.asObservable();
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-  ) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   public async startConnection(): Promise<void> {
     if (!isPlatformBrowser(this.platformId)) {
@@ -47,10 +42,9 @@ export class SignalRService {
 
       await this.hubConnection.start();
 
-      this.hubConnection.on("onlineUsers",(users:string[])=>{
-        
-        this.usersOnline.next(users)
-      })
+      this.hubConnection.on('onlineUsers', (users: string[]) => {
+        this.usersOnline.next(users);
+      });
 
       this.setupSignalRHandlers();
       console.log('SignalR Connected!');
@@ -63,6 +57,9 @@ export class SignalRService {
 
   private setupSignalRHandlers(): void {
     if (!this.hubConnection) return;
+
+    // Remove previous handler to prevent duplicate events
+    this.hubConnection.off('ReceiveNotification');
 
     this.hubConnection.on(
       'ReceiveNotification',
@@ -96,17 +93,27 @@ export class SignalRService {
     }
   }
 
-  public async markAsRead(notificationId: string): Promise<void> {
+  public async markAllAsRead(): Promise<void> {
     if (this.hubConnection && this.connectionEstablished.value) {
       try {
-        await this.hubConnection.invoke('MarkAsRead', notificationId);
+        await this.hubConnection.invoke('MarkAsRead');
       } catch (error) {
         console.error('Error marking notification as read:', error);
         throw error;
       }
     }
   }
-
+public async getAllNotifications(): Promise<Notification[]> {
+  if (this.hubConnection && this.connectionEstablished.value) {
+    try {
+      return await this.hubConnection.invoke('GetAllNotifications');
+    } catch (error) {
+      console.error('Error getting all notifications:', error);
+      throw error;
+    }
+  }
+  return [];
+}
   public async deleteNotification(notificationId: number): Promise<void> {
     if (this.hubConnection && this.connectionEstablished.value) {
       try {
@@ -128,6 +135,19 @@ export class SignalRService {
       }
     }
     return [];
+  }
+
+  public async changeNotificationStatus(notificationId: number, status: number): Promise<void> {
+    if (this.hubConnection && this.connectionEstablished.value) {
+      try {
+        await this.hubConnection.invoke('ChangeNotificationStatus', notificationId, status);
+      } catch (error) {
+        console.error('Error changing notification status:', error);
+        throw error;
+      }
+    } else {
+      throw new Error('SignalR connection is not established');
+    }
   }
 
   public isConnected(): boolean {

@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment.development';
-import * as signalR from '@microsoft/signalr';
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  HubConnectionState,
+} from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
-import { AuthService } from 'src/app/identity/services/auth.service';
 
 export interface SupportMessage {
   id: number;
@@ -16,7 +19,7 @@ export interface SupportMessage {
 
 @Injectable({ providedIn: 'root' })
 export class SupportSignalRService {
-  private hubConnection: signalR.HubConnection | null = null;
+  private hubConnection: HubConnection | null = null;
   private messagesSubject = new BehaviorSubject<SupportMessage[]>([]);
   public messages$ = this.messagesSubject.asObservable();
   private connectionStatusSubject = new BehaviorSubject<boolean>(false);
@@ -24,17 +27,56 @@ export class SupportSignalRService {
 
   async startConnection(): Promise<void> {
     try {
-     
+      const token = this.getTokenFromCookies();
+      if (!token) {
+        console.warn('Authentication token not found, trying to connect without token');
+        // Continue without token for now, the server will handle authentication
+      }
 
-      this.hubConnection = new signalR.HubConnectionBuilder()
-        .withUrl(`${environment.apiUrl.replaceAll('/api','')}hubs/messages`, {
-        })
-        .withAutomaticReconnect()
-        .build();
+      const builder = new HubConnectionBuilder()
+        .withAutomaticReconnect();
+      
+      if (token) {
+        builder.withUrl(`${environment.baseUrl}/hubs/messages`, {
+          accessTokenFactory: () => token
+        });
+      } else {
+        builder.withUrl(`${environment.baseUrl}/hubs/messages`);
+      }
+      
+      this.hubConnection = builder.build();
 
-      this.setupSignalRHandlers();
-
+      // Wait for connection to start
       await this.hubConnection.start();
+
+      this.hubConnection.on('ReceiveMessage', (message: SupportMessage) => {
+        const currentMessages = this.messagesSubject.value;
+        this.messagesSubject.next([...currentMessages, message]);
+      });
+
+      this.hubConnection.on('MessageDeleted', (messageId: number) => {
+        const currentMessages = this.messagesSubject.value;
+        const updatedMessages = currentMessages.filter(
+          (msg) => msg.id !== messageId
+        );
+        this.messagesSubject.next(updatedMessages);
+      });
+
+      this.hubConnection.onreconnecting(() => {
+        this.connectionStatusSubject.next(false);
+        console.log('SignalR Reconnecting...');
+      });
+
+      this.hubConnection.onreconnected(() => {
+        this.connectionStatusSubject.next(true);
+        console.log('SignalR Reconnected');
+      });
+
+      this.hubConnection.onclose(() => {
+        this.connectionStatusSubject.next(false);
+        console.log('SignalR Connection Closed');
+      });
+
       this.connectionStatusSubject.next(true);
       console.log('SignalR Connected');
     } catch (error) {
@@ -44,43 +86,12 @@ export class SupportSignalRService {
     }
   }
 
-  private setupSignalRHandlers(): void {
-    if (!this.hubConnection) return;
-
-    this.hubConnection.on('ReceiveMessage', (message: SupportMessage) => {
-      const currentMessages = this.messagesSubject.value;
-      this.messagesSubject.next([...currentMessages, message]);
-    });
-
-    this.hubConnection.on('MessageDeleted', (messageId: number) => {
-      const currentMessages = this.messagesSubject.value;
-      const updatedMessages = currentMessages.filter(msg => msg.id !== messageId);
-      this.messagesSubject.next(updatedMessages);
-    });
-
-    this.hubConnection.onreconnecting(() => {
-      this.connectionStatusSubject.next(false);
-      console.log('SignalR Reconnecting...');
-    });
-
-    this.hubConnection.onreconnected(() => {
-      this.connectionStatusSubject.next(true);
-      console.log('SignalR Reconnected');
-    });
-
-    this.hubConnection.onclose(() => {
-      this.connectionStatusSubject.next(false);
-      console.log('SignalR Connection Closed');
-    });
-  }
-
   async sendMessage(message: string, receiverId: string): Promise<void> {
-    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
-      throw new Error('SignalR connection is not established');
-    }
+    // Wait for connection to be ready
+    await this.waitForConnection();
 
     try {
-      await this.hubConnection.invoke('SendNewMessage', receiverId, message);
+      await this.hubConnection!.invoke('SendNewMessage', receiverId, message);
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
@@ -88,27 +99,50 @@ export class SupportSignalRService {
   }
 
   async getMessagesWithUser(otherUserId: string): Promise<SupportMessage[]> {
-    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
-      throw new Error('SignalR connection is not established');
-    }
+    // Wait for connection to be ready
+    await this.waitForConnection();
 
     try {
-      const messages = await this.hubConnection.invoke<SupportMessage[]>('GetMessagesWithUser', otherUserId);
-      this.messagesSubject.next(messages);
-      return messages;
+      const messages = await this.hubConnection!.invoke<SupportMessage[]>(
+        'GetMessagesWithUser',
+        otherUserId
+      );
+      
+      // Update the messages subject with the received messages
+      this.messagesSubject.next(messages || []);
+      
+      return messages || [];
     } catch (error) {
       console.error('Error getting messages:', error);
       throw error;
     }
   }
 
-  async markMessagesAsRead(otherUserId: string): Promise<void> {
-    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
-      throw new Error('SignalR connection is not established');
+  private async waitForConnection(): Promise<void> {
+    if (!this.hubConnection) {
+      throw new Error('SignalR connection not initialized');
     }
 
+    // Wait for connection to be established
+    let attempts = 0;
+    const maxAttempts = 30; // 30 seconds timeout
+    
+    while (this.hubConnection.state !== HubConnectionState.Connected && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      attempts++;
+    }
+
+    if (this.hubConnection.state !== HubConnectionState.Connected) {
+      throw new Error('SignalR connection failed to establish within timeout period');
+    }
+  }
+
+  async markMessagesAsRead(otherUserId: string): Promise<void> {
+    // Wait for connection to be ready
+    await this.waitForConnection();
+
     try {
-      await this.hubConnection.invoke('MarkMessagesAsRead', otherUserId);
+      await this.hubConnection!.invoke('MarkMessagesAsRead', otherUserId);
     } catch (error) {
       console.error('Error marking messages as read:', error);
       throw error;
@@ -128,7 +162,7 @@ export class SupportSignalRService {
   }
 
   isConnected(): boolean {
-    return this.hubConnection?.state === signalR.HubConnectionState.Connected;
+    return this.hubConnection?.state === HubConnectionState.Connected;
   }
 
   private getTokenFromCookies(): string | null {
@@ -141,4 +175,4 @@ export class SupportSignalRService {
     }
     return null;
   }
-} 
+}

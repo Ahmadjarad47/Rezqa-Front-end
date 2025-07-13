@@ -11,7 +11,7 @@ import { SignalRService } from './core/services/signalr.service';
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'SyrianOpenSooq';
+  title = 'syria-open-store';
 
   constructor(private flowbiteService: FlowbiteService,private auth:AuthService,private signalRService:SignalRService) {}
   ngOnDestroy(): void {

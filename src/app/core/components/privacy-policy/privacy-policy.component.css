@@ -14,12 +14,12 @@
 }
 
 .container::-webkit-scrollbar-thumb {
-  background: #f97316;
+  background: #22c55e;
   border-radius: 4px;
 }
 
 .container::-webkit-scrollbar-thumb:hover {
-  background: #ea580c;
+  background: #16a34a;
 }
 
 /* تحسين مظهر العناوين */

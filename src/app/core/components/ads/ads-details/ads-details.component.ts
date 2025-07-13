@@ -26,9 +26,7 @@ export class AdsDetailsComponent implements OnInit {
   ngOnInit(): void {
     // Get the parameters from the URL
     this.route.params.subscribe((params) => {
-      debugger
-      console.log('Route params:', params); // Debug log
-
+     
       this.adsId = +params['id'];
       this.category = decodeURIComponent(params['category'] || '');
       this.adsTitle = decodeURIComponent(params['ads'] || '');

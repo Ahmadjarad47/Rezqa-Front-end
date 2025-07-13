@@ -1,5 +1,4 @@
-
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import {
   BrowserModule,
   provideClientHydration,
@@ -28,9 +27,17 @@ import { AdsDetailsComponent } from './core/components/ads/ads-details/ads-detai
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { credentialsInterceptor } from './core/interceptor/credentials.interceptor';
 import { PrivacyPolicyComponent } from './core/components/privacy-policy/privacy-policy.component';
+import { GlobalErrorHandler } from './core/services/GlobalErrorHandler ';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NavbarComponent, AdsHomeComponent, AdsDetailsComponent, PrivacyPolicyComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    NavbarComponent,
+    AdsHomeComponent,
+    AdsDetailsComponent,
+    PrivacyPolicyComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -45,15 +52,16 @@ import { PrivacyPolicyComponent } from './core/components/privacy-policy/privacy
     AppRoutingModule,
     NgxSpinnerModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
     provideClientHydration(withEventReplay()),
-    provideHttpClient(
-      withFetch(),
-      withInterceptors([credentialsInterceptor])
-    ),
+    provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor])),
     provideAnimations(),
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler,
+    },
   ],
   bootstrap: [AppComponent],
 })

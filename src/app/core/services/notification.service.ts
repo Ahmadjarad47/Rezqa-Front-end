@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  NotificationStatus,
-  Notification,
-} from '@app/models/notification.model';
+import { Notification } from '@app/models/notification.model';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { SignalRService } from './signalr.service';
 import { ToastrService } from 'ngx-toastr';
@@ -12,19 +9,17 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class NotificationService {
   private notificationsSubject = new BehaviorSubject<Notification[]>([]);
+  private allNotificationsSubject = new BehaviorSubject<Notification[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private selectedStatusSubject = new BehaviorSubject<string>('all');
 
   public notifications$ = this.notificationsSubject.asObservable();
+  public allNotifications$ = this.allNotificationsSubject.asObservable();
   public loading$ = this.loadingSubject.asObservable();
   public selectedStatus$ = this.selectedStatusSubject.asObservable();
 
   public unreadCount$ = this.notifications$.pipe(
-    map(
-      (notifications) =>
-        notifications.filter((n) => n.status === NotificationStatus.Unread)
-          .length
-    )
+    map((notifications) => notifications.filter((n) => n.status === 0).length)
   );
 
   public filteredNotifications$ = combineLatest([
@@ -33,7 +28,7 @@ export class NotificationService {
   ]).pipe(
     map(([notifications, status]) => {
       if (status === 'all') return notifications;
-      return notifications.filter((n) => n.status === status);
+      return notifications.filter((n) => n.status === Number(status));
     })
   );
 
@@ -50,13 +45,6 @@ export class NotificationService {
       this.addNotification(notification);
       this.toastService.warning(notification.message);
     });
-
-    // Subscribe to connection status
-    this.signalRService.connectionEstablished$.subscribe((isConnected) => {
-      if (isConnected) {
-        this.loadNotifications();
-      }
-    });
   }
 
   public async loadNotifications(): Promise<void> {
@@ -71,15 +59,16 @@ export class NotificationService {
       this.loadingSubject.next(false);
     }
   }
-
-  public async markAsRead(notificationId: string): Promise<void> {
+  public async getAllNotifications(): Promise<void> {
+    this.loadingSubject.next(true);
     try {
-      await this.signalRService.markAsRead(notificationId);
-      this.updateNotificationStatus(notificationId, NotificationStatus.Read);
-      this.toastService.success('تم تحديث حالة الإشعار');
+      const notifications = await this.signalRService.getAllNotifications();
+      this.allNotificationsSubject.next(notifications);
     } catch (error) {
-      console.error('Error marking notification as read:', error);
-      this.toastService.error('فشل في تحديث حالة الإشعار');
+      console.error('Error loading notifications:', error);
+      this.toastService.error('فشل في تحميل الإشعارات');
+    } finally {
+      this.loadingSubject.next(false);
     }
   }
 
@@ -99,13 +88,7 @@ export class NotificationService {
   }
 
   public markAllAsRead(): void {
-    const unreadNotifications = this.notificationsSubject.value.filter(
-      (n) => n.status === NotificationStatus.Unread
-    );
-
-    unreadNotifications.forEach((notification) => {
-      this.markAsRead(notification.id.toString());
-    });
+    this.signalRService.markAllAsRead();
   }
 
   public clearAllNotifications(): void {
@@ -122,7 +105,7 @@ export class NotificationService {
 
   private updateNotificationStatus(
     notificationId: string,
-    status: NotificationStatus
+    status: number
   ): void {
     const currentNotifications = this.notificationsSubject.value;
     const updatedNotifications = currentNotifications.map((notification) =>
@@ -142,9 +125,7 @@ export class NotificationService {
   }
 
   public getUnreadCount(): number {
-    return this.notificationsSubject.value.filter(
-      (n) => n.status === NotificationStatus.Unread
-    ).length;
+    return this.notificationsSubject.value.filter((n) => n.status === 0).length;
   }
 
   public async startConnection(): Promise<void> {
@@ -198,6 +179,19 @@ export class NotificationService {
     } catch (error) {
       this.toastService.error('فشل في إرسال الإشعار لجميع المستخدمين');
       throw error;
+    }
+  }
+
+  public async changeNotificationStatus(notificationId: number, status: number): Promise<void> {
+    try {
+      if (this.signalRService["changeNotificationStatus"]) {
+        await this.signalRService["changeNotificationStatus"](notificationId, status);
+      }
+      this.updateNotificationStatus(notificationId.toString(), status);
+      this.toastService.success('تم تغيير حالة الإشعار');
+    } catch (error) {
+      console.error('Error changing notification status:', error);
+      this.toastService.error('فشل في تغيير حالة الإشعار');
     }
   }
 }

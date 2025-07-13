@@ -14,6 +14,7 @@ import { DynamicFieldFormComponent } from './components/dynamic-field-form/dynam
 import { AdsComponent } from './components/ads/ads.component';
 import { ReportComponent } from './components/report/report.component';
 import { SupportComponent } from './components/support/support.component';
+import { NotificationComponent } from './components/notification/notification.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { SupportComponent } from './components/support/support.component';
     AdsComponent,
     ReportComponent,
     SupportComponent,
+    NotificationComponent,
     
   ],
   imports: [

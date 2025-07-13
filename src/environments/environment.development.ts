@@ -1,6 +1,7 @@
 export const environment = {
     production: false,
     apiUrl: 'https://localhost:7109/api/', // Update this with your actual API URL
+    baseUrl: 'https://localhost:7109', // Update this with your actual API URL
     appName: 'SyrainSooq',
     version: '1.0.0',
     defaultLanguage: 'en',

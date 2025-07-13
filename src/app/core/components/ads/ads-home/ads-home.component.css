@@ -17,10 +17,10 @@
 }
 .thumbnail:hover, .thumbnail.active {
   transform: scale(1.15);
-  border-color: #3b82f6;
+  border-color: #22c55e;
   filter: brightness(1.1);
   z-index: 2;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 /* Enhanced scrollbar styling */
@@ -46,15 +46,15 @@
 
 /* Enhanced button animations */
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateY(0);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
 
 .btn-secondary {
@@ -85,14 +85,14 @@
 
 .category-tag:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
 }
 
 .category-tag.active {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  border-color: #3b82f6;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border-color: #22c55e;
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
 }
 
 /* Enhanced loading animations */
@@ -121,15 +121,15 @@
 }
 
 .pagination-btn.active {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 /* Enhanced search input focus effects */
 .search-input:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
 }
 
 /* Enhanced image container effects */

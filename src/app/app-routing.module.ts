@@ -7,7 +7,7 @@ import { PrivacyPolicyComponent } from './core/components/privacy-policy/privacy
 
 const routes: Routes = [
   {
-    path: '/',
+    path: '',
 
     component: HomeComponent,
   },
@@ -48,7 +48,7 @@ const routes: Routes = [
     path: 'ads',
     loadChildren: () => import('./ads/ads.module').then((m) => m.AdsModule),
   },
-  { path: '**', redirectTo: '/', pathMatch: 'full' },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
 @NgModule({

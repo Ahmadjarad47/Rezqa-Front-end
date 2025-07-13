@@ -1,10 +1,20 @@
-import { Component, OnInit, OnDestroy, inject, Inject, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  inject,
+  Inject,
+  PLATFORM_ID,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { SupportService } from '@app/admin/services/support.service';
 import { UsersService } from '../users/users.service';
 import { SignalRService } from '@app/core/services/signalr.service';
 import { GetAllUsers } from '@app/admin/models/users/Crud';
-import { Message, UserLastMessage } from '@app/admin/models/user-last-message.model';
+import {
+  Message,
+  UserLastMessage,
+} from '@app/admin/models/user-last-message.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -17,7 +27,7 @@ export class SupportComponent implements OnInit, OnDestroy {
   supService = inject(SupportService);
   userService = inject(UsersService);
   signalRService = inject(SignalRService);
-  
+
   allUsers: GetAllUsers[] = [];
   usersWithMessages: UserLastMessage[] = [];
   messages: Message[] = [];
@@ -28,85 +38,151 @@ export class SupportComponent implements OnInit, OnDestroy {
   connectionReady: boolean = false;
   showEmojiPicker: boolean = false;
   onlineUserIds: string[] = [];
-  
+
   commonEmojis: string[] = [
-    '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣',
-    '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰',
-    '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜',
-    '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏',
-    '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
-    '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠',
-    '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨',
-    '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥'
+    '😀',
+    '😃',
+    '😄',
+    '😁',
+    '😆',
+    '😅',
+    '😂',
+    '🤣',
+    '😊',
+    '😇',
+    '🙂',
+    '🙃',
+    '😉',
+    '😌',
+    '😍',
+    '🥰',
+    '😘',
+    '😗',
+    '😙',
+    '😚',
+    '😋',
+    '😛',
+    '😝',
+    '😜',
+    '🤪',
+    '🤨',
+    '🧐',
+    '🤓',
+    '😎',
+    '🤩',
+    '🥳',
+    '😏',
+    '😒',
+    '😞',
+    '😔',
+    '😟',
+    '😕',
+    '🙁',
+    '☹️',
+    '😣',
+    '😖',
+    '😫',
+    '😩',
+    '🥺',
+    '😢',
+    '😭',
+    '😤',
+    '😠',
+    '😡',
+    '🤬',
+    '🤯',
+    '😳',
+    '🥵',
+    '🥶',
+    '😱',
+    '😨',
+    '😰',
+    '😥',
+    '😓',
+    '🤗',
+    '🤔',
+    '🤭',
+    '🤫',
+    '🤥',
   ];
-  
+
   private subscriptions: Subscription[] = [];
 
   constructor(@Inject(PLATFORM_ID) private platformId: any) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if (this.isBrowser) {
-      this.loadAllUsers();
-      this.startChatConnection();
-      this.subscribeToMessages();
-      this.setupClickOutsideHandler();
-      this.startSignalRConnection();
-      this.subscribeToOnlineUsers();
+      // Delay initialization to avoid hydration issues
+      setTimeout(async () => {
+        this.loadAllUsers();
+        await this.startChatConnection();
+        this.subscribeToMessages();
+        this.setupClickOutsideHandler();
+        this.startSignalRConnection();
+        this.subscribeToOnlineUsers();
+      }, 100);
     }
   }
 
   ngOnDestroy(): void {
     if (this.isBrowser) {
-      this.subscriptions.forEach(sub => sub.unsubscribe());
+      this.subscriptions.forEach((sub) => sub.unsubscribe());
       this.supService.stopConnection();
     }
   }
 
   loadAllUsers() {
     if (!this.isBrowser) return;
-    
+
     this.loading = true;
     this.userService.getAllUsers().subscribe({
       next: (value) => {
         this.allUsers = value;
         this.loading = false;
+        
       },
       error: (error) => {
         console.error('Error loading users:', error);
         this.loading = false;
-      }
+      },
     });
   }
 
-  startChatConnection() {
+   startChatConnection() {
     if (!this.isBrowser) return;
-    
-    this.supService.startConnection();
-    
-    // Subscribe to connection state
-    const connectionSub = this.supService.connectionReady$.subscribe(ready => {
-      this.connectionReady = ready;
-      if (ready) {
-        // Only get chats when connection is ready
-        this.supService.getChats();
-      }
-    });
-    
-    this.subscriptions.push(connectionSub);
+
+    try {
+       this.supService.startConnection();
+      
+      // Subscribe to connection state
+      const connectionSub = this.supService.connectionReady$.subscribe(
+        (ready) => {
+          this.connectionReady = ready;
+          if (ready) {
+            // Only get chats when connection is ready
+            this.supService.getChats();
+          }
+        }
+      );
+
+      this.subscriptions.push(connectionSub);
+    } catch (error) {
+      console.error('Error starting chat connection:', error);
+    }
   }
 
   subscribeToMessages() {
     if (!this.isBrowser) return;
-    
+
     // Subscribe to users with messages
-    const usersSub = this.supService.usersLastMessage$.subscribe(users => {
+    const usersSub = this.supService.usersLastMessage$.subscribe((users) => {
       this.usersWithMessages = users;
     });
 
     // Subscribe to messages
-    const messagesSub = this.supService.usersMessage$.subscribe(messages => {
+    const messagesSub = this.supService.usersMessage$.subscribe((messages) => {
       this.messages = messages;
     });
 
@@ -115,45 +191,60 @@ export class SupportComponent implements OnInit, OnDestroy {
 
   async selectUser(user: GetAllUsers) {
     if (!this.isBrowser) return;
-    
-    this.supService.joinWithUserGroup(user.id);
+
+    await this.supService.joinWithUserGroup(user.id);
 
     this.selectedUser = user;
     await this.supService.GetMessagesWithUser(user.id);
-    
+
     // Mark messages as read when user is selected
     await this.supService.markMessagesAsRead(user.id);
   }
 
   async sendMessage(event?: Event) {
-    if (!this.isBrowser || !this.selectedUser || !this.newMessage.trim()) return;
-    
+    if (!this.isBrowser || !this.selectedUser || !this.newMessage.trim())
+      return;
+
     // Prevent default behavior if it's a keyboard event
     if (event) {
       event.preventDefault();
     }
-    
-    await this.supService.sendMessage(this.selectedUser.id, this.newMessage.trim());
+
+    await this.supService.sendMessage(
+      this.selectedUser.id,
+      this.newMessage.trim()
+    );
     this.newMessage = '';
   }
 
   async deleteMessage(message: Message) {
     console.log(message);
-    
+
     if (!this.isBrowser || !this.selectedUser || !message.id) {
       console.log(this.selectedUser);
       console.log(message.id);
-      
-      console.warn('Cannot delete message: browser check failed or missing data');
+
+      console.warn(
+        'Cannot delete message: browser check failed or missing data'
+      );
       return;
     }
-    
+
     console.log('Attempting to delete message:', message);
-    const messageId = typeof message.id === 'string' ? parseInt(message.id) : message.id;
-    console.log('Message ID to delete:', messageId, 'User ID:', this.selectedUser.id);
-    
+    const messageId =
+      typeof message.id === 'string' ? parseInt(message.id) : message.id;
+    console.log(
+      'Message ID to delete:',
+      messageId,
+      'User ID:',
+      this.selectedUser.id
+    );
+
     try {
-      const success = await this.supService.deleteMessage(this.selectedUser.id, messageId);
+      const success = await this.supService.deleteMessage(
+        this.selectedUser.id,
+        messageId
+      );
       if (success) {
         console.log('Message deleted successfully');
       } else {
@@ -165,31 +256,38 @@ export class SupportComponent implements OnInit, OnDestroy {
   }
 
   isUserSentMessageAndNotRead(user: GetAllUsers): boolean {
-    const userMessage = this.usersWithMessages.find(um => um.userId === user.id);
+    const userMessage = this.usersWithMessages.find(
+      (um) => um.userId === user.id
+    );
     return userMessage?.HasUnreadMessages || false;
   }
 
   getUserLastMessageTime(user: GetAllUsers): string {
-    const userMessage = this.usersWithMessages.find(um => um.userId === user.id);
+    const userMessage = this.usersWithMessages.find(
+      (um) => um.userId === user.id
+    );
     return userMessage?.LastMessageTime || '';
   }
 
   getUserWithMessages(): GetAllUsers[] {
-    return this.allUsers.filter(user => 
-      this.usersWithMessages.some(um => um.userId === user.id)
+    return this.allUsers.filter((user) =>
+      this.usersWithMessages.some((um) => um.userId === user.id)
     );
   }
 
   formatMessageTime(timeString: string): string {
     if (!timeString || !this.isBrowser) return '';
-    
+
     try {
       const date = new Date(timeString);
       const now = new Date();
       const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-      
+
       if (diffInHours < 24) {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
       } else if (diffInHours < 48) {
         return 'Yesterday';
       } else {
@@ -217,7 +315,9 @@ export class SupportComponent implements OnInit, OnDestroy {
 
   // Get unread message count for a user
   getUnreadCount(user: GetAllUsers): number {
-    const userMessage = this.usersWithMessages.find(um => um.userId === user.id);
+    const userMessage = this.usersWithMessages.find(
+      (um) => um.userId === user.id
+    );
     return userMessage?.HasUnreadMessages ? 1 : 0;
   }
 
@@ -233,7 +333,7 @@ export class SupportComponent implements OnInit, OnDestroy {
 
   // Get online users from all users list
   getOnlineUsers(): GetAllUsers[] {
-    return this.allUsers.filter(user => this.isUserOnline(user));
+    return this.allUsers.filter((user) => this.isUserOnline(user));
   }
 
   // Emoji picker methods
@@ -248,10 +348,13 @@ export class SupportComponent implements OnInit, OnDestroy {
 
   private setupClickOutsideHandler() {
     if (!this.isBrowser) return;
-    
+
     document.addEventListener('click', (event: Event) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('.emoji-picker-container') && !target.closest('.emoji-button')) {
+      if (
+        !target.closest('.emoji-picker-container') &&
+        !target.closest('.emoji-button')
+      ) {
         this.showEmojiPicker = false;
       }
     });
@@ -259,7 +362,7 @@ export class SupportComponent implements OnInit, OnDestroy {
 
   private async startSignalRConnection() {
     if (!this.isBrowser) return;
-    
+
     try {
       await this.signalRService.startConnection();
     } catch (error) {
@@ -269,12 +372,14 @@ export class SupportComponent implements OnInit, OnDestroy {
 
   private subscribeToOnlineUsers() {
     if (!this.isBrowser) return;
-    
-    const onlineUsersSub = this.signalRService.usersOnline$.subscribe(users => {
-      this.onlineUserIds = users;
-      console.log('Online users updated:', users);
-    });
-    
+
+    const onlineUsersSub = this.signalRService.usersOnline$.subscribe(
+      (users) => {
+        this.onlineUserIds = users;
+        console.log('Online users updated:', users);
+      }
+    );
+
     this.subscriptions.push(onlineUsersSub);
   }
 }

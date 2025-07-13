@@ -33,7 +33,6 @@ export class HomeService {
 
   constructor(
     private http: HttpClient,
-    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
     private transferState: TransferState
   ) {}

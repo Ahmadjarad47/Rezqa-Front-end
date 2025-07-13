@@ -1,6 +1,7 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://syrianstore.runasp.net/api/', // Update this with your actual API URL
+    apiUrl: 'https://api.syriaopenstore.com/api/', // Update this with your actual API URL
+    baseUrl: 'https://api.syriaopenstore.com', // Update this with your actual API URL
     appName: 'SyrainSooq',
     version: '1.0.0',
     defaultLanguage: 'en',

@@ -54,6 +54,7 @@ export class AuthService {
         map((value) => {
           this.userDataSource.next(value);
           this.notificationService.success('مرحبا بك مجدداً');
+          this.signalRService.getNotifications();
         })
       );
     }
@@ -107,6 +108,7 @@ export class AuthService {
           userName: response.userName,
         });
         this.signalRService.startConnection();
+        this.signalRService.getNotifications();
 
       }),
       catchError((error) => this.handleError(error))

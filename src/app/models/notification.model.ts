@@ -4,13 +4,10 @@ export interface Notification {
   title: string;
   message: string;
   createdAt: string;
-  status: NotificationStatus;
+  status: number;
 }
 
-export enum NotificationStatus {
-  Unread = 'Unread',
-  Read = 'Read'
-}
+
 
 export interface NotificationResponse {
   isSuccess: boolean;

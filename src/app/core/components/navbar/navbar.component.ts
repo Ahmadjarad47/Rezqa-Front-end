@@ -173,12 +173,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onSearchSubmit(): void {
-    const searchTerm = this.searchControl.value;
-    if (searchTerm && searchTerm.trim()) {
+  
       // Navigate to search results page or perform search
-      this.router.navigate(['/search'], { queryParams: { q: searchTerm } });
+      this.router.navigate(['/all']);
       this.showSearchResults = false;
-    }
+    
   }
 
   clearSearch(): void {
