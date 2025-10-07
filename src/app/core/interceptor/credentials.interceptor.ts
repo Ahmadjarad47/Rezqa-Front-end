@@ -1,23 +1,15 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs';
+import { AuthService } from '@app/identity/services/auth.service';
 
 export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
-  const loader = inject(NgxSpinnerService);
+  const authService = inject(AuthService);
+  
+ 
   req = req.clone({
     withCredentials: true,
+  
   });
-  if (
-    !req.url.includes('/admin') &&
-    !req.url.includes('/GetAdLists') &&
-    !req.url.includes('/AdHome')
-  ) {
-    loader.show();
-  }
-  return next(req).pipe(
-    finalize(() => {
-      loader.hide();
-    })
-  );
+
+  return next(req);
 };

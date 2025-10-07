@@ -17,7 +17,7 @@ export class authAdsGuardAndDashboard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> {
     // Store the original URL before any redirects
     this.originalUrl = this.router.url;
-
+debugger
     return this.checkAuth().pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 && !this.isRefreshing) {

@@ -13,7 +13,7 @@ const routes: Routes = [
     path: '',
     component: StepperComponent,
     canActivate: [authAdsGuardAndDashboard],
-    canDeactivate: [AdsLeaveGuard],
+    // canDeactivate: [AdsLeaveGuard],
     children: [
       { path: 'select-category', component: SelectCategoryComponent },
       { path: 'select-sub-category', component: SelectSubCategoryComponent },

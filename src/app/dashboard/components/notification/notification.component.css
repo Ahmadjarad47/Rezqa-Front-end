@@ -42,7 +42,7 @@
 
 .connection-status.connected {
   background: #f0fdf4;
-  border-color: #bbf7d0;
+  border-color: #0061fe;
 }
 
 .status-indicator {
@@ -54,7 +54,7 @@
 }
 
 .connection-status.connected .status-indicator {
-  background: #22c55e;
+  background: #0061fe;
 }
 
 @keyframes pulse {

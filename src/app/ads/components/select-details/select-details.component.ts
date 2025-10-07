@@ -2,7 +2,11 @@ import { Component, inject, OnInit } from '@angular/core';
 import { AdsService } from '../../service/ads.service';
 import { IDynamicField, Option } from '../../models/Ads';
 import { Router } from '@angular/router';
-import { Governorate, Neighborhood, SYRIAN_GOVERNORATES } from '@app/models/governorates-data';
+import {
+  Governorate,
+  Neighborhood,
+  SYRIAN_GOVERNORATES,
+} from '@app/models/governorates-data';
 
 interface SelectedValue {
   value: string;
@@ -37,9 +41,27 @@ export class SelectDetailsComponent implements OnInit {
     location: '',
   };
 
+  // Track if price field has been focused to clear initial value
+  isPriceFieldFocused = false;
+
   // Validation states
   validationErrors: { [key: string]: string } = {};
   isFormValid = false;
+
+  // IsSpecific functionality
+  isSpecific = false;
+  activeMonths = 1;
+  selectedActiveMonths = 1;
+  showActiveMonthsSelection = false;
+  
+  // Payment pricing (you can adjust these prices)
+  monthlyPricing = {
+    1: { price: 50, label: 'شهر واحد' },
+    2: { price: 90, label: 'شهران' },
+    3: { price: 120, label: '3 أشهر' },
+    6: { price: 200, label: '6 أشهر' },
+    12: { price: 350, label: 'سنة كاملة' }
+  };
 
   // Field types configuration
   fieldTypes = [
@@ -76,6 +98,8 @@ export class SelectDetailsComponent implements OnInit {
 
     // Get dynamic fields from the service (already fetched when sub-category was selected)
     this.DynamicFields = this.adsService.getDynamicFields();
+    // ترتيب الحقول حسب id
+    this.DynamicFields.sort((a, b) => a.id - b.id);
     const categoryId = this.adsService.getCurrentAds()?.categoryId;
     const subcategoryId = this.adsService.getCurrentAds()?.subCategoryId;
     // If no dynamic fields are stored, fetch them as fallback
@@ -97,10 +121,12 @@ export class SelectDetailsComponent implements OnInit {
 
       this.adsService.getDynamicField(CategoryId, SubcategoryId)?.subscribe({
         next: (res) => {
-          this.DynamicFields = res;
+          console.log(res);
+          // ترتيب الحقول حسب id
+          this.DynamicFields = res.sort((a, b) => a.id - b.id);
           this.isLoading = false;
           this.isInitialLoading = false;
-          console.log(res);
+        
 
           // this.adsService.setDynamicFields(res);
         },
@@ -236,10 +262,8 @@ export class SelectDetailsComponent implements OnInit {
     if (!field.shouldFilterbyParent) {
       return true;
     }
-
-    // Find the parent field (assuming it's the previous field in the array)
-    const parentField = this.DynamicFields.find((f) => f.id === field.id - 1);
-
+    // استخدم الدالة الجديدة
+    const parentField = this.getParentField(field);
     if (parentField) {
       // Only show this field if parent field has a selected value
       const parentValue = this.selectedValues[parentField.id];
@@ -248,7 +272,6 @@ export class SelectDetailsComponent implements OnInit {
       }
       return parentValue && parentValue.value.trim() !== '';
     }
-
     return true;
   }
 
@@ -256,26 +279,21 @@ export class SelectDetailsComponent implements OnInit {
     if (!field.shouldFilterbyParent) {
       return field.options;
     }
-
-    // Find the parent field (assuming it's the previous field in the array)
-    const parentField = this.DynamicFields.find((f) => f.id === field.id - 1);
-
+    // استخدم الدالة الجديدة
+    const parentField = this.getParentField(field);
     if (parentField) {
       const parentValue = this.selectedValues[parentField.id];
       let parentValueStr: string | undefined;
-
       if (Array.isArray(parentValue)) {
         parentValueStr = parentValue[0]?.value;
       } else if (parentValue) {
         parentValueStr = parentValue.value;
       }
-
       // Filter options based on parent value
       return field.options.filter(
         (option) => !option.parentValue || option.parentValue === parentValueStr
       );
     }
-
     return field.options;
   }
 
@@ -296,13 +314,17 @@ export class SelectDetailsComponent implements OnInit {
     return field.shouldFilterbyParent;
   }
 
+  // دالة جديدة للبحث عن الحقل الأب بناءً على الترتيب
   getParentField(field: IDynamicField): IDynamicField | undefined {
     if (!field.shouldFilterbyParent) {
       return undefined;
     }
-
-    // Find the parent field (assuming it's the previous field in the array)
-    return this.DynamicFields.find((f) => f.id === field.id - 1);
+    const index = this.DynamicFields.findIndex(f => f.id === field.id);
+    for (let i = index - 1; i >= 0; i--) {
+      // نعتبر أول حقل قبله هو الأب (يمكنك تخصيص المنطق حسب الحاجة)
+      return this.DynamicFields[i];
+    }
+    return undefined;
   }
 
   getNextChildField(): IDynamicField | undefined {
@@ -337,10 +359,12 @@ export class SelectDetailsComponent implements OnInit {
       currentAd.description = this.ExisitadDetails.description.trim();
       currentAd.price = this.ExisitadDetails.price;
       currentAd.location = this.ExisitadDetails.location.trim();
-      
+      currentAd.isSpecific = this.isSpecific;
+      currentAd.activeMonths = this.isSpecific ? this.activeMonths : undefined;
+
       // Update the service with the complete ad data
       this.adsService.setCurrentAds(currentAd);
-      
+
       console.log('Ad data saved to service:', currentAd);
     }
 
@@ -357,16 +381,30 @@ export class SelectDetailsComponent implements OnInit {
   getFieldsProgressPercentage(): number {
     const displayFields = this.getFieldDisplayOrder();
     const totalFields = displayFields.length + 4; // +4 for static fields (title, description, price, location)
-    
+
     if (totalFields === 0) return 100;
 
     let filledFields = 0;
 
     // Check static fields
-    if (this.ExisitadDetails.title && this.ExisitadDetails.title.trim().length >= 3) filledFields++;
-    if (this.ExisitadDetails.description && this.ExisitadDetails.description.trim().length >= 10) filledFields++;
-    if (this.ExisitadDetails.price && this.ExisitadDetails.price > 0) filledFields++;
-    if (this.ExisitadDetails.location && this.selectedGovernorate && this.selectedNeighborhood) filledFields++;
+    if (
+      this.ExisitadDetails.title &&
+      this.ExisitadDetails.title.trim().length >= 3
+    )
+      filledFields++;
+    if (
+      this.ExisitadDetails.description &&
+      this.ExisitadDetails.description.trim().length >= 10
+    )
+      filledFields++;
+    if (this.ExisitadDetails.price && this.ExisitadDetails.price > 0)
+      filledFields++;
+    if (
+      this.ExisitadDetails.location &&
+      this.selectedGovernorate &&
+      this.selectedNeighborhood
+    )
+      filledFields++;
 
     // Check dynamic fields
     for (const field of displayFields) {
@@ -384,8 +422,6 @@ export class SelectDetailsComponent implements OnInit {
   formatPrice(event: Event) {
     const input = event.target as HTMLInputElement;
     let value = input.value.replace(/[^\d.]/g, '');
-
-  
 
     // Ensure the value is a valid number
     if (value === '' || value === '.') {
@@ -407,10 +443,24 @@ export class SelectDetailsComponent implements OnInit {
     }
   }
 
+  // Handle price field focus to clear initial value
+  onPriceFocus(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!this.isPriceFieldFocused && this.ExisitadDetails.price === 0) {
+      this.isPriceFieldFocused = true;
+      input.value = '';
+      this.ExisitadDetails.price = 0;
+    }
+    this.clearValidationError('price');
+  }
+
   onGovernorateChange(event: Event) {
     const value = (event.target as HTMLSelectElement).value;
-    this.selectedGovernorate = this.governorates.find(g => g.name === value) || null;
-    this.neighborhoods = this.selectedGovernorate ? this.selectedGovernorate.neighborhoods : [];
+    this.selectedGovernorate =
+      this.governorates.find((g) => g.name === value) || null;
+    this.neighborhoods = this.selectedGovernorate
+      ? this.selectedGovernorate.neighborhoods
+      : [];
     this.selectedNeighborhood = null;
     this.updateLocation();
     this.validateForm();
@@ -418,7 +468,8 @@ export class SelectDetailsComponent implements OnInit {
 
   onNeighborhoodChange(event: Event) {
     const value = (event.target as HTMLSelectElement).value;
-    this.selectedNeighborhood = this.neighborhoods.find(n => n.name === value) || null;
+    this.selectedNeighborhood =
+      this.neighborhoods.find((n) => n.name === value) || null;
     this.updateLocation();
     this.validateForm();
   }
@@ -439,7 +490,10 @@ export class SelectDetailsComponent implements OnInit {
     let isValid = true;
 
     // Validate title
-    if (!this.ExisitadDetails.title || this.ExisitadDetails.title.trim().length < 3) {
+    if (
+      !this.ExisitadDetails.title ||
+      this.ExisitadDetails.title.trim().length < 3
+    ) {
       this.validationErrors['title'] = 'يجب أن يكون العنوان 3 أحرف على الأقل';
       isValid = false;
     } else if (this.ExisitadDetails.title.trim().length > 100) {
@@ -448,11 +502,15 @@ export class SelectDetailsComponent implements OnInit {
     }
 
     // Validate description
-    if (!this.ExisitadDetails.description || this.ExisitadDetails.description.trim().length < 10) {
-      this.validationErrors['description'] = 'يجب أن يكون الوصف 10 أحرف على الأقل';
+    if (
+      !this.ExisitadDetails.description ||
+      this.ExisitadDetails.description.trim().length < 10
+    ) {
+      this.validationErrors['description'] =
+        'يجب أن يكون الوصف 10 أحرف على الأقل';
       isValid = false;
-    } else if (this.ExisitadDetails.description.trim().length > 1000) {
-      this.validationErrors['description'] = 'يجب أن لا يتجاوز الوصف 1000 حرف';
+    } else if (this.ExisitadDetails.description.trim().length > 2000) {
+      this.validationErrors['description'] = 'يجب أن لا يتجاوز الوصف 2000 حرف';
       isValid = false;
     }
 
@@ -463,7 +521,11 @@ export class SelectDetailsComponent implements OnInit {
     }
 
     // Validate location
-    if (!this.ExisitadDetails.location || !this.selectedGovernorate || !this.selectedNeighborhood) {
+    if (
+      !this.ExisitadDetails.location ||
+      !this.selectedGovernorate ||
+      !this.selectedNeighborhood
+    ) {
       this.validationErrors['location'] = 'يجب اختيار المحافظة والحي';
       isValid = false;
     }
@@ -478,10 +540,12 @@ export class SelectDetailsComponent implements OnInit {
 
     for (const field of visibleFields) {
       const fieldValue = this.selectedValues[field.id];
-      
+
       // For now, consider all visible fields as required
       if (!fieldValue) {
-        this.validationErrors[`dynamic_${field.id}`] = `حقل ${field.title} مطلوب`;
+        this.validationErrors[
+          `dynamic_${field.id}`
+        ] = `حقل ${field.title} مطلوب`;
         isValid = false;
         continue;
       }
@@ -489,43 +553,69 @@ export class SelectDetailsComponent implements OnInit {
       // Check if it's an array (checkbox) or single value
       if (Array.isArray(fieldValue)) {
         if (fieldValue.length === 0) {
-          this.validationErrors[`dynamic_${field.id}`] = `حقل ${field.title} مطلوب`;
+          this.validationErrors[
+            `dynamic_${field.id}`
+          ] = `حقل ${field.title} مطلوب`;
           isValid = false;
         }
       } else {
         if (!fieldValue.value || fieldValue.value.trim() === '') {
-          this.validationErrors[`dynamic_${field.id}`] = `حقل ${field.title} مطلوب`;
+          this.validationErrors[
+            `dynamic_${field.id}`
+          ] = `حقل ${field.title} مطلوب`;
           isValid = false;
         }
       }
 
       // Additional validation for text fields
-      if (field.type === 'text' && !Array.isArray(fieldValue) && fieldValue.value) {
+      if (
+        field.type === 'text' &&
+        !Array.isArray(fieldValue) &&
+        fieldValue.value
+      ) {
         if (fieldValue.value.trim().length < 2) {
-          this.validationErrors[`dynamic_${field.id}`] = `حقل ${field.title} يجب أن يكون حرفين على الأقل`;
+          this.validationErrors[
+            `dynamic_${field.id}`
+          ] = `حقل ${field.title} يجب أن يكون حرفين على الأقل`;
           isValid = false;
         } else if (fieldValue.value.trim().length > 200) {
-          this.validationErrors[`dynamic_${field.id}`] = `حقل ${field.title} يجب أن لا يتجاوز 200 حرف`;
+          this.validationErrors[
+            `dynamic_${field.id}`
+          ] = `حقل ${field.title} يجب أن لا يتجاوز 200 حرف`;
           isValid = false;
         }
       }
 
       // Additional validation for textarea fields
-      if (field.type === 'textarea' && !Array.isArray(fieldValue) && fieldValue.value) {
+      if (
+        field.type === 'textarea' &&
+        !Array.isArray(fieldValue) &&
+        fieldValue.value
+      ) {
         if (fieldValue.value.trim().length < 5) {
-          this.validationErrors[`dynamic_${field.id}`] = `حقل ${field.title} يجب أن يكون 5 أحرف على الأقل`;
+          this.validationErrors[
+            `dynamic_${field.id}`
+          ] = `حقل ${field.title} يجب أن يكون 5 أحرف على الأقل`;
           isValid = false;
         } else if (fieldValue.value.trim().length > 500) {
-          this.validationErrors[`dynamic_${field.id}`] = `حقل ${field.title} يجب أن لا يتجاوز 500 حرف`;
+          this.validationErrors[
+            `dynamic_${field.id}`
+          ] = `حقل ${field.title} يجب أن لا يتجاوز 500 حرف`;
           isValid = false;
         }
       }
 
       // Additional validation for number fields
-      if (field.type === 'number' && !Array.isArray(fieldValue) && fieldValue.value) {
+      if (
+        field.type === 'number' &&
+        !Array.isArray(fieldValue) &&
+        fieldValue.value
+      ) {
         const numValue = parseFloat(fieldValue.value);
         if (isNaN(numValue) || numValue < 0) {
-          this.validationErrors[`dynamic_${field.id}`] = `حقل ${field.title} يجب أن يكون رقماً صحيحاً`;
+          this.validationErrors[
+            `dynamic_${field.id}`
+          ] = `حقل ${field.title} يجب أن يكون رقماً صحيحاً`;
           isValid = false;
         }
       }
@@ -537,7 +627,8 @@ export class SelectDetailsComponent implements OnInit {
   validateForm(): boolean {
     const staticValid = this.validateStaticFields();
     const dynamicValid = this.validateDynamicFields();
-    this.isFormValid = staticValid && dynamicValid;
+    const isSpecificValid = this.validateIsSpecificFields();
+    this.isFormValid = staticValid && dynamicValid && isSpecificValid;
     return this.isFormValid;
   }
 
@@ -548,10 +639,72 @@ export class SelectDetailsComponent implements OnInit {
   }
 
   getFieldValidationClass(fieldName: string): string {
-    return this.validationErrors[fieldName] ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : '';
+    return this.validationErrors[fieldName]
+      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+      : '';
   }
 
   getDynamicFieldValidationClass(fieldId: number): string {
-    return this.validationErrors[`dynamic_${fieldId}`] ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : '';
+    return this.validationErrors[`dynamic_${fieldId}`]
+      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+      : '';
   }
+
+  // IsSpecific functionality methods
+  onIsSpecificChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.isSpecific = target.checked;
+    this.showActiveMonthsSelection = this.isSpecific;
+    
+    if (this.isSpecific) {
+      this.selectedActiveMonths = 1;
+      this.activeMonths = 1;
+    } else {
+      this.showActiveMonthsSelection = false;
+      this.selectedActiveMonths = 1;
+      this.activeMonths = 1;
+    }
+    
+    this.clearValidationError('isSpecific');
+    this.validateForm();
+  }
+
+  onActiveMonthsChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.selectedActiveMonths = parseInt(target.value);
+    this.activeMonths = this.selectedActiveMonths;
+    this.clearValidationError('activeMonths');
+    this.validateForm();
+  }
+
+  getSelectedPricing(): { price: number; label: string } {
+    return this.monthlyPricing[this.selectedActiveMonths as keyof typeof this.monthlyPricing] || this.monthlyPricing[1];
+  }
+
+  getTotalPrice(): number {
+    return this.getSelectedPricing().price;
+  }
+
+  getPricingOptions(): Array<{ months: number; price: number; label: string }> {
+    return Object.entries(this.monthlyPricing).map(([months, data]) => ({
+      months: parseInt(months),
+      price: data.price,
+      label: data.label
+    }));
+  }
+
+  // Update validation to include IsSpecific fields
+  validateIsSpecificFields(): boolean {
+    let isValid = true;
+
+    if (this.isSpecific) {
+      if (!this.selectedActiveMonths || this.selectedActiveMonths < 1 || this.selectedActiveMonths > 12) {
+        this.validationErrors['activeMonths'] = 'يجب اختيار عدد صحيح من الأشهر (1-12)';
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  }
+
 }

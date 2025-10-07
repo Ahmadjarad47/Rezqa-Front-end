@@ -13,6 +13,7 @@ export class ForgotPasswordComponent {
   forgotPasswordForm: FormGroup;
   isLoading = false;
   isEmailSent = false;
+  errorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -41,10 +42,7 @@ export class ForgotPasswordComponent {
     this.authService.requestToPasswordReset(email).subscribe({
       next: (response) => {
         this.isEmailSent = true;
-        this.notificationService.success(
-          response.message,
-          'تم إرسال الطلب'
-        );
+        // Remove notificationService.success
         // Reset the form after successful submission
         this.forgotPasswordForm.reset();
         Object.keys(this.forgotPasswordForm.controls).forEach(key => {
@@ -54,8 +52,8 @@ export class ForgotPasswordComponent {
       },
       error: (error) => {
         this.isEmailSent = false; // Ensure email sent state is false on error
-        const errorMessage = error.error?.message || 'حدث خطأ أثناء إرسال طلب إعادة تعيين كلمة المرور';
-        this.notificationService.error(errorMessage);
+        this.errorMessage = error.error?.message || 'حدث خطأ أثناء إرسال طلب إعادة تعيين كلمة المرور';
+        // Remove notificationService.error
       },
       complete: () => {
         this.isLoading = false;

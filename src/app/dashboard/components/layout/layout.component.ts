@@ -10,25 +10,25 @@ import { NotificationService } from '@app/core/services/notification.service';
   styleUrl: './layout.component.css',
 })
 export class LayoutComponent implements OnInit {
-  authService = inject(AuthService);
+ public authService = inject(AuthService);
   isSidebarOpen = false;
-  
-  constructor(private flowbiteService: FlowbiteService, public notificationService: NotificationService) {}
+
+  constructor(
+    public notificationService: NotificationService,
+   
+  ) {}
 
   ngOnInit(): void {
-    // Initialize Flowbite for other functionality
-    this.flowbiteService.loadFlowbite((flowbite) => {
-      console.log('Flowbite loaded for layout component');
-    });
+   
   }
 
   toggleSidebar(): void {
     const sidebar = document.getElementById('separator-sidebar');
     const backdrop = document.getElementById('separator-sidebar-backdrop');
-    
+
     if (sidebar && backdrop) {
       this.isSidebarOpen = !this.isSidebarOpen;
-      
+
       if (this.isSidebarOpen) {
         // Open sidebar
         sidebar.classList.remove('-translate-x-full');
@@ -46,7 +46,7 @@ export class LayoutComponent implements OnInit {
   closeSidebar(): void {
     const sidebar = document.getElementById('separator-sidebar');
     const backdrop = document.getElementById('separator-sidebar-backdrop');
-    
+
     if (sidebar && backdrop) {
       this.isSidebarOpen = false;
       sidebar.classList.remove('translate-x-0');

@@ -136,6 +136,7 @@
                 <span>اسحب وأفلت الصورة هنا</span>
               </div>
               <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF حتى 5 ميجابايت</p>
+              <p class="text-xl text-red-500 dark:text-red-400">لا يمكنك تسجيل الدخول بدون صورة شخصية</p>
             </div>
           </div>
           <div *ngIf="isFieldInvalid('profileImage')" class="text-xs text-red-500 mt-1">
@@ -199,7 +200,7 @@
         <!-- Submit -->
         <div>
           <button type="submit" [disabled]="isLoading ||registerForm.invalid"
-            class="w-full flex justify-center items-center gap-2 px-4 py-3 bg-[#f7a90c] hover:bg-[#e89a00] text-white text-sm font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f7a90c] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow">
+            class="w-full flex justify-center items-center gap-2 px-4 py-3 text-white text-sm font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f7a90c] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow" style="background-color:#0061fe;">
             <i *ngIf="!isLoading" class="fas fa-user-plus"></i>
             <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
             <span>{{ isLoading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب' }}</span>

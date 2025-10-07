@@ -1,0 +1,382 @@
+/* Carousel Component Styles */
+.carousel-container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.carousel-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+}
+
+.carousel-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.carousel-table {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.carousel-table-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.carousel-table-content {
+  overflow-x: auto;
+}
+
+.carousel-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.carousel-table th {
+  background-color: #f8fafc;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.carousel-table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+.carousel-table tr:hover {
+  background-color: #f9fafb;
+  transition: background-color 0.2s ease;
+}
+
+.carousel-image {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 2px solid #e5e7eb;
+  transition: border-color 0.2s ease;
+}
+
+.carousel-image:hover {
+  border-color: #8b5cf6;
+}
+
+.carousel-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.carousel-status.active {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.carousel-status.deleted {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.carousel-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.carousel-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.carousel-btn-edit {
+  color: #8b5cf6;
+  background-color: #f3f4f6;
+}
+
+.carousel-btn-edit:hover {
+  background-color: #e5e7eb;
+  color: #7c3aed;
+}
+
+.carousel-btn-delete {
+  color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.carousel-btn-delete:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.carousel-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+}
+
+.carousel-pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.carousel-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.carousel-pagination-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.carousel-pagination-btn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.carousel-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.carousel-pagination-btn.active {
+  background-color: #8b5cf6;
+  color: white;
+  border-color: #8b5cf6;
+}
+
+.carousel-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+}
+
+.carousel-empty-icon {
+  width: 6rem;
+  height: 6rem;
+  margin: 0 auto 1.5rem;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.carousel-modal-content {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.carousel-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.carousel-modal-body {
+  padding: 1.5rem;
+}
+
+.carousel-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .carousel-container {
+    background-color: #111827;
+  }
+  
+  .carousel-table {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+  
+  .carousel-table-header {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    border-color: #4b5563;
+  }
+  
+  .carousel-table th {
+    background-color: #374151;
+    color: #d1d5db;
+    border-color: #4b5563;
+  }
+  
+  .carousel-table td {
+    border-color: #374151;
+    color: #f9fafb;
+  }
+  
+  .carousel-table tr:hover {
+    background-color: #374151;
+  }
+  
+  .carousel-image {
+    border-color: #4b5563;
+  }
+  
+  .carousel-image:hover {
+    border-color: #a855f7;
+  }
+  
+  .carousel-status.active {
+    background-color: #065f46;
+    color: #d1fae5;
+    border-color: #047857;
+  }
+  
+  .carousel-status.deleted {
+    background-color: #7f1d1d;
+    color: #fecaca;
+    border-color: #991b1b;
+  }
+  
+  .carousel-btn-edit {
+    background-color: #374151;
+    color: #a855f7;
+  }
+  
+  .carousel-btn-edit:hover {
+    background-color: #4b5563;
+    color: #9333ea;
+  }
+  
+  .carousel-btn-delete {
+    background-color: #7f1d1d;
+    color: #fca5a5;
+  }
+  
+  .carousel-btn-delete:hover {
+    background-color: #991b1b;
+    color: #f87171;
+  }
+  
+  .carousel-pagination {
+    background-color: #374151;
+    border-color: #4b5563;
+  }
+  
+  .carousel-pagination-btn {
+    background-color: #1f2937;
+    border-color: #4b5563;
+    color: #d1d5db;
+  }
+  
+  .carousel-pagination-btn:hover:not(:disabled) {
+    background-color: #374151;
+    border-color: #6b7280;
+  }
+  
+  .carousel-pagination-btn.active {
+    background-color: #a855f7;
+    border-color: #a855f7;
+  }
+  
+  .carousel-empty-state {
+    color: #9ca3af;
+  }
+  
+  .carousel-empty-icon {
+    background-color: #374151;
+  }
+  
+  .carousel-modal-content {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+  
+  .carousel-modal-header,
+  .carousel-modal-footer {
+    border-color: #374151;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .carousel-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .carousel-table-content {
+    font-size: 0.875rem;
+  }
+  
+  .carousel-table th,
+  .carousel-table td {
+    padding: 0.75rem 1rem;
+  }
+  
+  .carousel-pagination {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .carousel-pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

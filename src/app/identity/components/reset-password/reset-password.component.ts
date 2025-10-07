@@ -80,9 +80,9 @@ export class ResetPasswordComponent implements OnInit {
       return 'border-red-500 focus:ring-red-500';
     }
     if (this.isFieldValid(fieldName)) {
-      return 'border-green-500 focus:ring-green-500';
+      return 'border-[#0061fe] focus:ring-[#0061fe]';
     }
-    return 'border-gray-300 focus:ring-blue-500';
+    return 'border';
   }
 
   getPasswordStrengthClass(): string {
@@ -109,7 +109,7 @@ export class ResetPasswordComponent implements OnInit {
       case 3:
         return 'bg-yellow-500';
       case 4:
-        return 'bg-green-500';
+        return 'bg';
       default:
         return 'bg-gray-200';
     }

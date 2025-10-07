@@ -6,8 +6,22 @@
   <title>سوق السوري المفتوح | بيع وشراء في سوريا</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta property="og:title" content="سوق السوري المفتوح | بيع وشراء في سوريا">
-  <meta property="og:description" content="بيع واشتري كل شيء بسهولة في سوريا: سيارات، عقارات، موبايلات، وظائف، خدمات والمزيد.">
+  
+  <!-- Resource Hints for Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.syriaopenstore.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  
+  <!-- DNS Prefetch for external domains -->
+  <link rel="dns-prefetch" href="//api.syriaopenstore.com">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//accounts.google.com">
+  
+  <!-- Meta tags for SEO and social sharing -->
+  <!-- <meta property="og:title" content="سوق السوري المفتوح | بيع وشراء في سوريا">
+  <meta property="og:description"
+    content="بيع واشتري كل شيء بسهولة في سوريا: سيارات، عقارات، موبايلات، وظائف، خدمات والمزيد.">
   <meta property="og:url" content="https://syriaopenstore.com/">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://syriaopenstore.com/Photo_1751890456601.png">
@@ -16,11 +30,11 @@
   <meta property="og:locale" content="ar_SY">
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:site_name" content="سوق السوري المفتوح">
-  <meta property="og:locale:alternate" content="en_US">
 
-
-  <meta name="description" content="سوق السوري المفتوح هو أفضل منصة للإعلانات المبوبة في سوريا. بيع واشتري كل شيء بسهولة: سيارات، عقارات، موبايلات، وظائف، خدمات والمزيد. أسرع طريقة للبيع والشراء في سوريا.">
-  <meta name="keywords" content="سوق السوري المفتوح, إعلانات مبوبة, بيع, شراء, سوريا, سيارات, عقارات, موبايلات, وظائف, خدمات, سوق, تسوق, open souq, syrian souq, classifieds">
+  <meta name="description"
+    content="سوق السوري المفتوح هو أفضل منصة للإعلانات المبوبة في سوريا. بيع واشتري كل شيء بسهولة: سيارات، عقارات، موبايلات، وظائف، خدمات والمزيد. أسرع طريقة للبيع والشراء في سوريا.">
+  <meta name="keywords"
+    content="سوق السوري المفتوح, إعلانات مبوبة, بيع, شراء, سوريا, سيارات, عقارات, موبايلات, وظائف, خدمات, سوق, تسوق, open souq, syrian souq, classifieds">
   <meta name="robots" content="index, follow">
   <link rel="icon" type="image/x-icon" href="https://syriaopenstore.com/Photo_1751890456601.png">
   <link rel="canonical" href="https://syriaopenstore.com/">
@@ -37,12 +51,10 @@
   <link rel="apple-touch-icon" sizes="180x180" href="Photo_1751890456601.png">
   <meta name="msapplication-TileColor" content="#ff6600">
   <meta name="msapplication-config" content="/browserconfig.xml">
-  <meta http-equiv="refresh" content="999999">
-  <!-- Open Graph Meta Tags (متقدمة) -->
-  <meta property="og:site_name" content="سوق السوري المفتوح">
-  <meta property="og:locale:alternate" content="en_US">
-  <!-- Twitter Card Meta Tags (متقدمة) -->
+   -->
+  <!-- Twitter Card Meta Tags -->
   <meta name="twitter:creator" content="@syriaOpenStore">
+  
   <!-- Structured Data (JSON-LD) -->
   <script type="application/ld+json">
   {
@@ -72,22 +84,42 @@
   </script>
 
   <!-- Cache Control -->
-  <meta http-equiv="Cache-Control" content="public, max-age=31536000">
   <meta http-equiv="Expires" content="31536000">
   
-  <!-- Preload critical resources -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap"></noscript>
-  
-  <!-- DNS Prefetch for external domains -->
-  <link rel="dns-prefetch" href="//api.syriaopenstore.com">
-  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-  
+  <!-- Critical CSS inline -->
+  <style>
+    /* Critical CSS for above-the-fold content */
+    body { margin: 0; font-family: 'Cairo', sans-serif; }
+    .loading { display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #ff6600; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 
 <body class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+  <!-- Loading indicator for better perceived performance -->
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+  </div>
+  
   <app-root></app-root>
+  
+  <!-- Defer non-critical scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
+  
+  <!-- Remove loading indicator when app is ready -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          loading.style.display = 'none';
+        }
+      }, 1000);
+    });
+  </script>
 </body>
 
 </html>

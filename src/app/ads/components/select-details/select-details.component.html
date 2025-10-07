@@ -10,8 +10,8 @@
 @if (isInitialLoading) {
 <div class="flex items-center justify-center min-h-[400px]">
     <div class="text-center">
-        <div
-            class="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-to-r from-green-500 to-green-600 rounded-full animate-pulse">
+        <div class="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full animate-pulse"
+            style="background-color:#0061fe;">
             <svg class="w-8 h-8 text-white animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor"
@@ -19,7 +19,7 @@
                 </path>
             </svg>
         </div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">جاري تحميل الحقول الديناميكية</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">جاري تحميل </h3>
         <p class="text-sm text-gray-600 dark:text-gray-400">يرجى الانتظار...</p>
     </div>
 </div>
@@ -39,7 +39,8 @@
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">خطأ في التحميل</h3>
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ loadingError }}</p>
         <button (click)="retryLoading()"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white"
+            style="background-color:#0061fe;">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
@@ -60,7 +61,7 @@
 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-xl">
         <div class="flex items-center">
-            <svg class="w-6 h-6 text-green-600 dark:text-green-400 animate-spin mr-3" fill="none" viewBox="0 0 24 24">
+            <svg class="w-6 h-6 animate-spin mr-3" style="color:#0061fe;" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
@@ -87,8 +88,7 @@
                     {{ field.title }}
                 </h3>
                 @if (isChildField(field)) {
-                <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -103,8 +103,8 @@
         <!-- Field Input -->
         @if (field.type === 'select') {
         <select (change)="onSelectChange(field.id, $event)"
-            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 ' + getDynamicFieldValidationClass(field.id)"
-            (focus)="clearValidationError('dynamic_' + field.id)">
+            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 ' + getDynamicFieldValidationClass(field.id)"
+            style="border-color:#0061fe;" (focus)="clearValidationError('dynamic_' + field.id)">
             <option value=""> {{ field.title }}</option>
             @for (option of getFilteredOptions(field); track option.id) {
             <option [value]="option.value">
@@ -118,49 +118,51 @@
         }
 
         @if (field.type === 'radio') {
-        <div class="space-y-3">
+        <div class="flex flex-wrap gap-2">
             @for (option of getFilteredOptions(field); track option.id) {
             <label
-                class="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200">
+                class="flex items-center p-2 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 text-xs">
                 <input type="radio" [name]="'field-' + field.id" [value]="option.value"
                     (change)="onRadioChange(field.id, option.value)"
                     (focus)="clearValidationError('dynamic_' + field.id)"
-                    class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {{ option.label }}
+                    class="w-3 h-3  bg-gray-100 border-gray-300  dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    style="color:#0061fe; border-color:#0061fe;">
+                <span class="ml-2 text-xl font-medium text-gray-700 dark:text-gray-300" style="font-size: 16px;">
+                    &nbsp; {{ option.label }}
                 </span>
             </label>
             }
         </div>
         @if (validationErrors['dynamic_' + field.id]) {
-        <p class="text-red-500 text-sm mt-1">{{ validationErrors['dynamic_' + field.id] }}</p>
+        <p class="text-red-500 text-xs mt-1">{{ validationErrors['dynamic_' + field.id] }}</p>
         }
         }
 
         @if (field.type === 'checkbox') {
-        <div class="space-y-3">
+        <div class="flex flex-wrap gap-2">
             @for (option of getFilteredOptions(field); track option.id) {
             <label
-                class="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200">
+                class="flex items-center p-2 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 text-xs">
                 <input type="checkbox" [value]="option.value" [checked]="isCheckboxChecked(field.id, option.value)"
                     (change)="onCheckboxInput(field.id, option.value, $event)"
                     (focus)="clearValidationError('dynamic_' + field.id)"
-                    class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {{ option.label }}
+                    class="w-3 h-3  bg-gray-100 border-gray-300 rounded  dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    style="color:#0061fe; border-color:#0061fe;">
+                <span class="ml-2 text-lg font-medium text-gray-700 dark:text-gray-300">
+                    &nbsp; {{ option.label }}
                 </span>
             </label>
             }
         </div>
         @if (validationErrors['dynamic_' + field.id]) {
-        <p class="text-red-500 text-sm mt-1">{{ validationErrors['dynamic_' + field.id] }}</p>
+        <p class="text-red-500 text-xs mt-1">{{ validationErrors['dynamic_' + field.id] }}</p>
         }
         }
 
         @if (field.type === 'text') {
         <input type="text" [placeholder]="'أدخل ' + field.title" (input)="onTextInput(field.id, $event)"
-            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 ' + getDynamicFieldValidationClass(field.id)"
-            (focus)="clearValidationError('dynamic_' + field.id)">
+            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 ' + getDynamicFieldValidationClass(field.id)"
+            style="border-color:#0061fe;" (focus)="clearValidationError('dynamic_' + field.id)">
         @if (validationErrors['dynamic_' + field.id]) {
         <p class="text-red-500 text-sm mt-1">{{ validationErrors['dynamic_' + field.id] }}</p>
         }
@@ -168,8 +170,8 @@
 
         @if (field.type === 'number') {
         <input type="number" [placeholder]="'أدخل ' + field.title" (input)="onTextInput(field.id, $event)"
-            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 ' + getDynamicFieldValidationClass(field.id)"
-            (focus)="clearValidationError('dynamic_' + field.id)">
+            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 ' + getDynamicFieldValidationClass(field.id)"
+            style="border-color:#0061fe;" (focus)="clearValidationError('dynamic_' + field.id)">
         @if (validationErrors['dynamic_' + field.id]) {
         <p class="text-red-500 text-sm mt-1">{{ validationErrors['dynamic_' + field.id] }}</p>
         }
@@ -177,8 +179,8 @@
 
         @if (field.type === 'textarea') {
         <textarea [placeholder]="'أدخل ' + field.title" rows="4" (input)="onTextareaInput(field.id, $event)"
-            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 resize-vertical ' + getDynamicFieldValidationClass(field.id)"
-            (focus)="clearValidationError('dynamic_' + field.id)"></textarea>
+            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 resize-vertical ' + getDynamicFieldValidationClass(field.id)"
+            style="border-color:#0061fe;" (focus)="clearValidationError('dynamic_' + field.id)"></textarea>
         @if (validationErrors['dynamic_' + field.id]) {
         <p class="text-red-500 text-sm mt-1">{{ validationErrors['dynamic_' + field.id] }}</p>
         }
@@ -188,12 +190,11 @@
 
     <!-- Hint for next field -->
     @if (getNextChildField()) {
-    <div
-        class="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-800 rounded-xl p-6">
+    <div class="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-800 rounded-xl p-6"
+        style="background-color:#0061fe; border-color:#0061fe;">
         <div class="flex items-center">
             <div class="flex-shrink-0">
-                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+                <svg class="w-6 h-6  dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
@@ -272,15 +273,132 @@
 
 
 
+<!-- IsSpecific Ad Type Selection -->
+<div class="space-y-6 mb-8" dir="rtl">
+    <!-- Ad Type Selection -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800 p-6">
+        <div class="flex items-center mb-4">
+            <span class="text-2xl mr-3">
+                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </span>
+            <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">نوع الإعلان</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">اختر نوع الإعلان الذي تريد نشره</p>
+            </div>
+        </div>
+        
+        <div class="space-y-4">
+            <!-- Regular Ad Option -->
+            <label class="flex items-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200">
+                <input type="radio" name="adType" value="regular" [checked]="!isSpecific" 
+                       (change)="onIsSpecificChange($event)" 
+                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <div class="ml-3">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">إعلان عادي</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">إعلان مجاني يظهر في القائمة العامة</div>
+                </div>
+            </label>
+
+            <!-- Specific Ad Option -->
+            <label class="flex items-center p-4 border border-blue-300 dark:border-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-colors duration-200" [class.bg-blue-50]="isSpecific" [class.dark:bg-blue-900]="isSpecific">
+                <input type="radio" name="adType" value="specific" [checked]="isSpecific" (change)="onIsSpecificChange($event)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                <div class="ml-3">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">إعلان مميز</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">إعلان مدفوع يظهر في المقدمة مع ميزات إضافية</div>
+                </div>
+            </label>
+        </div>
+
+        <!-- Active Months Selection (shown when IsSpecific is selected) -->
+        <div *ngIf="showActiveMonthsSelection" class="mt-6 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center mb-3">
+                <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h4 class="text-md font-semibold text-gray-900 dark:text-white">اختر مدة النشر</h4>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <label *ngFor="let option of getPricingOptions()" 
+                       class="flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors duration-200"
+                       [class]="selectedActiveMonths === option.months ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'">
+                    <input type="radio" name="activeMonths" [value]="option.months" 
+                           [checked]="selectedActiveMonths === option.months"
+                           (change)="onActiveMonthsChange($event)"
+                           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <div class="flex-1 ml-3">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ option.label }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ option.price }} ل.س</div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Payment Summary -->
+            <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-green-800 dark:text-green-200">إجمالي المبلغ المطلوب</span>
+                    </div>
+                    <div class="text-lg font-bold text-green-800 dark:text-green-200">{{ getTotalPrice() }} ل.س</div>
+                </div>
+                <p class="text-xs text-green-700 dark:text-green-300 mt-1">
+                    سيتم خصم هذا المبلغ من رصيدك عند تأكيد الإعلان
+                </p>
+            </div>
+
+            @if (validationErrors['activeMonths']) {
+            <p class="text-red-500 text-sm mt-2">{{ validationErrors['activeMonths'] }}</p>
+            }
+        </div>
+    </div>
+</div>
+
 <!-- Static Fields -->
 <div class="space-y-6 mb-8" dir="rtl">
     <!-- Title Field -->
+    <!-- Price Field -->
     <div
         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
         <div class="flex items-center mb-4">
             <span class="text-2xl mr-3">
-                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+                <svg class="w-6 h-6  dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </span>
+            <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">السعر <span
+                        class="text-red-500">*</span></h3>
+            </div>
+        </div>
+        <div class="relative">
+            <input type="number" min="1" step="0.01" [(ngModel)]="ExisitadDetails.price"
+                placeholder="أدخل السعر بالأرقام فقط (مثال: 100.00)" name="price" required
+                [class]="'w-full pl-16 pr-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 text-left' + getFieldValidationClass('price')"
+                style="border-color:#0061fe;" style="direction: ltr; text-align: left;" (focus)="onPriceFocus($event)">
+
+        </div>
+        @if (validationErrors['price']) {
+        <p class="text-red-500 text-sm mt-1">{{ validationErrors['price'] }}</p>
+        }
+    </div>
+
+
+
+
+
+
+
+    <div
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
+        <div class="flex items-center mb-4">
+            <span class="text-2xl mr-3">
+                <svg class="w-6 h-6  dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -291,8 +409,8 @@
             </div>
         </div>
         <input type="text" [(ngModel)]="ExisitadDetails.title" placeholder="أدخل عنوان الإعلان" name="title" required
-            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 ' + getFieldValidationClass('title')"
-            (focus)="clearValidationError('title')">
+            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 ' + getFieldValidationClass('title')"
+            style="border-color:#0061fe;" (focus)="clearValidationError('title')">
         @if (validationErrors['title']) {
         <p class="text-red-500 text-sm mt-1">{{ validationErrors['title'] }}</p>
         }
@@ -303,8 +421,7 @@
         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
         <div class="flex items-center mb-4">
             <span class="text-2xl mr-3">
-                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+                <svg class="w-6 h-6  dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -317,15 +434,15 @@
         </div>
         <div class="flex flex-col md:flex-row gap-4">
             <select (change)="onGovernorateChange($event)" [value]="selectedGovernorate?.name || ''" required
-                [class]="'w-full md:w-1/2 px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 ' + getFieldValidationClass('location')"
-                (focus)="clearValidationError('location')">
+                [class]="'w-full md:w-1/2 px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 ' + getFieldValidationClass('location')"
+                style="border-color:#0061fe;" (focus)="clearValidationError('location')">
                 <option value="" disabled selected>اختر المحافظة</option>
                 <option *ngFor="let gov of governorates" [value]="gov.name">{{ gov.name }}</option>
             </select>
             <select (change)="onNeighborhoodChange($event)" [value]="selectedNeighborhood?.name || ''"
                 [disabled]="!selectedGovernorate" required
-                [class]="'w-full md:w-1/2 px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 ' + getFieldValidationClass('location')"
-                (focus)="clearValidationError('location')">
+                [class]="'w-full md:w-1/2 px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 ' + getFieldValidationClass('location')"
+                style="border-color:#0061fe;" (focus)="clearValidationError('location')">
                 <option value="" disabled selected>اختر الحي</option>
                 <option *ngFor="let n of neighborhoods" [value]="n.name">{{ n.name }}</option>
             </select>
@@ -343,8 +460,7 @@
         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
         <div class="flex items-center mb-4">
             <span class="text-2xl mr-3">
-                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+                <svg class="w-6 h-6  dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
             </span>
@@ -354,65 +470,39 @@
             </div>
         </div>
         <textarea [(ngModel)]="ExisitadDetails.description" rows="4" placeholder="أدخل وصف الإعلان" required
-            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 resize-vertical ' + getFieldValidationClass('description')"
-            (focus)="clearValidationError('description')"></textarea>
+            [class]="'w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors duration-200 resize-vertical ' + getFieldValidationClass('description')"
+            style="border-color:#0061fe;" (focus)="clearValidationError('description')"></textarea>
         @if (validationErrors['description']) {
         <p class="text-red-500 text-sm mt-1">{{ validationErrors['description'] }}</p>
         }
     </div>
 
-    <!-- Price Field -->
-    <div
-        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
-        <div class="flex items-center mb-4">
-            <span class="text-2xl mr-3">
-                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </span>
-            <div class="flex-1">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">السعر <span
-                        class="text-red-500">*</span></h3>
-            </div>
-        </div>
-        <div class="relative">
-            <input type="text" [value]="ExisitadDetails.price ? ExisitadDetails.price.toFixed(2) : ''" placeholder="0.00" name="price" required
-                [class]="'w-full pl-16 pr-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200 ' + getFieldValidationClass('price')"
-                (input)="formatPrice($event)" (blur)="onBlur($event)" (focus)="clearValidationError('price')">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span class="text-gray-500 dark:text-gray-400">$</span>
-            </div>
-        </div>
-        @if (validationErrors['price']) {
-        <p class="text-red-500 text-sm mt-1">{{ validationErrors['price'] }}</p>
-        }
-    </div>
+
 </div>
 
 <!-- Continue Button - Fixed at bottom -->
-<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 z-40">
+<div
+    class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 z-40">
     <div class="max-w-4xl mx-auto">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
             <!-- Progress indicator -->
             <div class="flex-1">
                 <div class="flex items-center gap-2 mb-2">
                     <span class="text-sm text-gray-600 dark:text-gray-400">اكتمال النموذج</span>
-                    <span class="text-sm font-medium text-green-600 dark:text-green-400">
+                    <span class="text-sm font-medium" style="color:#0061fe;">
                         {{ Math.round(getFieldsProgressPercentage()) }}%
                     </span>
                 </div>
                 <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-300"
-                        [style.width.%]="getFieldsProgressPercentage()"></div>
+                        style="background-color:#0061fe;"></div>
                 </div>
             </div>
 
             <!-- Continue Button -->
-            <button (click)="continueToUploadPhoto()"
-                [disabled]="!validateForm()"
-                class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-w-[120px]">
+            <button (click)="continueToUploadPhoto()" [disabled]="!validateForm()"
+                class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white"
+                style="background-color:#0061fe;">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>

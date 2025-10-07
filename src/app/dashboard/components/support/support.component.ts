@@ -32,6 +32,8 @@ export class SupportComponent
   messagesError: string | null = null;
   currentUserId: string | null = null;
   receiverId: string = '';
+  adInfo: string = '';
+  userMessage: string = '';
   @ViewChild('lastMessageDiv') lastMessageDiv!: ElementRef;
   private shouldScroll = false;
   private subscriptions: Subscription[] = [];
@@ -74,9 +76,11 @@ export class SupportComponent
       await this.supportSignalR.getMessagesWithUser('other user id');
 
       if (this.route.snapshot.queryParams['ad']) {
-        this.message =
-          this.route.snapshot.queryParams['ad'] + ' الأعلان هذا' + '\n';
+        this.adInfo = ' الأعلان :' + '\n' + this.route.snapshot.queryParams['ad'] + '\n';
+      } else {
+        this.adInfo = '';
       }
+      this.userMessage = '';
       // Subscribe to connection status
       this.subscriptions.push(
         this.supportSignalR.connectionStatus$.subscribe(
@@ -114,16 +118,17 @@ export class SupportComponent
   }
 
   async sendMessage(): Promise<void> {
-    if (!this.message.trim() || this.sending) return;
+    const fullMessage = this.adInfo + this.userMessage.trim();
+    if (!fullMessage.trim() || this.sending) return;
 
     this.sending = true;
     this.error = null;
 
     try {
       // For user side, we don't need to specify receiverId as it will be handled by the backend
-      await this.supportSignalR.sendMessage(this.message.trim(), '');
+      await this.supportSignalR.sendMessage(fullMessage, '');
 
-      this.message = '';
+      this.userMessage = '';
       this.sent = true;
 
       // Reset sent status after 2 seconds
@@ -166,7 +171,7 @@ export class SupportComponent
   }
 
   getConnectionStatusClass(): string {
-    return this.isConnected ? 'text-green-600' : 'text-red-600';
+    return this.isConnected ? 'text-[#0061fe]' : 'text-red-600';
   }
 
   trackByMessageId(index: number, message: SupportMessage): number {
@@ -178,21 +183,21 @@ export class SupportComponent
     textarea.style.height = 'auto';
     textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
 
-    // Limit message length to 500 characters
-    if (this.message.length > 500) {
-      this.message = this.message.substring(0, 500);
+    // Limit message length to 500 characters (excluding adInfo)
+    if (this.userMessage.length > 500) {
+      this.userMessage = this.userMessage.substring(0, 500);
     }
   }
 
   getCharacterCounterClass(): string {
-    const length = this.message.length;
+    const length = this.userMessage.length;
     if (length > 450) return 'text-red-500 dark:text-red-400';
     if (length > 400) return 'text-yellow-500 dark:text-yellow-400';
     return 'text-gray-400 dark:text-gray-500';
   }
 
   isMessageTooLong(): boolean {
-    return this.message.length > 500;
+    return this.userMessage.length > 500;
   }
 
   onChatFocus(): void {

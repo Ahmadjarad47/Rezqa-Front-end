@@ -24,14 +24,14 @@
 
       <!-- ✅ Success -->
       <div *ngIf="!isLoading && successMessage" class="text-center">
-        <div class="rounded-full bg-green-100 dark:bg-green-200/10 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-          <svg class="h-8 w-8 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+        <div class="rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4" style="background-color:#0061fe;">
+          <svg class="h-8 w-8" style="color:#0061fe;" xmlns="http://www.w3.org/2000/svg" fill="none"
                viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p class="text-green-700 dark:text-green-300 text-lg font-medium mb-2">{{ successMessage }}</p>
+        <p style="color:#0061fe;" class="text-lg font-medium mb-2">{{ successMessage }}</p>
         <p class="text-gray-600 dark:text-gray-400 text-sm">سيتم تحويلك إلى صفحة تسجيل الدخول تلقائياً...</p>
       </div>
 

@@ -49,7 +49,7 @@ export class CategoryService {
   }
 
   // Update category
-  updateCategory(id: number, category: Category): Observable<Category> {
+  updateCategory(id: number, category: FormData): Observable<Category> {
     return this.http.put<Category>(`${this.apiUrl}/${id}`, category)
       .pipe(catchError(error => this.handleError(error)));
   }

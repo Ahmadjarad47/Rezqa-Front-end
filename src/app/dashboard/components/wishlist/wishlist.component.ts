@@ -39,7 +39,7 @@ export class WishlistComponent implements OnInit {
           this.totalCount = response.totalCount;
         } else {
           this.notificationService.error(
-            response.message || 'Failed to load wishlist'
+            response.message || 'فشل في تحميل المفضلة'
           );
         }
         this.loading = false;
@@ -59,37 +59,37 @@ export class WishlistComponent implements OnInit {
             (item) => item.adId !== adId
           );
           this.totalCount = response.totalCount;
-          this.notificationService.success('Item removed from wishlist');
+          this.notificationService.success('تم إزالة العنصر من المفضلة');
         } else {
           this.notificationService.error(
-            response.message || 'Failed to remove item'
+            response.message || 'فشل في إزالة العنصر'
           );
         }
       },
       error: (error) => {
         console.error('Error removing item from wishlist:', error);
-        this.notificationService.error('Failed to remove item from wishlist');
+        this.notificationService.error('فشل في إزالة العنصر من المفضلة');
       },
     });
   }
 
   clearWishlist(): void {
-    if (confirm('Are you sure you want to clear your entire wishlist?')) {
+    if (confirm('هل أنت متأكد من أنك تريد مسح المفضلة بالكامل؟')) {
       this.wishlistService.clearWishlist().subscribe({
         next: (response: WishlistResponse) => {
           if (response.isSuccess) {
             this.wishlistItems = [];
             this.totalCount = 0;
-            this.notificationService.success('Wishlist cleared successfully');
+            this.notificationService.success('تم مسح المفضلة بنجاح');
           } else {
             this.notificationService.error(
-              response.message || 'Failed to clear wishlist'
+              response.message || 'فشل في مسح المفضلة'
             );
           }
         },
         error: (error) => {
           console.error('Error clearing wishlist:', error);
-          this.notificationService.error('Failed to clear wishlist');
+          this.notificationService.error('فشل في مسح المفضلة');
         },
       });
     }

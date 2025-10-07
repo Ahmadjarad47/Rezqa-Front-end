@@ -79,28 +79,19 @@ export class CategoryFormComponent implements OnInit {
       this.error = '';
       const formData = new FormData();
       formData.append('Title', this.categoryForm.value.title.trim());
-      formData.append(
-        'Description',
-        this.categoryForm.value.description.trim()
-      );
+      formData.append('Description', this.categoryForm.value.description.trim());
       formData.append('IsActive', this.categoryForm.value.isActive);
       if (this.selectedFile) {
         formData.append('Image', this.selectedFile);
       }
-
       let request;
       if (this.category) {
-        // For update, you may need to adjust this if your backend expects FormData for update as well
-        request = this.categoryService.updateCategory(this.category.id, {
-          ...this.categoryForm.value,
-          image: this.selectedFile
-            ? this.selectedFile.name
-            : this.categoryForm.value.image,
-        });
+        // For update, use FormData and include Id if required
+        formData.append('Id', this.category.id.toString());
+        request = this.categoryService.updateCategory(this.category.id, formData);
       } else {
         request = this.categoryService.createCategory(formData);
       }
-
       request.subscribe({
         next: () => {
           this.loading = false;

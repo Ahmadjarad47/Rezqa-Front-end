@@ -44,7 +44,35 @@ export class ReportService {
     return EMPTY;
   }
 
-  clearCache(): Observable<any> {
+  getAdExpirationSettings(): Observable<any> {
+    if (isPlatformBrowser(this.platformId)) {
+      return this.http.get(`${this.apiUrl}/ad-expiration-settings`).pipe(catchError(error => this.handleError(error)));
+    }
+    return EMPTY;
+  }
+
+  getAdExpirationStatus(): Observable<any> {
+    if (isPlatformBrowser(this.platformId)) {
+      return this.http.get(`${this.apiUrl}/ad-expiration-status`).pipe(catchError(error => this.handleError(error)));
+    }
+    return EMPTY;
+  }
+
+  updateAdExpirationSettings(settings: any): Observable<any> {
+    if (isPlatformBrowser(this.platformId)) {
+      return this.http.put(`${this.apiUrl}/ad-expiration-settings`, settings).pipe(catchError(error => this.handleError(error)));
+    }
+    return EMPTY;
+  }
+
+  triggerAdExpirationCheck(request: any): Observable<any> {
+    if (isPlatformBrowser(this.platformId)) {
+      return this.http.post(`${this.apiUrl}/ad-expiration-check`, request).pipe(catchError(error => this.handleError(error)));
+    }
+    return EMPTY;
+  }
+
+  clearAllCache(): Observable<any> {
     if (isPlatformBrowser(this.platformId)) {
       return this.http.post(`${this.apiUrl}/clear-cache`, {}).pipe(catchError(error => this.handleError(error)));
     }

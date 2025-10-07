@@ -5,16 +5,175 @@
 @source "../node_modules/flowbite";
 @custom-variant dark (&:where(.dark, .dark *));
 
-
-@theme {
-    --color-primary-50: #eff6ff;
-    --color-primary-100: #dbeafe;
-    --color-primary-200: #bfdbfe;
-    --color-primary-300: #93c5fd;
-    --color-primary-400: #60a5fa;
-    --color-primary-500: #3b82f6;
-    --color-primary-600: #2563eb;
-    --color-primary-700: #1d4ed8;
-    --color-primary-800: #1e40af;
-    --color-primary-900: #1e3a8a;
+/* Custom Color Palette Variables */
+:root {
+  --color-text: #000000;
+  --color-bg: #f6f6f6;
+  --color-accent: #56ff50;
+  --color-text-light: #333333;
+  --color-bg-light: #ffffff;
+  --color-accent-dark: #4ae04a;
+  --color-accent-light: #7aff7a;
 }
+
+* {
+  font-family: 'Cairo', sans-serif !important;
+}
+
+/* Global color overrides */
+body {
+  background-color: var(--color-bg) !important;
+  color: var(--color-text) !important;
+}
+
+/* Button styles with new colors */
+.btn-primary {
+  background-color: var(--color-accent) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-accent) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-dark) !important;
+  border-color: var(--color-accent-dark) !important;
+}
+
+.btn-secondary {
+  background-color: var(--color-bg-light) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-text) !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-text) !important;
+  color: var(--color-bg-light) !important;
+}
+
+/* Card styles */
+.card {
+  background-color: var(--color-bg-light) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-accent) !important;
+}
+
+/* Input styles */
+input, textarea, select {
+  background-color: var(--color-bg-light) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-accent) !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px rgba(86, 255, 80, 0.1) !important;
+}
+
+/* Comprehensive color overrides for all UI elements */
+.bg-primary, .bg-green-500, .bg-green-600, .bg-emerald-500, .bg-emerald-600 {
+  background-color: var(--color-accent) !important;
+}
+
+.text-primary, .text-green-600, .text-green-700, .text-emerald-600, .text-emerald-700 {
+  color: var(--color-accent) !important;
+}
+
+.border-primary, .border-green-500, .border-green-600, .border-emerald-500, .border-emerald-600 {
+  border-color: var(--color-accent) !important;
+}
+
+/* Override all green color variations */
+.bg-green-50, .bg-green-100, .bg-green-200, .bg-green-300, .bg-green-400 {
+  background-color: var(--color-accent-light) !important;
+}
+
+.bg-green-700, .bg-green-800, .bg-green-900 {
+  background-color: var(--color-accent-dark) !important;
+}
+
+.text-green-500, .text-green-600, .text-green-700, .text-green-800, .text-green-900 {
+  color: var(--color-accent) !important;
+}
+
+.text-green-50, .text-green-100, .text-green-200, .text-green-300, .text-green-400 {
+  color: var(--color-text) !important;
+}
+
+.border-green-500, .border-green-600, .border-green-700, .border-green-800, .border-green-900 {
+  border-color: var(--color-accent) !important;
+}
+
+.border-green-50, .border-green-100, .border-green-200, .border-green-300, .border-green-400 {
+  border-color: var(--color-accent-light) !important;
+}
+
+/* Override gray colors for better contrast */
+.bg-gray-50, .bg-gray-100, .bg-gray-200 {
+  background-color: var(--color-bg) !important;
+}
+
+.bg-gray-800, .bg-gray-900 {
+  background-color: var(--color-text) !important;
+}
+
+.text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 {
+  color: var(--color-text) !important;
+}
+
+.text-gray-50, .text-gray-100, .text-gray-200, .text-gray-300, .text-gray-400, .text-gray-500 {
+  color: var(--color-text-light) !important;
+}
+
+/* Override white backgrounds */
+.bg-white {
+  background-color: var(--color-bg-light) !important;
+}
+
+/* Override button styles */
+.btn, button {
+  color: var(--color-text) !important;
+}
+
+.btn:hover, button:hover {
+  background-color: var(--color-accent-dark) !important;
+  color: var(--color-text) !important;
+}
+
+/* Override card styles */
+.card, .bg-white\/80, .bg-white\/90 {
+  background-color: var(--color-bg-light) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-accent) !important;
+}
+
+/* Override gradient backgrounds */
+.bg-gradient-to-r, .bg-gradient-to-br, .bg-gradient-to-t {
+  background: var(--color-bg) !important;
+}
+
+/* Override shadow colors */
+.shadow-green-500, .shadow-green-600, .shadow-emerald-500, .shadow-emerald-600 {
+  box-shadow: 0 4px 6px -1px rgba(86, 255, 80, 0.1), 0 2px 4px -1px rgba(86, 255, 80, 0.06) !important;
+}
+
+/* Override focus states */
+.focus\:ring-green-500:focus, .focus\:ring-emerald-500:focus {
+  --tw-ring-color: var(--color-accent) !important;
+}
+
+.focus\:border-green-500:focus, .focus\:border-emerald-500:focus {
+  border-color: var(--color-accent) !important;
+}
+
+/* Override hover states */
+.hover\:bg-green-500:hover, .hover\:bg-green-600:hover, .hover\:bg-emerald-500:hover, .hover\:bg-emerald-600:hover {
+  background-color: var(--color-accent) !important;
+}
+
+.hover\:text-green-500:hover, .hover\:text-green-600:hover, .hover\:text-emerald-500:hover, .hover\:text-emerald-600:hover {
+  color: var(--color-accent) !important;
+}
+
+.hover\:border-green-500:hover, .hover\:border-green-600:hover, .hover\:border-emerald-500:hover, .hover\:border-emerald-600:hover {
+  border-color: var(--color-accent) !important;
+}
+

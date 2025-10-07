@@ -249,21 +249,21 @@ export class DynamicFieldsComponent implements OnInit {
 
   getFieldTypeBadgeColor(type: string): string {
     const colorMap: { [key: string]: string } = {
-      'text': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      'number': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      'email': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-      'tel': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-      'url': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-      'date': 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-      'datetime-local': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      'select': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-      'radio': 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
-      'checkbox': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200',
-      'textarea': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-      'file': 'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200',
-      'color': 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200',
-      'range': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
+      'text': 'bg-accent-light text-text',
+      'number': 'bg-accent text-text',
+      'email': 'bg-accent-light text-text',
+      'tel': 'bg-accent-light text-text',
+      'url': 'bg-accent-light text-text',
+      'date': 'bg-accent-light text-text',
+      'datetime-local': 'bg-accent-light text-text',
+      'select': 'bg-accent-light text-text',
+      'radio': 'bg-accent-light text-text',
+      'checkbox': 'bg-accent-light text-text',
+      'textarea': 'bg-accent-light text-text',
+      'file': 'bg-accent-light text-text',
+      'color': 'bg-accent-light text-text',
+      'range': 'bg-accent-light text-text'
     };
-    return colorMap[type] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    return colorMap[type] || 'bg-accent-light text-text';
   }
 } 

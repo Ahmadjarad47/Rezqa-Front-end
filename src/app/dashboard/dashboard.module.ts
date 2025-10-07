@@ -10,6 +10,7 @@ import { WishlistComponent } from './components/wishlist/wishlist.component';
 import { AdsComponent } from './components/ads/ads.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { SupportComponent } from './components/support/support.component';
+import { DeleteAccountComponent } from './components/delete-account/delete-account.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { SupportComponent } from './components/support/support.component';
     WishlistComponent,
     AdsComponent,
     NotificationComponent,
-    SupportComponent
+    SupportComponent,
+    DeleteAccountComponent
   ],
   imports: [
     CommonModule,

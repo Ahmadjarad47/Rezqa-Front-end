@@ -19,4 +19,7 @@ export interface AdDto {
   createdAt: Date;
   updatedAt?: Date;
   adFieldDtos: AdFieldDto[];
+  isSpecific: boolean;
+  activeMonths?: number;
+  isConfirmedByAdmin: boolean;
 }

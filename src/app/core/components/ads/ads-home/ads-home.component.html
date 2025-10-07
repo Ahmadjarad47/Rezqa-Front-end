@@ -1,3 +1,5 @@
+@if (isMobile) {
+
 @if (categories && posts) {
 
 <!-- Error message for posts -->
@@ -12,23 +14,15 @@
     </div>
 </div>
 
-<!-- Loading spinner for posts -->
-<div *ngIf="isLoadingPosts" class="flex items-center justify-center py-12">
-    <div class="relative">
-        <div class="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600"></div>
-        <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-green-400 animate-pulse"></div>
-    </div>
-    <span class="ml-4 text-lg font-medium text-gray-600 dark:text-gray-400 animate-pulse">جاري تحميل الإعلانات...</span>
-</div>
-
-<!-- Enhanced Sticky Header with Categories -->
+<!-- شريط الأقسام ... -->
 <div dir="rtl"
-    class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md  px-4 md:px-6 shadow-lg sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800">
+    class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md py-2  px-4 md:px-10 lg:px-16 shadow-lg sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800">
     <div class="max-w-7xl mx-auto">
         <!-- Main Category Navigation -->
-        <div class="flex flex-wrap gap-3 md:gap-4 overflow-x-auto pb-3 scrollbar-hide">
+        <div class="flex flex-wrap gap-3 md:gap-6 lg:gap-8 overflow-x-auto pb-3 scrollbar-hide">
             <!-- Dynamic Category Tags (first 8) -->
-            @for (category of categories.slice(0, 4); track category.id) {
+
+            @for (category of categories.slice(0, 4);track $index ) {
             <a href="#" (click)="$event.preventDefault(); selectCategory(category)"
                 [class.bg-gradient-to-r]="filterGetter.categoryId === category.id"
                 [class.from-green-500]="filterGetter.categoryId === category.id"
@@ -38,7 +32,8 @@
                 [class.scale-105]="filterGetter.categoryId === category.id"
                 class="px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm md:text-base font-medium whitespace-nowrap hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
                 <div class="flex items-center gap-2">
-                    <img [src]="category.image" width="20" height="20" class="rounded-full" alt="" loading="lazy" decoding="async">
+                    <img decoding="async" [src]="category.image" width="20" height="20" class="rounded-full" alt=""
+                        loading="lazy">
                     {{category.title}}
                 </div>
             </a>
@@ -63,7 +58,7 @@
         @if (showMoreCategories && categories.length > 4) {
         <div
             class="flex flex-wrap gap-3 md:gap-4 overflow-x-auto pb-3 scrollbar-hide mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 animate-slide-down">
-            @for (category of categories.slice(4); track category.id) {
+            @for (category of categories.slice(4); track $index) {
             <a [href]="'/ar/' + category.title + '/all'"
                 [class.bg-gradient-to-r]="filterGetter.categoryId === category.id"
                 [class.from-green-500]="filterGetter.categoryId === category.id"
@@ -73,7 +68,529 @@
                 [class.scale-105]="filterGetter.categoryId === category.id"
                 class="px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm md:text-base font-medium whitespace-nowrap hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
                 <div class="flex items-center gap-2">
-                    <img [src]="category.image" width="20" height="20" class="rounded-full" alt="" loading="lazy" decoding="async">
+                    <img [src]="category.image" width="20" height="20" class="rounded-full" alt="" loading="lazy">
+                    {{category.title}}
+                </div>
+            </a>
+            }
+        </div>
+        }
+    </div>
+</div>
+
+<!-- أيقونة فلترة رمادية فوق الإعلانات -->
+<div class="flex justify-start my-4 px-2">
+    <button (click)="toggleFilters()" aria-label="فلترة"
+        class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 shadow transition">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                d="M20 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6h-2m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4" />
+        </svg>
+
+    </button>
+</div>
+
+<!-- Enhanced Advanced Filter Dialog -->
+<div *ngIf="showFilters" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Enhanced Overlay with Backdrop Blur -->
+    <div class="fixed inset-0 bg-black/70 backdrop-blur-md transition-opacity duration-300" (click)="toggleFilters()"
+        [@fadeInOut]></div>
+
+    <!-- Enhanced Dialog Box with Advanced Animations -->
+    <div dir="rtl"
+        class="relative w-full max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden flex flex-col max-h-[90vh] animate-slide-up"
+        [@slideUpDown]>
+
+        <!-- Enhanced Header with Gradient -->
+        <div
+            class="relative bg-gradient-to-r from-red-50 to-red-100 dark:from-gray-800 dark:to-gray-900 px-6 py-5 border-b border-gray-200/50 dark:border-gray-700/50">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-5">
+                <div class="absolute inset-0"
+                    style="background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0); background-size: 20px 20px;">
+                </div>
+            </div>
+
+            <div class="relative flex items-center justify-between">
+                <button (click)="toggleFilters()" aria-label="إغلاق"
+                    class="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-800/80 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 text-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 backdrop-blur-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+
+                <div class="flex-1 text-center">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white flex items-center justify-center gap-3">
+                        <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-xl">
+                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+                                </path>
+                            </svg>
+                        </div>
+                        فلترة متقدمة
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">ابحث وفلتر الإعلانات بسهولة</p>
+                </div>
+
+                <div class="w-12"></div> <!-- للموازنة -->
+            </div>
+        </div>
+
+        <!-- Enhanced Filter Content with Scrollable Area -->
+        <div class="flex-1 overflow-y-auto">
+            <form (ngSubmit)="applyFilters(); toggleFilters()" class="p-6 space-y-6">
+
+                <!-- Enhanced Search Section -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <label class="text-lg font-semibold text-gray-800 dark:text-white">البحث المتقدم</label>
+                    </div>
+
+                    <div class="relative group">
+                        <input type="text" [(ngModel)]="filterGetter.searchTerm" name="searchTerm"
+                            class="w-full pr-12 pl-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 text-right placeholder:text-right text-lg shadow-sm group-hover:shadow-md"
+                            placeholder="ابحث في الإعلانات..." [disabled]="isLoadingPosts">
+                        <div
+                            class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Category Section -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
+                            <svg class="w-5 h-5 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                        </div>
+                        <label class="text-lg font-semibold text-gray-800 dark:text-white">القسم والفئة</label>
+                    </div>
+
+                    <div class="space-y-3">
+                        <select [(ngModel)]="filterGetter.categoryId" name="categoryId"
+                            (change)="onCategoryChange($event)"
+                            class="w-full p-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-4 focus:ring-yellow-500/20 focus:border-yellow-500 transition-all duration-300 text-right text-lg shadow-sm hover:shadow-md"
+                            [disabled]="isLoadingPosts">
+                            <option value="">🏷️ جميع الأقسام</option>
+                            <option *ngFor="let cat of categories" [value]="cat.id">
+                                🏷️ {{cat.title}}
+                            </option>
+                        </select>
+
+                        <!-- Subcategory Dropdown (Conditional) -->
+                        <div *ngIf="subcategories.length > 0" class="space-y-2">
+                            <select [(ngModel)]="filterGetter.subCategoryId" name="subCategoryId"
+                                (change)="onSubCategoryChange($event)"
+                                class="w-full p-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-4 focus:ring-yellow-500/20 focus:border-yellow-500 transition-all duration-300 text-right text-lg shadow-sm hover:shadow-md"
+                                [disabled]="isLoadingPosts">
+                                <option value="">📋 جميع الفئات الفرعية</option>
+                                <option *ngFor="let sub of subcategories" [value]="sub.id">
+                                    📋 {{sub.title}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Location Section -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-xl">
+                            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <label class="text-lg font-semibold text-gray-800 dark:text-white">الموقع</label>
+                    </div>
+
+                    <div class="space-y-3">
+                        <select [(ngModel)]="selectedCity" name="selectedCity" (change)="onCityChange($event)"
+                            class="w-full p-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 text-right text-lg shadow-sm hover:shadow-md"
+                            [disabled]="isLoadingPosts">
+                            <option value="">🌍 كل المدن</option>
+                            <option *ngFor="let city of cityList" [value]="city.name">
+                                🏙️ {{city.name}}
+                            </option>
+                        </select>
+
+                        <!-- Neighborhood Dropdown (Conditional) -->
+                        <div *ngIf="neighborhoodList.length > 0" class="space-y-2">
+                            <select [(ngModel)]="selectedNeighborhood" name="selectedNeighborhood"
+                                (change)="onNeighborhoodChange($event)"
+                                class="w-full p-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 text-right text-lg shadow-sm hover:shadow-md"
+                                [disabled]="isLoadingPosts">
+                                <option value="">🏘️ كل المناطق</option>
+                                <option *ngFor="let n of neighborhoodList" [value]="n.name">
+                                    🏘️ {{n.name}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Dynamic Fields Section -->
+                <div *ngIf="dynamicFields.length > 0" class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+                            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <label class="text-lg font-semibold text-gray-800 dark:text-white">خصائص إضافية</label>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div *ngFor="let field of dynamicFields" class="space-y-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{field.title}}</label>
+                            <select [(ngModel)]="dynamicFieldFilters[field.id]"
+                                (change)="onDynamicFieldChange(field.id, $event)" name="dynamicField_{{field.id}}"
+                                class="w-full p-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 text-right text-lg shadow-sm hover:shadow-md"
+                                [disabled]="isLoadingPosts">
+                                <option value="">جميع الخيارات</option>
+                                <option *ngFor="let option of getFieldOptions(field)" [value]="option.value">
+                                    {{option.label}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Price Section -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-xl">
+                            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8">
+                                </path>
+                            </svg>
+                        </div>
+                        <label class="text-lg font-semibold text-gray-800 dark:text-white">نطاق السعر</label>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="relative group">
+                                <input type="number" [(ngModel)]="filterGetter.minPrice" name="minPrice"
+                                    class="w-full p-4 pr-12 border-2 border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-300 text-right placeholder:text-right text-lg shadow-sm group-hover:shadow-md"
+                                    placeholder="من" [disabled]="isLoadingPosts">
+                                <div
+                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-red-500 transition-colors duration-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="relative group">
+                                <input type="number" [(ngModel)]="filterGetter.maxPrice" name="maxPrice"
+                                    class="w-full p-4 pr-12 border-2 border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50 dark:bg-gray-800 dark:text-white focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-300 text-right placeholder:text-right text-lg shadow-sm group-hover:shadow-md"
+                                    placeholder="إلى" [disabled]="isLoadingPosts">
+                                <div
+                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-red-500 transition-colors duration-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 8v8">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price Error Display -->
+                        <div *ngIf="priceError"
+                            class="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-red-600 dark:text-red-400 text-sm font-medium">{{ priceError }}</span>
+                        </div>
+
+                        <div class="text-sm text-gray-500 dark:text-gray-400 text-center">
+                            💰 ليرة سورية
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Enhanced Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button type="submit" [disabled]="isLoadingPosts"
+                        class="flex-1 py-4 px-6 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <span>🔍 تطبيق الفلاتر</span>
+                    </button>
+
+                    <button type="button" (click)="clearAllFilters()" [disabled]="isLoadingPosts"
+                        class="flex-1 py-4 px-6 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>🗑️ مسح الكل</span>
+                    </button>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+<main dir="ltr" class="flex flex-col lg:flex-row gap-8 container mx-auto px-4 md:px-6 py-8 dark:bg-gray-900 max-w-7xl">
+    <!-- Enhanced Listings Section -->
+    <!-- Enhanced Listings Grid -->
+    <div class="flex flex-col gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6">
+        @for (item of posts;track $index) {
+        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-row-reverse items-start py-3 px-3 gap-3 group shadow-sm hover:shadow-lg hover:border-red-400 transition-all duration-200 min-h-[120px]"
+            (mouseenter)="setHovered($index)" (mouseleave)="clearHovered()">
+
+            <!-- صورة صغيرة أقصى اليسار -->
+            <div routerLink="/all/{{item.categoryTitle.replaceAll(' ','-')}}/{{item.title.replaceAll(' ','-')}}/{{item.id}}"
+                class="flex-shrink-0 relative w-20 h-20 md:w-24 md:h-24">
+                <img [src]="getCurrentImage(item, $index)" alt="{{item.title}}"
+                    class="w-full h-full rounded-lg object-cover border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div
+                    class="absolute bottom-1 left-1 bg-black/70 text-white text-xs rounded-full px-1.5 py-0.5 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {{item.imageUrl.length}}
+                </div>
+            </div>
+
+            <!-- معلومات الإعلان من اليمين -->
+            <div class="flex-1 flex flex-col justify-between gap-2 pr-2 min-w-0 overflow-hidden">
+                <div routerLink="/all/{{item.categoryTitle.replaceAll(' ','-')}}/{{item.title.replaceAll(' ','-')}}/{{item.id}}"
+                    class="min-w-0">
+                    <!-- العنوان والسعر (السعر تحت العنوان) -->
+                    <div class="mb-2">
+                        <h3
+                            class="text-sm md:text-base font-bold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 line-clamp-2 leading-tight">
+                            {{item.title}}</h3>
+                        <span
+                            class="block mt-1 text-sm md:text-base font-bold text-red-600 dark:text-red-400 truncate">{{item.price}}</span>
+                    </div>
+                    <!-- التفاصيل -->
+                    <div class="flex flex-wrap gap-1 mb-2 max-h-8 overflow-hidden">
+                        <ng-container *ngFor="let field of item.adFieldDtos; let i = index">
+                            <span *ngIf="i < 2"
+                                class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs text-gray-600 dark:text-gray-300 truncate max-w-[80px]">
+                                {{field.value}}
+                            </span>
+                        </ng-container>
+                        <span *ngIf="item.adFieldDtos.length > 2"
+                            class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-xs text-gray-600 dark:text-gray-300">
+                            +{{item.adFieldDtos.length - 2}}
+                        </span>
+                    </div>
+                    <!-- الموقع والتاريخ -->
+                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mb-1 min-w-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 flex-shrink-0" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                        <span class="truncate flex-1">{{item.location}}</span>
+                        <span class="mx-1 flex-shrink-0">|</span>
+                        <span class="flex-shrink-0">{{item.createdAt|date:'short'}}</span>
+                    </div>
+                </div>
+                <!-- أزرار التفاعل -->
+                <div class="flex gap-1 mt-1 flex-shrink-0">
+                    <button (click)="toggleWishlist(item.id); $event.stopPropagation(); $event.preventDefault();"
+                        [ngClass]="{'text-red-500': isInWishlist(item.id), 'text-gray-400': !isInWishlist(item.id)}"
+                        class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 shadow transition">
+                        <svg *ngIf="!isInWishlist(item.id)" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <svg *ngIf="isInWishlist(item.id)" xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 md:h-5 md:w-5" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
+                    <div class="flex gap-1">
+                        <a [href]="'https://wa.me/' + item.phonNumber" target="_blank" rel="noopener"
+                            [ngClass]="{'text-gray-400': !isInWishlist(item.id)}"
+                            class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 shadow transition"
+                            (click)="$event.stopPropagation()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 md:h-4 md:w-4" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                        </a>
+                        <a [href]="'tel:' + item.phonNumber"
+                            class="w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-white bg-gradient-to-r from-green-600 to-green-700 rounded-full hover:from-green-700 hover:to-green-800 shadow transition"
+                            (click)="$event.stopPropagation()">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 md:h-4 md:w-4" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Enhanced Pagination -->
+    <div *ngIf="paginationInfo"
+        class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-10 border border-gray-100 dark:border-gray-700">
+        <div class="text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
+            عرض <span class="font-bold text-gray-800 dark:text-gray-200">{{(paginationInfo.pageNumber - 1) *
+                paginationInfo.pageSize + 1}}-{{paginationInfo.pageNumber * paginationInfo.pageSize}}</span> من
+            <span class="font-bold text-gray-800 dark:text-gray-200">{{paginationInfo.totalCount}}</span> إعلان
+        </div>
+        <div class="flex items-center gap-2 justify-center sm:justify-end w-full sm:w-auto">
+            <button (click)="onPageChanged(paginationInfo.pageNumber - 1)"
+                [disabled]="!paginationInfo.hasPreviousPage || isLoadingPosts"
+                class="w-12 h-12 flex items-center justify-center border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293-3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+
+            <ng-container *ngFor="let page of totalPages">
+                <button
+                    *ngIf="page <= 3 || page >= paginationInfo.totalPages - 2 || (page >= paginationInfo.pageNumber - 1 && page <= paginationInfo.pageNumber + 1)"
+                    (click)="onPageChanged(page)"
+                    [ngClass]="{'bg-gradient-to-r from-red-500 to-red-600 text-white border-red-500 shadow-lg': page === paginationInfo.pageNumber, 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600': page !== paginationInfo.pageNumber}"
+                    [disabled]="isLoadingPosts"
+                    class="w-12 h-12 flex items-center justify-center border-2 rounded-xl font-bold transition-all duration-200 hover:scale-105">
+                    {{page}}
+                </button>
+                <span *ngIf="page === 3 && paginationInfo.pageNumber > 5" class="px-3 text-gray-500">...</span>
+                <span
+                    *ngIf="page === paginationInfo.totalPages - 3 && paginationInfo.pageNumber < paginationInfo.totalPages - 4"
+                    class="px-3 text-gray-500">...</span>
+            </ng-container>
+
+            <button (click)="onPageChanged(paginationInfo.pageNumber + 1)"
+                [disabled]="!paginationInfo.hasNextPage || isLoadingPosts"
+                class="w-12 h-12 flex items-center justify-center border-2 border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</main>
+}
+}@else {
+@if (categories && posts) {
+
+<!-- Error message for posts -->
+<div *ngIf="errorMsg"
+    class="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 text-center shadow-sm animate-fade-in">
+    <div class="flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {{ errorMsg }}
+    </div>
+</div>
+
+
+
+<!-- Enhanced Sticky Header with Categories -->
+<div dir="rtl"
+    class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md  px-4 md:px-6 shadow-lg sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto">
+        <!-- Main Category Navigation -->
+        <div class="flex flex-wrap gap-3 md:gap-4 overflow-x-auto pb-3 scrollbar-hide">
+            <!-- Dynamic Category Tags (first 8) -->
+            @for (category of categories.slice(0, 4); track $index) {
+            <a href="#" (click)="$event.preventDefault(); selectCategory(category)"
+                [class.bg-gradient-to-r]="filterGetter.categoryId === category.id"
+                [class.from-green-500]="filterGetter.categoryId === category.id"
+                [class.to-green-600]="filterGetter.categoryId === category.id"
+                [class.text-white]="filterGetter.categoryId === category.id"
+                [class.shadow-lg]="filterGetter.categoryId === category.id"
+                [class.scale-105]="filterGetter.categoryId === category.id"
+                class="px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm md:text-base font-medium whitespace-nowrap hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
+                <div class="flex items-center gap-2">
+                    <img [src]="category.image" width="20" height="20" class="rounded-full" alt="" loading="lazy">
+                    {{category.title}}
+                </div>
+            </a>
+            }
+
+            <!-- Toggle Button for More Categories -->
+            @if (categories.length > 4) {
+            <button (click)="toggleMoreCategories()"
+                class="px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm md:text-base font-medium text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-300 flex items-center gap-2 hover:scale-105 hover:shadow-md">
+                <span>{{showMoreCategories ? 'أقل' : 'المزيد'}}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" [class.rotate-180]="showMoreCategories"
+                    class="h-4 w-4 transform transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+            }
+        </div>
+
+        <!-- Additional Categories (shown when expanded) -->
+        @if (showMoreCategories && categories.length > 4) {
+        <div
+            class="flex flex-wrap gap-3 md:gap-4 overflow-x-auto pb-3 scrollbar-hide mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 animate-slide-down">
+            @for (category of categories.slice(4); track $index) {
+            <a [href]="'/ar/' + category.title + '/all'"
+                [class.bg-gradient-to-r]="filterGetter.categoryId === category.id"
+                [class.from-green-500]="filterGetter.categoryId === category.id"
+                [class.to-green-600]="filterGetter.categoryId === category.id"
+                [class.text-white]="filterGetter.categoryId === category.id"
+                [class.shadow-lg]="filterGetter.categoryId === category.id"
+                [class.scale-105]="filterGetter.categoryId === category.id"
+                class="px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm md:text-base font-medium whitespace-nowrap hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-200 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
+                <div class="flex items-center gap-2">
+                    <img [src]="category.image" width="20" height="20" class="rounded-full" alt="" loading="lazy">
                     {{category.title}}
                 </div>
             </a>
@@ -90,7 +607,7 @@
         <!-- Enhanced Search Box -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -99,10 +616,10 @@
             </h3>
             <div class="relative">
                 <input type="text" placeholder="ابحث في الإعلانات..."
-                    class="w-full pr-12 pl-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300"
+                    class="w-full pr-12 pl-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-300"
                     [(ngModel)]="filterGetter.searchTerm" (keyup.enter)="applyFilters()" [disabled]="isLoadingPosts">
                 <button (click)="applyFilters()" [disabled]="isLoadingPosts"
-                    class="absolute left-3 top-3 text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200">
+                    class="absolute left-3 top-3 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -118,9 +635,9 @@
             <button (click)="toggleCategories()"
                 class="flex items-center w-full justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
                 <span class="flex items-center gap-3 font-semibold text-gray-800 dark:text-gray-200">
-                    <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-400"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
@@ -144,35 +661,55 @@
                 </div>
                 } @else {
                 <ul class="space-y-2">
+                    <!-- Show "All Categories" option when no category is selected -->
+                    @if (!filterGetter.categoryId) {
                     <li>
                         <a href="#"
                             (click)="$event.preventDefault(); filterGetter.categoryId = undefined; applyFilters()"
                             class="block hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-3 py-3 px-4 rounded-xl hover:text-green-600 dark:hover:text-green-400 transition-all duration-200 group">
                             <div
-                                class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/30 transition-colors duration-200">
+                                class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg group-hover:bg-red-100 dark:group-hover:bg-red-900/30 transition-colors duration-200">
                                 <span class="text-lg">🏷️</span>
                             </div>
                             <span class="font-medium">جميع الأقسام</span>
                         </a>
                     </li>
+                    }
+
+                    <!-- Show all categories when no category is selected -->
+                    @if (!filterGetter.categoryId) {
                     @for (item of categories; track $index) {
                     <li>
                         <a href="#" (click)="$event.preventDefault(); selectCategory(item)"
-                            [class.bg-gradient-to-r]="filterGetter.categoryId === item.id"
-                            [class.from-green-50]="filterGetter.categoryId === item.id"
-                            [class.to-green-100]="filterGetter.categoryId === item.id"
-                            [class.dark:from-green-900]="filterGetter.categoryId === item.id"
-                            [class.dark:to-green-800]="filterGetter.categoryId === item.id"
-                            [class.text-green-600]="filterGetter.categoryId === item.id"
-                            [class.dark:text-green-400]="filterGetter.categoryId === item.id"
-                            class="block hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-3 py-3 px-4 rounded-xl hover:text-green-600 dark:hover:text-green-400 transition-all duration-200 group">
+                            class="block hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-3 py-3 px-4 rounded-xl hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 group">
                             <div
-                                class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/30 transition-colors duration-200">
-                                <img [src]="item.image" width="20" height="20" class="rounded" alt="" loading="lazy" decoding="async">
+                                class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg group-hover:bg-red-100 dark:group-hover:bg-red-900/30 transition-colors duration-200">
+                                <img [src]="item.image" width="20" height="20" class="rounded" alt="" decoding="async"
+                                    loading="lazy">
                             </div>
                             <span class="font-medium">{{item.title}}</span>
                         </a>
                     </li>
+                    }
+                    }
+
+                    <!-- Show only selected category when one is selected -->
+                    @if (filterGetter.categoryId) {
+                    @for (item of categories; track $index) {
+                    @if (filterGetter.categoryId === item.id) {
+                    <li>
+                        <a href="#" (click)="$event.preventDefault(); selectCategory(item)"
+                            class="block bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 text-red-600 dark:text-red-400 flex items-center gap-3 py-3 px-4 rounded-xl transition-all duration-200 group">
+                            <div
+                                class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg transition-colors duration-200">
+                                <img [src]="item.image" width="20" height="20" class="rounded" alt="" decoding="async"
+                                    loading="lazy">
+                            </div>
+                            <span class="font-medium">{{item.title}}</span>
+                        </a>
+                    </li>
+                    }
+                    }
                     }
                 </ul>
 
@@ -203,19 +740,19 @@
                         <ul class="space-y-1">
                             <li>
                                 <a href="#" (click)="$event.preventDefault(); clearSubcategoryFilter()"
-                                    class="block hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2 py-2 px-4 rounded-lg hover:text-green-600 dark:hover:text-green-400 transition-all duration-200">
+                                    class="block hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 py-2 px-4 rounded-lg hover:text-red-600 dark:hover:text-red-400 transition-all duration-200">
                                     <span class="text-sm">📋</span>
                                     <span class="text-sm font-medium">جميع الفئات الفرعية</span>
                                 </a>
                             </li>
-                            @for (subcategory of subcategories; track subcategory.id) {
+                            @for (subcategory of subcategories; track $index) {
                             <li>
                                 <a href="#" (click)="$event.preventDefault(); selectSubcategory(subcategory)"
-                                    [class.bg-green-50]="filterGetter.subCategoryId === subcategory.id"
-                                    [class.text-green-600]="filterGetter.subCategoryId === subcategory.id"
-                                    [class.dark:bg-green-900]="filterGetter.subCategoryId === subcategory.id"
-                                    [class.dark:text-green-400]="filterGetter.subCategoryId === subcategory.id"
-                                    class="block hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 py-2 px-4 rounded-lg hover:text-green-600 dark:hover:text-green-400 transition-all duration-200">
+                                    [class.bg-red-50]="filterGetter.subCategoryId === subcategory.id"
+                                    [class.text-red-600]="filterGetter.subCategoryId === subcategory.id"
+                                    [class.dark:bg-red-900]="filterGetter.subCategoryId === subcategory.id"
+                                    [class.dark:text-red-400]="filterGetter.subCategoryId === subcategory.id"
+                                    class="block hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2 py-2 px-4 rounded-lg hover:text-red-600 dark:hover:text-red-400 transition-all duration-200">
                                     <span class="text-sm">•</span>
                                     <span class="text-sm font-medium">{{subcategory.title}}</span>
                                 </a>
@@ -240,9 +777,9 @@
             <button (click)="toggleLocation()"
                 class="flex items-center w-full justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
                 <span class="flex items-center gap-3 font-semibold text-gray-800 dark:text-gray-200">
-                    <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-400"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -266,7 +803,8 @@
                         <select
                             class="w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300"
                             [(ngModel)]="selectedCity" (change)="onCityChange($event)" [disabled]="isLoadingPosts">
-                            <option value="" disabled selected>اختر المدينة</option>
+
+                            <option value="">جميع المحافظات</option>
                             <option *ngFor="let city of cityList" [value]="city.name">{{city.name}}</option>
                         </select>
                     </div>
@@ -276,12 +814,57 @@
                             class="w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300"
                             [(ngModel)]="selectedNeighborhood" (change)="onNeighborhoodChange($event)"
                             [disabled]="isLoadingPosts">
-                            <option value="" disabled selected>اختر المنطقة</option>
+                            <option value="" selected>كل المناطق</option>
                             <option *ngFor="let n of neighborhoodList" [value]="n.name">{{n.name}}</option>
                         </select>
                     </div>
                 </div>
                 <button (click)="clearLocationFilter()" [disabled]="isLoadingPosts"
+                    class="mt-4 w-full py-2 px-4 text-sm text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20">
+                    مسح التحديد
+                </button>
+            </div>
+        </section>
+
+        <!-- Enhanced Dynamic Fields Section -->
+        <section *ngIf="dynamicFields.length > 0"
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+            <button (click)="toggleDynamicFields()"
+                class="flex items-center w-full justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+                <span class="flex items-center gap-3 font-semibold text-gray-800 dark:text-gray-200">
+                    <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600 dark:text-purple-400"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <span>خصائص إضافية</span>
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" [class.rotate-180]="isDynamicFieldsExpanded"
+                    class="h-5 w-5 text-gray-400 transform transition-transform duration-300" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div *ngIf="isDynamicFieldsExpanded" class="px-6 pb-6 transition-all duration-300 ease-in-out">
+                <div class="space-y-4">
+                    <div *ngFor="let field of dynamicFields" class="space-y-2">
+                        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{field.title}}</h3>
+                        <select
+                            class="w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300"
+                            [(ngModel)]="dynamicFieldFilters[field.id]"
+                            (change)="onDynamicFieldChange(field.id, $event)" [disabled]="isLoadingPosts">
+                            <option value="">جميع الخيارات</option>
+                            <option *ngFor="let option of getFieldOptions(field)" [value]="option.value">
+                                {{option.label}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <button (click)="clearDynamicFieldFilters()" [disabled]="isLoadingPosts"
                     class="mt-4 w-full py-2 px-4 text-sm text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20">
                     مسح التحديد
                 </button>
@@ -294,8 +877,8 @@
             <button (click)="togglePrice()"
                 class="flex items-center w-full justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
                 <span class="flex items-center gap-3 font-semibold text-gray-800 dark:text-gray-200">
-                    <div class="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 dark:text-yellow-400"
+                    <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-400"
                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -314,11 +897,11 @@
             <div *ngIf="isPriceExpanded" class="px-6 pb-6 transition-all duration-300 ease-in-out">
                 <div class="flex gap-3 mb-3">
                     <input type="number" placeholder="من"
-                        class="w-1/2 p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-yellow-500/20 focus:border-yellow-500 transition-all duration-300"
+                        class="w-1/2 p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-300"
                         [(ngModel)]="filterGetter.minPrice" (input)="onPriceInputChange()"
                         (keyup.enter)="applyFilters()" [disabled]="isLoadingPosts">
                     <input type="number" placeholder="إلى"
-                        class="w-1/2 p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-yellow-500/20 focus:border-yellow-500 transition-all duration-300"
+                        class="w-1/2 p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-red-500/20 focus:border-red-500 transition-all duration-300"
                         [(ngModel)]="filterGetter.maxPrice" (input)="onPriceInputChange()"
                         (keyup.enter)="applyFilters()" [disabled]="isLoadingPosts">
                 </div>
@@ -336,29 +919,37 @@
 
     <!-- Enhanced Listings Section -->
     <section class="flex-1" #listingsSection>
+        <!-- Loading State -->
+        <div *ngIf="isLoadingPosts" class="flex flex-col items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mb-4"></div>
+            <p class="text-gray-600 dark:text-gray-400 text-lg font-medium">جاري تحميل الإعلانات...</p>
+        </div>
+
         <!-- Enhanced Listings Grid -->
-        <div class="flex flex-col gap-6">
-            @for (item of posts; track trackByAdId) {
+        <div *ngIf="!isLoadingPosts" class="flex flex-col gap-6">
+            @for (item of posts; track $index) {
             <a class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 flex flex-col lg:flex-row items-stretch relative group"
                 (mouseenter)="setHovered($index)" (mouseleave)="clearHovered()">
 
                 <!-- Enhanced Badge -->
                 <div class="absolute top-4 right-4 z-10">
                     <span
-                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 shadow-lg">
+                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-red-400 to-red-500 text-red-900 shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="currentColor"
                             viewBox="0 0 20 20">
                             <path
                                 d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
-                        مميز
+                        مزاد
                     </span>
                 </div>
 
                 <!-- Enhanced Image Section -->
                 <div class="relative h-64 lg:h-48 lg:w-64 flex-shrink-0 overflow-hidden">
-                    <img class="w-full h-full object-cover transition-all duration-500 main-image group-hover:scale-110"
-                        [class.fade]="mainImageFade[$index]" [src]="getCurrentImage(item, $index)" [alt]="item.title" loading="lazy" decoding="async">
+                    <img decoding="async"
+                        class="w-full h-full object-cover transition-all duration-500 main-image group-hover:scale-110"
+                        [class.fade]="mainImageFade[$index]" [src]="getCurrentImage(item, $index)" alt="{{item.title}}"
+                        loading="lazy">
 
                     <!-- Enhanced Photo Count -->
                     <div class="absolute bottom-3 left-3">
@@ -376,10 +967,12 @@
                     <!-- Enhanced Thumbnails on hover -->
                     <div *ngIf="hoveredIndex === $index"
                         class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent backdrop-blur-sm flex gap-2 p-4 z-20 overflow-x-auto rounded-b-2xl">
-                        <img *ngFor="let img of item.imageUrl; let imgIdx = index" [src]="img" width="50" height="50"
-                            class="w-full h-full object-cover rounded cursor-pointer transition-all duration-200 hover:opacity-80"
-                            [class.opacity-50]="currentImageIndexes[$index] !== imgIdx" (click)="setCurrentImage($index, imgIdx)"
-                            loading="lazy" decoding="async">
+                        <img decoding="async" *ngFor="let img of item.imageUrl; let imgIdx = index" [src]="img"
+                            width="50" height="50"
+                            class="rounded-lg cursor-pointer object-cover transition-all duration-200 border-2 thumbnail hover:scale-110"
+                            [class.border-green-400]="currentImageIndexes[$index] === imgIdx"
+                            [class.border-white]="currentImageIndexes[$index] !== imgIdx"
+                            (mouseenter)="setCurrentImage($index, imgIdx)" alt="thumb" loading="lazy">
                     </div>
                 </div>
 
@@ -389,7 +982,7 @@
                         routerLink="/all/{{item.categoryTitle.replaceAll(' ','-')}}/{{item.title.replaceAll(' ','-')}}/{{item.id}}">
                         <div class="flex justify-between items-start mb-3">
                             <h3
-                                class="text-xl font-bold text-gray-800 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300 line-clamp-2">
+                                class="text-xl font-bold text-gray-800 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-300 line-clamp-2">
                                 {{item.title}}</h3>
                             <span
                                 class="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full whitespace-nowrap">{{item.createdAt|date:'short'}}</span>
@@ -413,14 +1006,19 @@
                     </div>
 
                     <div class="flex items-center justify-between mb-4">
-                        <span
-                            class="text-2xl font-bold text-red-600 dark:text-red-400">{{item.price|currency:'SYP'}}</span>
+                        <span class="text-2xl font-bold text-red-600 dark:text-red-400">{{item.price|currency}}</span>
                         <div class="flex items-center gap-2">
-                            <button (click)="wishlistService.addToWishlist({ adId: item.id })"
-                                class="p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 group">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5 group-hover:scale-110 transition-transform duration-200" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
+                            <button
+                                (click)="toggleWishlist(item.id); $event.stopPropagation(); $event.preventDefault();"
+                                [ngClass]="{'text-red-500': isInWishlist(item.id), 'text-gray-400': !isInWishlist(item.id)}"
+                                class="p-2 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 group">
+                                <svg *ngIf="!isInWishlist(item.id)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                <svg *ngIf="isInWishlist(item.id)" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                    fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
@@ -429,8 +1027,9 @@
                     </div>
 
                     <div class="flex gap-3">
-                        <button
-                            class="flex-1 py-3 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 flex items-center justify-center gap-2 group">
+                        <a [href]="'https://wa.me/00963' + item.phonNumber" target="_blank" rel="noopener"
+                            class="flex-1 py-3 px-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 flex items-center justify-center gap-2 group"
+                            (click)="$event.stopPropagation()">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-4 w-4 group-hover:scale-110 transition-transform duration-200" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -438,9 +1037,10 @@
                                     d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
                             دردش
-                        </button>
-                        <button
-                            class="flex-1 py-3 px-4 bg-gradient-to-r from-green-600 to-green-700 rounded-xl text-sm font-semibold text-white hover:from-green-700 hover:to-green-800 transition-all duration-300 flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl">
+                        </a>
+                        <a [href]="'tel:00963' + item.phonNumber"
+                            class="flex-1 py-3 px-4 bg-gradient-to-r from-green-600 to-green-700 rounded-xl text-sm font-semibold text-white hover:from-green-700 hover:to-green-800 transition-all duration-300 flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl"
+                            (click)="$event.stopPropagation()">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-4 w-4 group-hover:scale-110 transition-transform duration-200" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -448,7 +1048,7 @@
                                     d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                             </svg>
                             اتصل
-                        </button>
+                        </a>
                     </div>
                 </div>
             </a>
@@ -456,7 +1056,7 @@
         </div>
 
         <!-- Enhanced Pagination -->
-        <div *ngIf="paginationInfo"
+        <div *ngIf="paginationInfo && !isLoadingPosts"
             class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
             <div class="text-sm text-gray-600 dark:text-gray-400">
                 عرض <span class="font-bold text-gray-800 dark:text-gray-200">{{(paginationInfo.pageNumber - 1) *
@@ -478,7 +1078,7 @@
                     <button
                         *ngIf="page <= 3 || page >= paginationInfo.totalPages - 2 || (page >= paginationInfo.pageNumber - 1 && page <= paginationInfo.pageNumber + 1)"
                         (click)="onPageChanged(page)"
-                        [ngClass]="{'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-500 shadow-lg': page === paginationInfo.pageNumber, 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600': page !== paginationInfo.pageNumber}"
+                        [ngClass]="{'bg-gradient-to-r from-red-500 to-red-600 text-white border-red-500 shadow-lg': page === paginationInfo.pageNumber, 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600': page !== paginationInfo.pageNumber}"
                         [disabled]="isLoadingPosts"
                         class="w-12 h-12 flex items-center justify-center border-2 rounded-xl font-bold transition-all duration-200 hover:scale-105">
                         {{page}}
@@ -502,4 +1102,5 @@
         </div>
     </section>
 </main>
+}
 }

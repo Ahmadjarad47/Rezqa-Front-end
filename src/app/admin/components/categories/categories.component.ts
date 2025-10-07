@@ -1,14 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Category, GetAllCategoriesRequest, PaginatedResult } from '../../models/category';
+import {
+  Category,
+  GetAllCategoriesRequest,
+  PaginatedResult,
+} from '../../models/category';
 import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-categories',
   standalone: false,
   templateUrl: './categories.component.html',
-  styleUrl: './categories.component.css'
+  styleUrl: './categories.component.css',
 })
 export class CategoriesComponent implements OnInit {
   categories: Category[] = [];
@@ -44,7 +48,7 @@ export class CategoriesComponent implements OnInit {
   ) {
     this.searchForm = this.fb.group({
       searchTerm: [''],
-      isActive: [true]
+      isActive: [true],
     });
   }
 
@@ -54,16 +58,13 @@ export class CategoriesComponent implements OnInit {
   }
 
   get activeCategoriesCount(): number {
-    return this.categories.filter(c => c.isActive).length;
+    return this.categories.filter((c) => c.isActive).length;
   }
 
   setupSearchListener(): void {
     this.searchForm.valueChanges
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged()
-      )
-      .subscribe(values => {
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((values) => {
         this.searchTerm = values.searchTerm;
         this.isActiveFilter = values.isActive;
         this.currentPage = 1; // Reset to first page when searching
@@ -74,12 +75,12 @@ export class CategoriesComponent implements OnInit {
   loadCategories(): void {
     this.loading = true;
     this.error = '';
-    
+
     const request: GetAllCategoriesRequest = {
       pageNumber: this.currentPage,
       pageSize: this.pageSize,
       searchTerm: this.searchTerm || undefined,
-      isActive: this.isActiveFilter !== null ? this.isActiveFilter : undefined
+      isActive: this.isActiveFilter !== null ? this.isActiveFilter : undefined,
     };
 
     this.categoryService.getCategories(request).subscribe({
@@ -95,7 +96,7 @@ export class CategoriesComponent implements OnInit {
         this.error = 'Failed to load categories. Please try again.';
         this.loading = false;
         console.error('Error loading categories:', error);
-      }
+      },
     });
   }
 
@@ -116,7 +117,7 @@ export class CategoriesComponent implements OnInit {
   clearFilters(): void {
     this.searchForm.patchValue({
       searchTerm: '',
-      isActive: null
+      isActive: null,
     });
   }
 
@@ -154,7 +155,7 @@ export class CategoriesComponent implements OnInit {
         this.error = 'Failed to delete category. Please try again.';
         this.deleteLoading = false;
         console.error('Error deleting category:', error);
-      }
+      },
     });
   }
 
@@ -169,26 +170,52 @@ export class CategoriesComponent implements OnInit {
     this.editingCategory = null;
   }
 
+  toFormData(category: any): FormData {
+    const formData = new FormData();
+    formData.append('Id', category.id.toString());
+    formData.append('Title', category.title || category.Title);
+    formData.append('Description', category.description || category.Description);
+    formData.append('IsActive', category.isActive.toString());
+    // Only append image if it exists and is a File (not a string URL)
+    if (category.image && category.image instanceof File) {
+      formData.append('Image', category.image);
+    }
+    return formData;
+  }
+
   toggleActive(category: Category): void {
-    const updatedCategory = { ...category, isActive: !category.isActive };
-    this.categoryService.updateCategory(category.id, updatedCategory).subscribe({
-      next: (data) => {
-        const index = this.categories.findIndex(cat => cat.id === category.id);
-        if (index !== -1) {
-          this.categories[index] = data;
-        }
-      },
-      error: (error) => {
-        this.error = 'Failed to update category status. Please try again.';
-        console.error('Error updating category:', error);
-      }
-    });
+    // Ensure all required fields are included
+    const updatedCategory = {
+      ...category,
+      isActive: !category.isActive,
+      Title: category.title,
+      Description: category.description,
+    };
+    this.categoryService
+      .updateCategory(category.id, this.toFormData(updatedCategory))
+      .subscribe({
+        next: (data) => {
+          const index = this.categories.findIndex(
+            (cat) => cat.id === category.id
+          );
+          if (index !== -1) {
+            this.categories[index] = data;
+          }
+        },
+        error: (error) => {
+          this.error = 'Failed to update category status. Please try again.';
+          console.error('Error updating category:', error);
+        },
+      });
   }
 
   get pageNumbers(): number[] {
     const pages: number[] = [];
     const maxVisiblePages = 5;
-    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+    let startPage = Math.max(
+      1,
+      this.currentPage - Math.floor(maxVisiblePages / 2)
+    );
     let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {

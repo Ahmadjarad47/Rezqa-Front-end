@@ -1,0 +1,131 @@
+/* Custom scrollbar for table */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 8px;
+}
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* Table row hover effect */
+tbody tr:hover {
+  background-color: #f1f5f9;
+  transition: background-color 0.2s;
+}
+
+/* Status badge styles */
+.bg-red-100.text-red-800 {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+.bg-gray-100.text-gray-800 {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+}
+.bg-blue-100.text-blue-800 {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+.bg-purple-100.text-purple-800 {
+  background-color: #ede9fe !important;
+  color: #6d28d9 !important;
+}
+
+/* Button styles */
+button:not(:disabled):hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+  transition: filter 0.2s, transform 0.2s;
+}
+button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Modal overlay */
+.fixed.inset-0.bg-gray-600.bg-opacity-50 {
+  background-color: rgba(31, 41, 55, 0.15) !important;
+}
+
+/* Alerts */
+.bg-red-50 {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #b91c1c !important;
+}
+.bg-green-50 {
+  background-color: #ecfdf5 !important;
+  border-color: #bbf7d0 !important;
+  color: #047857 !important;
+}
+
+/* Card and table backgrounds */
+.bg-white {
+  background-color: #fff !important;
+}
+.bg-gray-50 {
+  background-color: #f9fafb !important;
+}
+
+/* Inputs and selects */
+input, select {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #111827;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb33;
+}
+
+/* Remove dark mode support */
+/* No dark mode styles present */
+
+/* Responsive table improvements */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    border-radius: 0.5rem;
+  }
+  table {
+    font-size: 0.95rem;
+  }
+  th, td {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+/* Animation for modal and alerts */
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+.modal-enter {
+  animation: modalFadeIn 0.2s;
+}
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.bg-red-50, .bg-green-50 {
+  animation: slideInDown 0.2s;
+}
+
+/* Spinner */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

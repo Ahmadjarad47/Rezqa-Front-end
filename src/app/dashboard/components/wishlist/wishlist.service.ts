@@ -79,7 +79,9 @@ export class WishlistService {
   /**
    * Add an item to user's wishlist
    */
-  public addToWishlist(request: AddToWishlistRequest) {
+  public addToWishlist(
+    request: AddToWishlistRequest
+  ): Observable<WishlistResponse> {
     if (!isPlatformBrowser(this.platformId)) {
       return of({
         isSuccess: false,
@@ -93,27 +95,30 @@ export class WishlistService {
       .post<WishlistResponse>(`${this.baseUrl}/add`, request)
       .pipe(
         map((value) => {
+          // ترجمة الرسالة إذا كانت العنصر موجود بالفعل
+          if (value.message === 'Item is already in your wishlist.') {
+            value.message = 'العنصر موجود بالفعل في المفضلة';
+            this.toast.info(value.message); // إظهار الرسالة للمستخدم
+          }else{
+            this.toast.success("تم الاضافة للمفضلة"); // إظهار الرسالة للمستخدم
+          }
           const currentWishlist = this.wishlist.value;
           if (currentWishlist) {
-            if (isPlatformBrowser(this.platformId)) {
-              this.toast.success('تم الاضافة للمفضلة');
-            }
             this.wishlist.next({
-              ...currentWishlist,
-              items: [...currentWishlist.items, ...value.items],
-              totalCount: currentWishlist.totalCount + value.items.length,
+              isSuccess: false,
+              message: 'Not available on server',
+              items: [],
+              totalCount: 0,
             });
+            this.wishlist.next(value);
+
+           
           } else {
             this.wishlist.next(value);
           }
           return value;
         })
-      )
-      .subscribe({
-        error: () => {
-          this.toast.error('تم الاضافة مسبقاً');
-        },
-      });
+      );
   }
 
   /**

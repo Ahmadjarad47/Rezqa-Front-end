@@ -1,3 +1,51 @@
+/* Fixed Map Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%),
+    linear-gradient(45deg, transparent 30%, rgba(60, 134, 52, 0.02) 30%, rgba(60, 134, 52, 0.02) 70%, transparent 70%),
+    linear-gradient(-45deg, transparent 30%, rgba(60, 134, 52, 0.02) 30%, rgba(60, 134, 52, 0.02) 70%, transparent 70%);
+  background-size: 
+    100px 100px,
+    150px 150px,
+    200px 200px,
+    50px 50px,
+    50px 50px;
+  background-position: 
+    0 0,
+    50px 50px,
+    100px 100px,
+    0 0,
+    25px 25px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Dark mode map background */
+.dark body::before {
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.15) 0%, transparent 50%),
+    linear-gradient(45deg, transparent 30%, rgba(60, 134, 52, 0.05) 30%, rgba(60, 134, 52, 0.05) 70%, transparent 70%),
+    linear-gradient(-45deg, transparent 30%, rgba(60, 134, 52, 0.05) 30%, rgba(60, 134, 52, 0.05) 70%, transparent 70%);
+  opacity: 0.8;
+}
+
+/* Ensure content is above background */
+.ads-details-container {
+  position: relative;
+  z-index: 1;
+}
+
 /* Custom scrollbar for thumbnail gallery */
 .overflow-x-auto::-webkit-scrollbar {
   height: 6px;
@@ -75,7 +123,7 @@ button:active {
 
 /* Gradient text effect */
 .gradient-text {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #3c8634 0%, #3c8634 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -83,7 +131,7 @@ button:active {
 
 /* Custom focus styles */
 button:focus, a:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #3c8634;
   outline-offset: 2px;
 }
 
@@ -118,7 +166,7 @@ button:focus, a:focus {
 
 /* Price styling */
 .price-display {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #3c8634 0%, #3c8634 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -155,7 +203,7 @@ button:focus, a:focus {
 
 /* Boost section gradient */
 .boost-gradient {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+  background: linear-gradient(135deg, #3c8634 0%, #3c8634 50%, #3c8634 100%);
 }
 
 /* Phone button glow effect */
@@ -192,13 +240,13 @@ button:focus, a:focus {
 
 /* Custom selection color */
 ::selection {
-  background-color: #22c55e;
+  background-color: #3c8634;
   color: white;
 }
 
 /* Focus visible for better accessibility */
 .focus-visible:focus {
-  outline: 2px solid #22c55e;
+  outline: 2px solid #3c8634;
   outline-offset: 2px;
 }
 

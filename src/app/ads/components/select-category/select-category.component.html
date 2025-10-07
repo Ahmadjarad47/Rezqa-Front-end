@@ -1,10 +1,7 @@
 
 
 <!-- Main Content -->
-<div class="text-center space-y-2">
-    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">ما الذي تود بيعه أو الإعلان عنه؟</h2>
-    <p class="text-gray-600 dark:text-gray-300">اختر القسم المناسب لإضافة الإعلان</p>
-</div>
+
 
 <!-- Search and Filters Section -->
 <div class="space-y-4 max-w-2xl mx-auto">
@@ -35,7 +32,7 @@
 <!-- Loading State -->
 @if (loading) {
     <div class="flex justify-center items-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2" style="border-color:#0061fe; border-bottom-color:#0061fe;"></div>
         <span class="ml-3 text-gray-600 dark:text-gray-300">جاري التحميل...</span>
     </div>
 }
@@ -45,7 +42,7 @@
 @if (!loading && !error) {
 <div class="text-center py-4">
     <p class="text-gray-600 dark:text-gray-300">
-        تم العثور على {{ totalCount }} قسم
+     
         @if (searchTerm) {
         لـ "{{ searchTerm }}"
         }
@@ -57,68 +54,18 @@
 @if (!loading && !error) {
 <div class="space-y-3">
     @for (item of getVisibleCategories(); track item.id) {
-    <div (click)="setCategoryIdAds(item.id)"
+    <div (click)="setCategoryIdAds(item.id)" dir="rtl"
         class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-all duration-200 group">
-        <span
-            class="font-medium flex items-center gap-3 text-gray-800 dark:text-gray-200 group-hover:text-green-600 dark:group-hover:text-green-400">
-            <span class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
+        <span style="font-size: 20px; font-weight: bold;"
+            class="font-medium flex items-center gap-3 text-gray-800 dark:text-gray-200 group-hover:text-green-600 dark:group-hover:text-green-400" >
+            <span class="p-2 rounded-lg" >
                 <img loading="lazy" width="80" [src]="item.image" alt="" decoding="async">
             </span>
             {{item.title}}
         </span>
-        <span class="text-gray-400 dark:text-gray-300 group-hover:text-green-500">→</span>
+        <span class="text-gray-400 dark:text-gray-300 group-hover:text-green-500" >→</span>
     </div>
     }
-</div>
-}
-
-<!-- Pagination Controls -->
-@if (!loading && !error && totalPages > 1) {
-<div
-    class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-    <!-- Page Info -->
-    <div class="text-sm text-gray-600 dark:text-gray-300">
-        صفحة {{ currentPage }} من {{ totalPages }}
-        ({{ totalCount }} نتيجة)
-    </div>
-
-    <!-- Pagination Buttons -->
-    <div class="flex items-center gap-2">
-        <!-- First Page -->
-        <button (click)="goToFirstPage()" [disabled]="!hasPreviousPage"
-            class="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
-            الأولى
-        </button>
-
-        <!-- Previous Page -->
-        <button (click)="goToPreviousPage()" [disabled]="!hasPreviousPage"
-            class="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
-            السابق
-        </button>
-
-        <!-- Page Numbers -->
-        <div class="flex items-center gap-1">
-            @for (page of getPageNumbers(); track page) {
-            <button (click)="goToPage(page)"
-                [class]="page === currentPage ? 'bg-green-500 text-white border-green-500' : 'bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-500'"
-                class="px-3 py-2 text-sm font-medium border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-500 transition-all duration-200 min-w-[40px]">
-                {{ page }}
-            </button>
-            }
-        </div>
-
-        <!-- Next Page -->
-        <button (click)="goToNextPage()" [disabled]="!hasNextPage"
-            class="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
-            التالي
-        </button>
-
-        <!-- Last Page -->
-        <button (click)="goToLastPage()" [disabled]="!hasNextPage"
-            class="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
-            الأخيرة
-        </button>
-    </div>
 </div>
 }
 
@@ -133,16 +80,10 @@
         </svg>
     </div>
     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">لا توجد نتائج</h3>
-    <p class="text-gray-500 dark:text-gray-400 mb-4">
-        @if (searchTerm) {
-        لم يتم العثور على أقسام تطابق "{{ searchTerm }}"
-        } @else {
-        لا توجد أقسام متاحة حالياً
-        }
-    </p>
+   
     @if (searchTerm) {
     <button (click)="clearFilters()"
-        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+        class="px-4 py-2 text-white rounded-lg transition-colors" style="background-color:#0061fe;">
         مسح البحث
     </button>
     }

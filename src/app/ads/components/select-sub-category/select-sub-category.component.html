@@ -1,9 +1,9 @@
 <!-- Header -->
 <div class="text-center mb-8">
-  <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">اختيار الفئة الفرعية</h1>
-  <p class="text-lg text-gray-600 dark:text-gray-400">
-    اختر الفئة الفرعية المناسبة لإعلانك
-  </p>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">اختيار الفئة الفرعية</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400">
+        اختر الفئة الفرعية المناسبة لإعلانك
+    </p>
 </div>
 
 <!-- Main Content -->
@@ -14,11 +14,7 @@
 
 <!-- Search Bar with focus effect -->
 <div class="relative max-w-2xl mx-auto">
-    <input 
-        type="text" 
-        placeholder="ابحث عن قسم فرعي..."
-        [(ngModel)]="searchTerm"
-        (input)="onSearchChange($event)"
+    <input type="text" placeholder="ابحث عن قسم فرعي..." [(ngModel)]="searchTerm" (input)="onSearchChange($event)"
         class="w-full pl-12 pr-5 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 shadow-sm" />
     <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor"
         viewBox="0 0 24 24">
@@ -29,10 +25,11 @@
 
 <!-- Loading State -->
 @if (isLoading) {
-    <div class="text-center py-8">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-        <p class="mt-2 text-gray-600 dark:text-gray-300">جاري تحميل الأقسام الفرعية...</p>
-    </div>
+<div class="text-center py-8">
+    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2"
+        style="border-color:#0061fe; border-bottom-color:#0061fe;"></div>
+    <p class="mt-2 text-gray-600 dark:text-gray-300">جاري تحميل الأقسام الفرعية...</p>
+</div>
 }
 
 <!-- Results Info -->
@@ -58,76 +55,14 @@
 @if (!isLoading && SubCategoryDto.length > 0) {
 <div class="space-y-3">
     @for (item of SubCategoryDto; track $index) {
-    <div 
-        (click)="selectSubCategory(item)"
+    <div (click)="selectSubCategory(item)" dir="rtl"
         class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-all duration-200 group">
-        <span
-            class="font-medium flex items-center gap-3 text-gray-800 dark:text-gray-200 group-hover:text-green-600 dark:group-hover:text-green-400">
+        <span class="font-xl flex items-center gap-3  group-hover:text-green-600 dark:group-hover:text-green-400"
+            style="color:#000;     font-size: 20px; font-weight: bold;">
             {{item.title}}
         </span>
-        <span class="text-gray-400 dark:text-gray-300 group-hover:text-green-500">→</span>
+        <span class="text-gray-400 dark:text-gray-300 group-hover:text-green-500" style="color:#0061fe;">→</span>
     </div>
     }
-</div>
-}
-
-<!-- Pagination Controls -->
-@if (!isLoading && totalPages > 1) {
-<div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 rounded-xl mt-6">
-    <div class="flex items-center justify-between">
-        <!-- Page Size Selector -->
-        <div class="flex items-center space-x-2">
-            <span class="text-sm text-gray-700 dark:text-gray-300">عرض:</span>
-            <select
-                [value]="pageSize"
-                (change)="onPageSizeChange($event)"
-                class="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-            </select>
-            <span class="text-sm text-gray-700 dark:text-gray-300">لكل صفحة</span>
-        </div>
-
-        <!-- Pagination Info -->
-        <div class="text-sm text-gray-700 dark:text-gray-300">
-            عرض {{ (currentPage - 1) * pageSize + 1 }} إلى {{ Math.min(currentPage * pageSize, totalCount) }} من {{ totalCount }} نتيجة
-        </div>
-
-        <!-- Pagination Navigation -->
-        <div class="flex items-center space-x-2">
-            <!-- Previous Button -->
-            <button
-                (click)="onPageChange(currentPage - 1)"
-                [disabled]="!hasPreviousPage"
-                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
-                السابق
-            </button>
-
-            <!-- Page Numbers -->
-            <div class="flex items-center space-x-1">
-                @for (page of getPageNumbers(); track page) {
-                @if (page === '...') {
-                <span class="px-3 py-2 text-sm text-gray-500">...</span>
-                } @else {
-                <button
-                    (click)="onPageButtonClick(page)"
-                    [class]="page === currentPage ? 'px-3 py-2 text-sm font-medium text-white bg-green-600 border border-green-600 rounded-lg' : 'px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700'">
-                    {{ page }}
-                </button>
-                }
-                }
-            </div>
-
-            <!-- Next Button -->
-            <button
-                (click)="onPageChange(currentPage + 1)"
-                [disabled]="!hasNextPage"
-                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
-                التالي
-            </button>
-        </div>
-    </div>
 </div>
 }

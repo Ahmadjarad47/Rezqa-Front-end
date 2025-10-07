@@ -85,6 +85,20 @@ export interface IUpdateProfileRequest {
   phoneNumber?: string;
 }
 
+export interface UpdateUsernameRequest {
+  newUsername: string;
+}
+
+export interface UpdatePhoneNumberRequest {
+  newPhoneNumber: string;
+}
+
+export interface UpdateUserResponse {
+  isSuccess: boolean;
+  message: string;
+  data?: any;
+}
+
 export interface IAuthState {
   user: IAuthUser | null;
   isAuthenticated: boolean;
@@ -218,4 +232,43 @@ export interface UserDetailsDto {
   totalAds: number;
   activeAds: number;
   inactiveAds: number;
+} 
+
+export interface IGoogleLoginRequest {
+  googleId: string;      // Maps to GoogleId in backend
+  email: string;         // Maps to Email in backend
+  picture: string;       // Maps to Picture in backend
+  name: string;          // Maps to Name in backend
+  phoneNumber: string;   // Maps to PhoneNumber in backend
+}
+
+export interface IGoogleAuthResponse extends IAuthResponse {
+  refreshToken?: string;
+  roles?: string[];
+}
+
+// Delete Account Models
+export interface IDeleteAccountRequest {
+  password: string;
+  confirmationText: string;
+  reason?: string;
+  agreeToDataDeletion: boolean;
+}
+
+export interface IConfirmAccountDeletionRequest {
+  token: string;
+  email: string;
+}
+
+export interface IDeleteAccountResponse {
+  isSuccess: boolean;
+  message: string;
+  deletedAt?: string;
+  errors?: string[];
+}
+
+export interface IRequestAccountDeletionResponse {
+  isSuccess: boolean;
+  message: string;
+  expiresIn?: string;
 } 

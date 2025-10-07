@@ -1,0 +1,127 @@
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-4xl w-full mx-auto">
+  <!-- Modal Header -->
+  <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex items-center space-x-3">
+      <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          {{ carousel ? 'Edit Carousel' : 'Add New Carousel' }}
+        </h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          {{ carousel ? 'Update carousel information and image' : 'Create a new carousel with image and title' }}
+        </p>
+      </div>
+    </div>
+    <button 
+      (click)="onCancel()"
+      class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="p-6">
+    <form [formGroup]="carouselForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Title Field -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Carousel Title <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          formControlName="title"
+          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+          placeholder="Enter carousel title..."
+          [class.border-red-500]="carouselForm.get('title')?.invalid && carouselForm.get('title')?.touched">
+        <div *ngIf="carouselForm.get('title')?.invalid && carouselForm.get('title')?.touched" class="mt-2 text-sm text-red-600 dark:text-red-400">
+          <div *ngIf="carouselForm.get('title')?.errors?.['required']">Title is required</div>
+          <div *ngIf="carouselForm.get('title')?.errors?.['maxlength']">Title cannot exceed 100 characters</div>
+        </div>
+      </div>
+
+      <!-- Image Upload Field -->
+      <div>
+                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+           Carousel Image <span class="text-red-500" *ngIf="!carousel">*</span>
+         </label>
+        
+        <!-- Image Preview -->
+        <div *ngIf="imagePreview" class="mb-4">
+          <div class="relative inline-block">
+            <img 
+              [src]="imagePreview" 
+              alt="Carousel preview" 
+              class="w-64 h-40 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600">
+            <button 
+              type="button"
+              (click)="removeImage()"
+              class="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- File Upload -->
+        <div class="flex items-center justify-center w-full">
+          <label 
+            for="image-upload"
+            class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
+            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+              <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                <span class="font-semibold">Click to upload</span> or drag and drop
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 10MB</p>
+            </div>
+            <input 
+              id="image-upload" 
+              type="file" 
+              class="hidden" 
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              [class.border-red-500]="carouselForm.get('image')?.invalid && carouselForm.get('image')?.touched">
+          </label>
+        </div>
+        
+                 <div *ngIf="carouselForm.get('image')?.invalid && carouselForm.get('image')?.touched" class="mt-2 text-sm text-red-600 dark:text-red-400">
+           <div *ngIf="carouselForm.get('image')?.errors?.['required'] && !carousel">Image is required for new carousels</div>
+         </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+          Cancel
+        </button>
+                 <button
+           type="submit"
+           [disabled]="isSubmitting || !isFormValidForSubmission()"
+           class="px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+          <span *ngIf="isSubmitting" class="inline-flex items-center">
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ carousel ? 'Updating...' : 'Creating...' }}
+          </span>
+          <span *ngIf="!isSubmitting">
+            {{ carousel ? 'Update Carousel' : 'Create Carousel' }}
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

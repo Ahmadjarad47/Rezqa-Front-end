@@ -1,150 +1,58 @@
-/* Upload Box Animations */
-.upload-box {
-  transition: all 0.3s ease-in-out;
-}
-
-.upload-box:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.upload-box.dragging {
-  transform: scale(1.05);
-  border-color: #22c55e;
-  background-color: rgba(34, 197, 94, 0.1);
-}
-
-/* File Input Styling */
-input[type="file"] {
-  display: none;
-}
-
-/* Image Preview */
-.upload-box img {
-  transition: all 0.3s ease-in-out;
-}
-
-.upload-box img:hover {
-  transform: scale(1.05);
-}
-
-/* Remove Button */
-.upload-box button {
-  transition: all 0.2s ease-in-out;
-}
-
-.upload-box button:hover {
-  transform: scale(1.1);
-}
-
-/* Drag and Drop Effects */
-.upload-box.drag-over {
-  border-color: #22c55e;
-  background-color: rgba(34, 197, 94, 0.1);
-  transform: scale(1.02);
-}
-
-/* Loading Animation */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-/* Progress Bar Animation */
-.progress-bar {
-  transition: width 0.3s ease-in-out;
-}
-
-/* Error Message Animation */
-.error-message {
-  animation: slideIn 0.3s ease-in-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Success Animation */
-.success-animation {
-  animation: successPulse 0.6s ease-in-out;
-}
-
-@keyframes successPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 640px) {
+/* Mobile-specific styles */
+@media (max-width: 768px) {
   .upload-box {
-    height: 120px;
+    min-height: 120px;
+    touch-action: manipulation;
   }
   
-  .upload-box h-48 {
-    height: 120px;
+  /* Improve touch targets */
+  label[for^="file-input-"] {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Better button sizing for mobile */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve image preview on mobile */
+  .upload-box img {
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  /* Mobile touch improvements */
+  .mobile-touch {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    touch-action: manipulation;
+  }
+
+  .mobile-touch:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
   }
 }
 
+/* Prevent layout shift */
+.upload-box {
+  min-height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Better error handling for mobile */
 @media (max-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+  .upload-box.has-error {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+    animation: shake 0.5s ease-in-out;
   }
-}
-
-@media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Dark Mode Enhancements */
-.dark .upload-box {
-  border-color: #374151;
-}
-
-.dark .upload-box:hover {
-  border-color: #4ade80;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-/* Focus States for Accessibility */
-.upload-box:focus-within {
-  outline: 2px solid #22c55e;
-  outline-offset: 2px;
-}
-
-/* Button States */
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-button:disabled:hover {
-  transform: none !important;
-}
-
-/* File Type Validation */
-.file-type-error {
-  animation: shake 0.5s ease-in-out;
 }
 
 @keyframes shake {
@@ -153,35 +61,222 @@ button:disabled:hover {
   75% { transform: translateX(5px); }
 }
 
-/* Upload Progress */
-.upload-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background-color: rgba(34, 197, 94, 0.2);
-  border-radius: 0 0 8px 8px;
+/* Prevent zoom on input focus for iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input[type="file"] {
+    font-size: 16px;
+  }
+}
+
+/* Improve drag and drop on mobile */
+.upload-box {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.upload-box.is-uploading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Error state styling */
+.upload-box.has-error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.upload-box.has-error.dark {
+  background-color: #450a0a;
+  border-color: #dc2626;
+}
+
+/* Success state styling */
+.upload-box.has-success {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.upload-box.has-success.dark {
+  background-color: #064e3b;
+  border-color: #059669;
+}
+
+/* Loading overlay styles */
+.loading-overlay {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Progress bar animation */
+@keyframes progress-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  }
+}
+
+.progress-bar {
+  animation: progress-glow 2s ease-in-out infinite;
+}
+
+/* Loading spinner enhancement */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spin-slow 1.5s linear infinite;
+}
+
+/* Success checkmark animation */
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-checkmark {
+  animation: checkmark 0.5s ease-in-out;
+}
+
+/* Mobile loading overlay improvements */
+@media (max-width: 768px) {
+  .loading-overlay {
+    padding: 1rem;
+  }
+  
+  .loading-content {
+    max-width: 90vw;
+    margin: 0 auto;
+  }
+  
+  .progress-steps {
+    font-size: 0.75rem;
+  }
+}
+
+/* Dark mode improvements for loading */
+.dark .loading-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dark .progress-bar {
+  background-color: #374151;
+}
+
+.dark .progress-fill {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+/* Warning text animation */
+@keyframes warning-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.warning-text {
+  animation: warning-pulse 2s ease-in-out infinite;
+}
+
+/* Tip text animation */
+@keyframes tip-glow {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.tip-text {
+  animation: tip-glow 3s ease-in-out infinite;
+}
+
+/* Progress bar glow effect */
+.progress-fill {
+  position: relative;
   overflow: hidden;
 }
 
-.upload-progress-bar {
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #22c55e, #16a34a);
-  transition: width 0.3s ease-in-out;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
 }
 
-/* Hover Effects for Interactive Elements */
-.interactive-element {
-  transition: all 0.2s ease-in-out;
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
-.interactive-element:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+/* Loading content entrance animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Smooth Transitions */
-* {
-  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+.loading-content {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Mobile optimizations for loading */
+@media (max-width: 640px) {
+  .loading-content {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .loading-spinner {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .progress-steps {
+    font-size: 0.7rem;
+  }
 }

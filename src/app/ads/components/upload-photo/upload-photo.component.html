@@ -1,60 +1,88 @@
-<div class="container mx-auto px-4 py-8" dir="rtl">
+<div class="container mx-auto px-4 py-4 sm:py-8" dir="rtl">
   <!-- Header -->
-  <div class="text-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">رفع صور الإعلان</h1>
-    <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+  <div class="text-center mb-4 sm:mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">رفع صور الإعلان</h1>
+    <p class="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">
       ارفع صور واضحة وجذابة لإعلانك (الحد الأقصى 10 صور)
     </p>
     
     <!-- Thumbnail Notice -->
-    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 inline-block">
-      <div class="flex items-center justify-center gap-2">
-        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 sm:p-4 inline-block max-w-full">
+      <div class="flex items-center justify-center gap-2 flex-wrap">
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
         </svg>
-        <span class="text-yellow-800 dark:text-yellow-200 font-medium">
+        <span class="text-yellow-800 dark:text-yellow-200 font-medium text-sm sm:text-base text-center">
           <strong>مهم:</strong> الصورة الأولى ستكون الصورة المصغرة للإعلان
+          <br>
+        * يجب رفع على الاقل 3 صور *
+
         </span>
       </div>
     </div>
   </div>
 
+  <!-- Specific Ad Indicator -->
+  <div *ngIf="adsService.getCurrentAds()?.isSpecific" class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6">
+    <div class="flex items-center justify-center gap-3">
+      <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+      </svg>
+      <div class="text-center">
+        <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200">إعلان مميز</h3>
+        <p class="text-sm text-blue-600 dark:text-blue-300">
+          مدة النشر: {{ adsService.getCurrentAds()?.activeMonths }} شهر
+        </p>
+      </div>
+      <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    </div>
+  </div>
+
   <!-- Upload Stats -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200 dark:border-gray-700">
+    <div class="grid grid-cols-3 gap-2 sm:gap-6">
       <div class="text-center">
-        <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ getUploadedCount() }}</div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">الصور المرفوعة</div>
+        <div class="text-lg sm:text-2xl font-bold" style="color:#0061fe;">{{ getUploadedCount() }}</div>
+        <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">الصور المرفوعة</div>
       </div>
       <div class="text-center">
-        <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ maxFiles - getUploadedCount() }}</div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">الصور المتبقية</div>
+        <div class="text-lg sm:text-2xl font-bold" style="color:#0061fe;">{{ maxFiles - getUploadedCount() }}</div>
+        <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">الصور المتبقية</div>
       </div>
       <div class="text-center">
-        <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ getTotalSize() }}</div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">إجمالي الحجم</div>
+        <div class="text-lg sm:text-2xl font-bold" style="color:#0061fe;">{{ getTotalSize() }}</div>
+        <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">إجمالي الحجم</div>
       </div>
     </div>
   </div>
 
   <!-- Upload Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-1 mb-8">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-2 gap-6 sm:gap-3 mb-4 sm:mb-8">
     @for (box of uploadBoxes; track box.id) {
       <div class="relative">
         <!-- Upload Box -->
         <div 
-          class="upload-box bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 h-48 flex flex-col items-center justify-center transition-all duration-200 hover:border-green-400 dark:hover:border-green-500"
+          class="upload-box bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg sm:rounded-xl p-2 sm:p-4 h-28 sm:h-32 md:h-40 lg:h-48 flex flex-col items-center justify-center transition-all duration-200 hover:border-green-400 dark:hover:border-green-500"
           [class.border-green-500]="isDragging"
           [class.bg-green-50]="isDragging"
           [class.dark:bg-green-900]="isDragging"
           [class.border-yellow-400]="box.id === 1"
           [class.bg-yellow-50]="box.id === 1"
           [class.dark:bg-yellow-900]="box.id === 1"
+          [class.has-error]="box.error"
+          [class.has-success]="box.file && !box.error"
+          [class.is-uploading]="box.isUploading"
           (dragover)="onDragOver($event)"
           (dragleave)="onDragLeave($event)"
           (drop)="onDrop($event, box.id)"
+          (touchstart)="!isMobileDevice() ? onDragOver($event) : null"
+          (touchend)="!isMobileDevice() ? onDragLeave($event) : null"
+          (click)="isMobileDevice() && isBoxEmpty(box) ? triggerFileInput(box.id) : null"
           [class.cursor-pointer]="isBoxEmpty(box)"
-          [class.cursor-default]="!isBoxEmpty(box)">
+          [class.cursor-default]="!isBoxEmpty(box)"
+          [class.mobile-touch]="isMobileDevice() && isBoxEmpty(box)">
           
           @if (isBoxEmpty(box)) {
             <!-- Empty State -->
@@ -71,13 +99,18 @@
                 </div>
               }
               
-              <div class="w-12 h-12 mx-auto mb-3 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
               </div>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">اسحب الصورة هنا</p>
-              <p class="text-xs text-gray-500 dark:text-gray-500">أو انقر للاختيار</p>
+               <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
+                 {{ isMobileDevice() ? 'انقر للتقاط صورة' : 'اسحب الصورة هنا' }}
+               </p>
+               <p class="text-xs text-gray-500 dark:text-gray-500">
+                 {{ isMobileDevice() ? 'أو اختر من المعرض' : 'أو انقر للاختيار' }}
+               </p>
+               <p class="text-xs text-blue-500 dark:text-blue-400 mt-1">{{ getDeviceTips() }}</p>
               
               <!-- File Input -->
               <input 
@@ -88,8 +121,8 @@
                 class="hidden">
               <label 
                 [for]="'file-input-' + box.id"
-                class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer transition-colors duration-200">
-                اختيار ملف
+                class="mt-1 sm:mt-2 inline-flex items-center px-3 py-2 sm:px-3 sm:py-1 border border-gray-300 dark:border-gray-600 rounded-md text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer transition-colors duration-200 min-h-[44px] min-w-[80px] justify-center">
+                {{ isMobileDevice() ? 'التقاط صورة' : 'اختيار ملف' }}
               </label>
             </div>
           } @else {
@@ -103,22 +136,22 @@
               <!-- Remove Button -->
               <button 
                 (click)="removeFile(box.id)"
-                class="absolute top-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="absolute top-1 right-1 sm:top-2 sm:right-2 w-8 h-8 sm:w-8 sm:h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg min-w-[32px] min-h-[32px]">
+                <svg class="w-4 h-4 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
               
               <!-- Box Number with Thumbnail Indicator -->
-              <div class="absolute bottom-2 left-2 flex items-center gap-1">
+              <div class="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 flex items-center gap-1">
                 @if (box.id === 1) {
-                  <div class="w-6 h-6 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center">
-                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <div class="w-6 h-6 sm:w-6 sm:h-6 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center min-w-[24px] min-h-[24px]">
+                    <svg class="w-3 h-3 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                     </svg>
                   </div>
                 } @else {
-                  <div class="w-6 h-6 bg-black bg-opacity-50 text-white text-xs rounded-full flex items-center justify-center">
+                  <div class="w-6 h-6 sm:w-6 sm:h-6 bg-black bg-opacity-50 text-white text-xs rounded-full flex items-center justify-center min-w-[24px] min-h-[24px]">
                     {{ box.id }}
                   </div>
                 }
@@ -128,7 +161,7 @@
           
           <!-- Error Message -->
           @if (box.error) {
-            <div class="absolute -bottom-8 left-0 right-0 text-xs text-red-600 dark:text-red-400 text-center">
+            <div class="absolute -bottom-8 sm:-bottom-8 left-0 right-0 text-xs text-red-600 dark:text-red-400 text-center px-1">
               {{ box.error }}
             </div>
           }
@@ -138,22 +171,24 @@
   </div>
 
   <!-- Upload Guidelines -->
-  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6 mb-8">
+  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 sm:p-6 mb-4 sm:mb-8">
     <div class="flex items-start">
       <div class="flex-shrink-0">
-        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 sm:w-6 sm:h-6" style="color:#0061fe;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
       </div>
-      <div class="mr-3">
-        <h3 class="text-lg font-medium text-green-800 dark:text-green-200 mb-2">نصائح لرفع الصور</h3>
-        <ul class="text-sm text-green-700 dark:text-green-300 space-y-1">
+      <div class="mr-2 sm:mr-3">
+        <h3 class="text-base sm:text-lg font-medium mb-2" style="color:#0061fe;">نصائح لرفع الصور</h3>
+        <ul class="text-xs sm:text-sm space-y-1" style="color:#0061fe;">
           <li>• <strong>الصورة الأولى ستكون الصورة المصغرة للإعلان</strong></li>
           <li>• استخدم صور عالية الجودة وواضحة</li>
           <li>• الحد الأقصى لحجم كل صورة: 5 ميجابايت</li>
           <li>• الصيغ المدعومة: JPG, PNG, WebP</li>
           <li>• ارفع الصورة الرئيسية أولاً لتكون الصورة المصغرة</li>
           <li>• تأكد من أن الصور تعرض المنتج بوضوح</li>
+                     <li>• {{ getDeviceTips() }}</li>
+           <li>• 📱 تأكد من وجود إضاءة جيدة عند التصوير</li>
         </ul>
       </div>
     </div>
@@ -161,19 +196,117 @@
 
   <!-- Save Button -->
   <div class="text-center">
+    <!-- Loading Overlay -->
+    @if (isSubmitting) {
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 loading-overlay">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-2xl loading-content">
+          <div class="text-center">
+            <!-- Loading Icon -->
+            <div class="w-16 h-16 mx-auto mb-4">
+              <svg class="w-full h-full animate-spin text-blue-600 loading-spinner" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            
+            <!-- Loading Text -->
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              جاري إنشاء الإعلان...
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              يرجى الانتظار، لا تغلق الصفحة
+            </p>
+            <p class="text-xs text-red-500 dark:text-red-400 mb-4 warning-text">
+              ⚠️ تحذير: إغلاق الصفحة سيؤدي إلى فقدان البيانات
+            </p>
+            <p class="text-xs text-blue-500 dark:text-blue-400 mb-4 tip-text">
+              💡 نصيحة: تأكد من وجود اتصال إنترنت مستقر
+            </p>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4 progress-bar">
+              <div 
+                class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300 ease-out progress-fill"
+                [style.width.%]="getProgressPercentage()">
+              </div>
+            </div>
+            
+            <!-- Progress Text -->
+            <p class="text-sm font-medium text-blue-600 dark:text-blue-400">
+              {{ getProgressPercentage() }}% مكتمل
+            </p>
+            
+            <!-- Additional Info -->
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              {{ getProgressStatusText() }}
+            </p>
+            
+            <!-- Progress Steps -->
+            <div class="mt-4 text-xs text-gray-500 dark:text-gray-400 space-y-1 progress-steps">
+              @if (getProgressPercentage() >= 10) {
+                <div class="flex items-center justify-center">
+                  <svg class="w-4 h-4 text-green-500 mr-2 success-checkmark" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  التحقق من الملفات
+                </div>
+              }
+              @if (getProgressPercentage() >= 30) {
+                <div class="flex items-center justify-center">
+                  <svg class="w-4 h-4 text-green-500 mr-2 success-checkmark" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  تجهيز البيانات
+                </div>
+              }
+              @if (getProgressPercentage() >= 50) {
+                <div class="flex items-center justify-center">
+                  <svg class="w-4 h-4 text-green-500 mr-2 success-checkmark" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  رفع الصور
+                </div>
+              }
+              @if (getProgressPercentage() >= 80) {
+                <div class="flex items-center justify-center">
+                  <svg class="w-4 h-4 text-green-500 mr-2 success-checkmark" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  حفظ الإعلان
+                </div>
+              }
+              @if (getProgressPercentage() >= 100) {
+                <div class="flex items-center justify-center">
+                  <svg class="w-4 h-4 text-green-500 mr-2 success-checkmark" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  تم الإنشاء بنجاح!
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+    
+    <!-- Save Button -->
     <button 
       (click)="savePhotos()"
-      [disabled]="!hasUploadedFiles() || isSaving"
-      class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+      [disabled]="!hasUploadedFiles() || isSaving || isSubmitting"
+      class="inline-flex items-center px-6 py-3 sm:px-8 sm:py-4 border border-transparent text-base sm:text-lg font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-h-[44px] w-full sm:w-auto" style="background-color:#0061fe;">
       
-      @if (isSaving) {
-        <svg class="w-5 h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+      @if (isSaving || isSubmitting) {
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        جاري الحفظ...
+        @if (isSubmitting) {
+          جاري إنشاء الإعلان...
+        } @else {
+          جاري الحفظ...
+        }
       } @else {
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
         </svg>
         حفظ الصور والمتابعة
@@ -182,12 +315,12 @@
     
     <!-- Error Message -->
     @if (saveError) {
-      <div class="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-        <div class="flex items-center">
-          <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+        <div class="flex items-start">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
           </svg>
-          <span class="text-red-700 dark:text-red-300">{{ saveError }}</span>
+          <span class="text-red-700 dark:text-red-300 text-sm sm:text-base leading-relaxed">{{ saveError }}</span>
         </div>
       </div>
     }

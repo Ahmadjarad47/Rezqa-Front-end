@@ -18,6 +18,15 @@ import {
   AuthErrorCode,
   UserData,
   UserDetailsDto,
+  UpdateUsernameRequest,
+  UpdatePhoneNumberRequest,
+  UpdateUserResponse,
+  IGoogleLoginRequest,
+  IGoogleAuthResponse,
+  IDeleteAccountRequest,
+  IConfirmAccountDeletionRequest,
+  IDeleteAccountResponse,
+  IRequestAccountDeletionResponse,
 } from '../models/auth.models';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
@@ -39,6 +48,7 @@ export class AuthService {
     error: null,
   });
   public readonly state$ = this.stateSubject.asObservable();
+  handleGoogleResponse: any;
 
   constructor(
     private http: HttpClient,
@@ -52,7 +62,17 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       return this.http.get<UserData>(this.apiUrl + '/user-data').pipe(
         map((value) => {
+          if (!value.phoneNumber) {
+            this.notificationService.info('يرجى إضافة رقم الهاتف للمتابعة');
+            this.userDataSource.next(value);
+
+            this.router.navigateByUrl('/dashboard/settings');
+            return;
+          }
+          
           this.userDataSource.next(value);
+          
+
           this.notificationService.success('مرحبا بك مجدداً');
           this.signalRService.getNotifications();
         })
@@ -72,17 +92,21 @@ export class AuthService {
       .post<IAuthResponse>(`${this.apiUrl}/register`, request)
       .pipe(
         tap((response) => {
+          debugger;
           if (!response.isSuccess) {
-            throw new Error(response.message || 'Registration failed');
+            this.notificationService.error(response.message);
           }
           this.setLoading(false);
-        
+
           // Log successful registration (without sensitive data)
           console.log('Registration successful:', {
             userName: response.userName,
             email: response.email,
             message: response.message,
           });
+          this.notificationService.success(
+            'تم التسجيل بنجاح! يرجى تأكيد البريد الإلكتروني تحقق منه '
+          );
         }),
         catchError((error) => this.handleError(error))
       );
@@ -97,9 +121,6 @@ export class AuthService {
     });
     return this.http.post<IAuthResponse>(`${this.apiUrl}/login`, request).pipe(
       tap((response) => {
-        if (!response.isSuccess) {
-          throw new Error(response.message || 'Login failed');
-        }
         this.handleAuthSuccess(response);
         this.userDataSource.next({
           imageUrl: response.imageUrl,
@@ -107,9 +128,10 @@ export class AuthService {
           phoneNumber: response.phoneNumber,
           userName: response.userName,
         });
+        this.signalRService.stopConnection();
         this.signalRService.startConnection();
         this.signalRService.getNotifications();
-
+        this.notificationService.success('تم تسجيل الدخول بنجاح!');
       }),
       catchError((error) => this.handleError(error))
     );
@@ -118,10 +140,7 @@ export class AuthService {
   refreshToken(): Observable<IAuthResponse> {
     return this.http
       .post<IAuthResponse>(`${this.apiUrl}/refresh-token`, {})
-      .pipe(
-        tap((response) => this.handleAuthSuccess(response)),
-        catchError((error) => this.handleError(error))
-      );
+      .pipe(tap((response) => this.handleAuthSuccess(response)));
   }
 
   verifyEmail(request: IVerifyEmailRequest): Observable<{ success: boolean }> {
@@ -129,7 +148,14 @@ export class AuthService {
     return this.http
       .post<{ success: boolean }>(`${this.apiUrl}/verify-email`, request)
       .pipe(
-        tap(() => this.setLoading(false)),
+        tap((res) => {
+          this.setLoading(false);
+          if (res.success) {
+            this.notificationService.success(
+              'تم تفعيل البريد الإلكتروني بنجاح!'
+            );
+          }
+        }),
         catchError((error) => this.handleError(error))
       );
   }
@@ -141,7 +167,14 @@ export class AuthService {
     return this.http
       .post<{ success: boolean }>(`${this.apiUrl}/reset-password`, request)
       .pipe(
-        tap(() => this.setLoading(false)),
+        tap((res) => {
+          this.setLoading(false);
+          if (res.success) {
+            this.notificationService.success(
+              'تم إعادة تعيين كلمة المرور بنجاح!'
+            );
+          }
+        }),
         catchError((error) => this.handleError(error))
       );
   }
@@ -153,7 +186,12 @@ export class AuthService {
     return this.http
       .post<{ success: boolean }>(`${this.apiUrl}/change-password`, request)
       .pipe(
-        tap(() => this.setLoading(false)),
+        tap((res) => {
+          this.setLoading(false);
+          if (res.success) {
+            this.notificationService.success('تم تغيير كلمة المرور بنجاح!');
+          }
+        }),
         catchError((error) => this.handleError(error))
       );
   }
@@ -165,6 +203,7 @@ export class AuthService {
           ...this.stateSubject.value,
           user,
         });
+        this.notificationService.success('تم تحديث الملف الشخصي بنجاح!');
       }),
       catchError((error) => this.handleError(error))
     );
@@ -195,7 +234,6 @@ export class AuthService {
           this.router.navigateByUrl('/');
           this.notificationService.warning('تم تسجيل الخروج بنجاح!');
           this.signalRService.stopConnection();
-
         }),
         map(() => void 0),
         catchError((error) => {
@@ -256,7 +294,12 @@ export class AuthService {
     return this.http
       .post<{ message: string }>(`${this.apiUrl}/resend-confirmation`, request)
       .pipe(
-        tap(() => this.setLoading(false)),
+        tap(() => {
+          this.setLoading(false);
+          this.notificationService.success(
+            'تم إرسال رسالة تأكيد البريد الإلكتروني بنجاح!'
+          );
+        }),
         catchError((error) => this.handleError(error))
       );
   }
@@ -311,39 +354,26 @@ export class AuthService {
 
   private handleError(error: any): Observable<never> {
     this.setLoading(false);
-
-    let errorMessage = 'حدث خطأ أثناء تسجيل الدخول';
+    debugger;
+    let errorMessage = error.error.message;
     let errorCode: AuthErrorCode = AuthErrorCode.Unknown;
     let statusCode = error.status || 500;
 
     if (error.error instanceof ErrorEvent) {
       // Client-side error
-      errorMessage = 'خطأ في الاتصال بالخادم';
+      errorMessage = error.error.message;
       errorCode = AuthErrorCode.NetworkError;
       statusCode = 0;
     } else if (error.status === 0) {
       // Network error
-      errorMessage = 'لا يمكن الاتصال بالخادم';
+      errorMessage = error.error.message;
       errorCode = AuthErrorCode.NetworkError;
       statusCode = 0;
     } else if (error.error?.message) {
       // Backend error with message
-      errorMessage = error.error.message;
-      switch (error.error.message) {
-        case 'Email not confirmed':
-          errorCode = AuthErrorCode.EmailNotConfirmed;
-          break;
-        case 'Invalid username or password':
-          errorCode = AuthErrorCode.InvalidCredentials;
-          break;
-        case 'User already exists':
-          errorCode = AuthErrorCode.UserExists;
-          break;
-        default:
-          // Use the message from the backend
-          if (error.error.isSuccess === false) {
-            errorMessage = error.error.message;
-          }
+      if (error.error.message) {
+        errorMessage = error.error.message;
+        this.notificationService.error(errorMessage);
       }
     }
 
@@ -371,6 +401,9 @@ export class AuthService {
       .pipe(
         tap(() => {
           this.setLoading(false);
+          this.notificationService.success(
+            'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني!'
+          );
         }),
         catchError((error) => {
           this.setLoading(false);
@@ -385,6 +418,96 @@ export class AuthService {
         this.notificationService.error('فشل في جلب تفاصيل المستخدم');
         return throwError(() => error);
       })
+    );
+  }
+
+  updateUsername(
+    request: UpdateUsernameRequest
+  ): Observable<UpdateUserResponse> {
+    this.setLoading(true);
+    return this.http
+      .put<UpdateUserResponse>(`${this.apiUrl}/update-username`, request)
+      .pipe(
+        tap((response) => {
+          this.setLoading(false);
+          if (response.isSuccess) {
+            this.notificationService.success('تم تحديث اسم المستخدم بنجاح!');
+            // Refresh user details
+            this.getUserDetails().subscribe();
+          }
+        }),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  updatePhoneNumber(
+    request: UpdatePhoneNumberRequest
+  ): Observable<UpdateUserResponse> {
+    this.setLoading(true);
+    return this.http
+      .put<UpdateUserResponse>(`${this.apiUrl}/update-phone`, request)
+      .pipe(
+        tap((response) => {
+          this.setLoading(false);
+          if (response.isSuccess) {
+            this.notificationService.success('تم تحديث رقم الهاتف بنجاح!');
+            // Refresh user details
+            this.getUserDetails().subscribe();
+          }
+        }),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   * Request account deletion (sends confirmation email)
+   */
+  requestAccountDeletion(): Observable<IRequestAccountDeletionResponse> {
+    this.setLoading(true);
+    return this.http.post<IRequestAccountDeletionResponse>(`${this.apiUrl}/request-account-deletion`, {}).pipe(
+      tap((response) => {
+        this.setLoading(false);
+        if (response.isSuccess) {
+          this.notificationService.success('تم إرسال رابط تأكيد حذف الحساب إلى بريدك الإلكتروني');
+        }
+      }),
+      catchError((error) => this.handleError(error))
+    );
+  }
+
+  /**
+   * Delete account permanently with confirmation
+   */
+  deleteAccount(request: IDeleteAccountRequest): Observable<IDeleteAccountResponse> {
+    this.setLoading(true);
+    return this.http.delete<IDeleteAccountResponse>(`${this.apiUrl}/delete-account`, { body: request }).pipe(
+      tap((response) => {
+        this.setLoading(false);
+        if (response.isSuccess) {
+          this.notificationService.success('تم حذف حسابك بنجاح');
+          this.logout();
+          this.router.navigate(['/']);
+        }
+      }),
+      catchError((error) => this.handleError(error))
+    );
+  }
+
+  /**
+   * Confirm account deletion using token from email
+   */
+  confirmAccountDeletion(request: IConfirmAccountDeletionRequest): Observable<IDeleteAccountResponse> {
+    this.setLoading(true);
+    return this.http.post<IDeleteAccountResponse>(`${this.apiUrl}/confirm-account-deletion`, request).pipe(
+      tap((response) => {
+        this.setLoading(false);
+        if (response.isSuccess) {
+          this.notificationService.success('تم حذف حسابك بنجاح');
+          this.logout();
+          this.router.navigate(['/']);
+        }
+      }),
+      catchError((error) => this.handleError(error))
     );
   }
 }

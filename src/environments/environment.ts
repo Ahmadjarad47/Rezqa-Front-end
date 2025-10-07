@@ -7,7 +7,8 @@ export const environment = {
     defaultLanguage: 'en',
     supportedLanguages: ['en', 'ar'],
     recaptchaSiteKey: '', // Add your reCAPTCHA site key if using Google reCAPTCHA
-    googleClientId: '', // Add your Google OAuth client ID if using Google authentication
+    googleClientId: '886841781701-.apps.googleusercontent.com', // Google OAuth Client ID
+    googleApiKey: '', // Google API Key (not required for OAuth)
     facebookAppId: '', // Add your Facebook App ID if using Facebook authentication
     maxUploadSize: 5 * 1024 * 1024, // 5MB
     allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif'],
@@ -15,8 +16,17 @@ export const environment = {
       defaultPageSize: 10,
       pageSizeOptions: [5, 10, 25, 50]
     },
-    cache: {
-      userProfileTTL: 3600, // 1 hour in seconds
-      refreshTokenTTL: 604800 // 7 days in seconds
+    // Production settings
+    enableConsoleLogs: false,
+    enableErrorLogs: false,
+    enableDebugMode: false,
+    hideAuthErrors: true,
+    suppressWarnings: true,
+    // Google OAuth settings for production
+    googleOAuthSettings: {
+      clientId: '886841781701-.apps.googleusercontent.com',
+      redirectUri: 'https://syriaopenstore.com/identity/login', // تحديث هذا بالـ domain الصحيح
+      scope: 'syriaopenstore@gmail.com',
+      responseType: 'code'
     }
   }; 

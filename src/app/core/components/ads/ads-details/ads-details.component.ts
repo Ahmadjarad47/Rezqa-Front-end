@@ -1,9 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HomeAdsService } from '../home-ads.service';
 import { AdPosts } from '../models/category';
 import { catchError, finalize, of } from 'rxjs';
 import { WishlistService } from '@app/dashboard/components/wishlist/wishlist.service';
+import { NotificationService } from '@app/core/services/notification.service';
 
 @Component({
   selector: 'app-ads-details',
@@ -17,6 +23,7 @@ export class AdsDetailsComponent implements OnInit {
   adsTitle: string = '';
   adsService = inject(HomeAdsService);
   wishlistService = inject(WishlistService);
+  notificationService = inject(NotificationService);
   constructor(private route: ActivatedRoute) {}
   post: AdPosts | null = null;
   loading: boolean = false;
@@ -26,7 +33,6 @@ export class AdsDetailsComponent implements OnInit {
   ngOnInit(): void {
     // Get the parameters from the URL
     this.route.params.subscribe((params) => {
-     
       this.adsId = +params['id'];
       this.category = decodeURIComponent(params['category'] || '');
       this.adsTitle = decodeURIComponent(params['ads'] || '');
@@ -46,12 +52,7 @@ export class AdsDetailsComponent implements OnInit {
     });
   }
   callPhoneNumber(post: any) {
-    if (post.phonNumber) {
-      // Remove any non-digit characters from the phone number
-      const phoneNumber = post.phonNumber.replace(/\D/g, '');
-      // Open the phone dialer
-      window.location.href = `tel:${phoneNumber}`;
-    }
+    window.location.href = `tel:${post}`;
   }
   loadPost() {
     this.loading = true;
@@ -122,10 +123,10 @@ export class AdsDetailsComponent implements OnInit {
     return field?.value || '';
   }
 
-  copyPhoneNumber() {
-    this.callPhoneNumber(this.post);
-    if (this.post?.phonNumber) {
-      navigator.clipboard.writeText(this.post.phonNumber);
+  copyPhoneNumber(num: string) {
+    this.callPhoneNumber(num);
+    if (num) {
+      navigator.clipboard.writeText(num);
       // You can add a toast notification here
     }
   }
@@ -150,5 +151,22 @@ export class AdsDetailsComponent implements OnInit {
 
   encodeURIComponent(str: string): string {
     return encodeURIComponent(str);
+  }
+
+  addToWishlistHandler(adId: number) {
+    this.wishlistService.addToWishlist({ adId }).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.notificationService.success('تم الاضافة للمفضلة');
+        } else {
+          this.notificationService.error(
+            response.message || 'حدث خطأ أثناء الإضافة للمفضلة'
+          );
+        }
+      },
+      error: () => {
+        this.notificationService.error('تم الاضافة مسبقاً');
+      },
+    });
   }
 }

@@ -14,10 +14,13 @@ import { environment } from '@environments/environment.development';
 })
 export class SignalRService {
   private hubConnection: HubConnection | null = null;
-
   private connectionEstablished = new BehaviorSubject<boolean>(false);
   private notificationReceived = new Subject<Notification>();
   private usersOnline = new Subject<string[]>();
+  private isConnecting = false;
+  private reconnectAttempts = 0;
+  private maxReconnectAttempts = 3;
+  private reconnectDelay = 2000; // 2 seconds
 
   public connectionEstablished$ = this.connectionEstablished.asObservable();
   public notificationReceived$ = this.notificationReceived.asObservable();
@@ -26,40 +29,64 @@ export class SignalRService {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   public async startConnection(): Promise<void> {
-    if (!isPlatformBrowser(this.platformId)) {
+    if (!isPlatformBrowser(this.platformId) || this.isConnecting || this.hubConnection) {
       return;
     }
+
+    this.isConnecting = true;
 
     try {
       this.hubConnection = new HubConnectionBuilder()
         .withUrl(
           `${environment.apiUrl.replace('/api/', '')}/hubs/notifications`,
-          {}
+          {
+            skipNegotiation: true,
+            transport: 1 // WebSockets only for better performance
+          }
         )
-        .withAutomaticReconnect()
-        .configureLogging(LogLevel.Information)
+        .withAutomaticReconnect({
+          nextRetryDelayInMilliseconds: retryContext => {
+            if (retryContext.previousRetryCount === 0) {
+              return 0;
+            }
+            if (retryContext.previousRetryCount < this.maxReconnectAttempts) {
+              return this.reconnectDelay * retryContext.previousRetryCount;
+            }
+            return null; // Stop trying to reconnect
+          }
+        })
+        .configureLogging(LogLevel.Warning) // Reduce logging for better performance
         .build();
 
-      await this.hubConnection.start();
-
-      this.hubConnection.on('onlineUsers', (users: string[]) => {
-        this.usersOnline.next(users);
-      });
-
+       this.hubConnection.start();
       this.setupSignalRHandlers();
-      console.log('SignalR Connected!');
+   
       this.connectionEstablished.next(true);
+      this.reconnectAttempts = 0;
     } catch (err) {
       console.error('Error while establishing SignalR connection: ', err);
       this.connectionEstablished.next(false);
+      this.handleConnectionError();
+    } finally {
+      this.isConnecting = false;
+    }
+  }
+
+  private handleConnectionError(): void {
+    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+      this.reconnectAttempts++;
+      setTimeout(() => {
+        this.startConnection();
+      }, this.reconnectDelay * this.reconnectAttempts);
     }
   }
 
   private setupSignalRHandlers(): void {
     if (!this.hubConnection) return;
 
-    // Remove previous handler to prevent duplicate events
+    // Remove previous handlers to prevent duplicate events
     this.hubConnection.off('ReceiveNotification');
+    this.hubConnection.off('onlineUsers');
 
     this.hubConnection.on(
       'ReceiveNotification',
@@ -69,9 +96,14 @@ export class SignalRService {
       }
     );
 
+    this.hubConnection.on('onlineUsers', (users: string[]) => {
+      this.usersOnline.next(users);
+    });
+
     this.hubConnection.onclose((error) => {
       console.log('SignalR connection closed:', error);
       this.connectionEstablished.next(false);
+      this.hubConnection = null;
     });
 
     this.hubConnection.onreconnecting((error) => {
@@ -82,14 +114,23 @@ export class SignalRService {
     this.hubConnection.onreconnected((connectionId) => {
       console.log('SignalR reconnected:', connectionId);
       this.connectionEstablished.next(true);
+      this.reconnectAttempts = 0;
     });
   }
 
   public async stopConnection(): Promise<void> {
+    this.isConnecting = false;
+    this.reconnectAttempts = 0;
+    
     if (this.hubConnection) {
-      await this.hubConnection.stop();
-      this.hubConnection = null;
-      this.connectionEstablished.next(false);
+      try {
+        await this.hubConnection.stop();
+      } catch (error) {
+        console.warn('Error stopping SignalR connection:', error);
+      } finally {
+        this.hubConnection = null;
+        this.connectionEstablished.next(false);
+      }
     }
   }
 
@@ -103,17 +144,19 @@ export class SignalRService {
       }
     }
   }
-public async getAllNotifications(): Promise<Notification[]> {
-  if (this.hubConnection && this.connectionEstablished.value) {
-    try {
-      return await this.hubConnection.invoke('GetAllNotifications');
-    } catch (error) {
-      console.error('Error getting all notifications:', error);
-      throw error;
+
+  public async getAllNotifications(): Promise<Notification[]> {
+    if (this.hubConnection && this.connectionEstablished.value) {
+      try {
+        return await this.hubConnection.invoke('GetAllNotifications');
+      } catch (error) {
+        console.error('Error getting all notifications:', error);
+        throw error;
+      }
     }
+    return [];
   }
-  return [];
-}
+
   public async deleteNotification(notificationId: number): Promise<void> {
     if (this.hubConnection && this.connectionEstablished.value) {
       try {

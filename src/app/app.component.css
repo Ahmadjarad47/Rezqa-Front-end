@@ -26,9 +26,9 @@ a {
   height: 20%;
   width: 20%;
   border-radius: 50%;
-  background-color: #fff;
-  filter: drop-shadow(0 0 10px rgb(95, 150, 202));
-  box-shadow: -6px -6px 11px #c1c1c1, 6px 6px 11px #ffffff;
+  background-color: #56ff50;
+  filter: drop-shadow(0 0 10px rgb(86, 255, 80));
+  box-shadow: -6px -6px 11px #f6f6f6, 6px 6px 11px #ffffff;
   transform: scale(0);
   opacity: 0.5;
   animation: pulse0112 calc(var(--uib-speed) * 1.111) ease-in-out infinite;

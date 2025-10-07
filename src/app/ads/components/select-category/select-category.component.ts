@@ -22,11 +22,8 @@ export class SelectCategoryComponent implements OnInit {
 
   // Pagination properties
   currentPage = 1;
-  pageSize = 10;
-  totalPages = 0;
+  pageSize = 1000; // جلب كل النتائج دفعة واحدة
   totalCount = 0;
-  hasNextPage = false;
-  hasPreviousPage = false;
 
   // Search properties
   searchTerm = '';
@@ -60,8 +57,8 @@ export class SelectCategoryComponent implements OnInit {
     this.error = null;
 
     const request: PaginatedRequest = {
-      pageNumber: this.currentPage,
-      pageSize: this.pageSize,
+      pageNumber: 1, // دائماً الصفحة الأولى
+      pageSize: this.pageSize, // جلب كل النتائج دفعة واحدة
       search: search || this.searchTerm || undefined,
     };
 
@@ -72,12 +69,7 @@ export class SelectCategoryComponent implements OnInit {
           tap((result) => {
             const page = result as IPage;
             this.categories = page.items;
-            this.currentPage = page.pageNumber;
-            this.pageSize = page.pageSize;
             this.totalCount = page.totalCount;
-            this.totalPages = page.totalPages;
-            this.hasPreviousPage = page.hasPreviousPage;
-            this.hasNextPage = page.hasNextPage;
             this.loading = false;
           }),
           catchError((error) => {
@@ -113,12 +105,7 @@ export class SelectCategoryComponent implements OnInit {
     this.getCategories(search).subscribe({
       next: (response: IPage) => {
         this.categories = response.items;
-        this.currentPage = response.pageNumber;
-        this.pageSize = response.pageSize;
         this.totalCount = response.totalCount;
-        this.totalPages = response.totalPages;
-        this.hasNextPage = response.hasNextPage;
-        this.hasPreviousPage = response.hasPreviousPage;
         this.loading = false;
       },
       error: (error) => {
@@ -130,32 +117,7 @@ export class SelectCategoryComponent implements OnInit {
   }
 
   // Pagination methods
-  goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.currentPage = page;
-      this.loadCategories();
-    }
-  }
-
-  goToNextPage(): void {
-    if (this.hasNextPage) {
-      this.goToPage(this.currentPage + 1);
-    }
-  }
-
-  goToPreviousPage(): void {
-    if (this.hasPreviousPage) {
-      this.goToPage(this.currentPage - 1);
-    }
-  }
-
-  goToFirstPage(): void {
-    this.goToPage(1);
-  }
-
-  goToLastPage(): void {
-    this.goToPage(this.totalPages);
-  }
+  // تم حذف دوال التقسيم (pagination) لأنها لم تعد مطلوبة
 
   // Filter methods
   toggleActiveFilter(): void {
@@ -177,27 +139,8 @@ export class SelectCategoryComponent implements OnInit {
   }
 
   getPageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxVisiblePages = 5;
-
-    if (this.totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= this.totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      let start = Math.max(1, this.currentPage - 2);
-      let end = Math.min(this.totalPages, start + maxVisiblePages - 1);
-
-      if (end - start + 1 < maxVisiblePages) {
-        start = Math.max(1, end - maxVisiblePages + 1);
-      }
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-    }
-
-    return pages;
+    // لم يعد هناك تقسيم صفحات
+    return [];
   }
 
   setCategoryIdAds(id: number) {
@@ -212,6 +155,7 @@ export class SelectCategoryComponent implements OnInit {
       subCategoryId: 0,
       DynamicFields: [],
       imageUrl: null,
+      isSpecific: false,
     };
     this.adsService.setCurrentAds(ad);
     this.router.navigateByUrl('/ads/select-sub-category');

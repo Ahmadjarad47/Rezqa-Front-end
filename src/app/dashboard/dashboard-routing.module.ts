@@ -10,6 +10,7 @@ import { SupportComponent } from './components/support/support.component';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { Inject } from '@angular/core';
+import { DeleteAccountComponent } from './components/delete-account/delete-account.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
       { path: 'wishlist', component: WishlistComponent },
       { path: 'notification', component: NotificationComponent },
       { path: 'settings', component: SettingsComponent },
+      { path: 'delete-account', component: DeleteAccountComponent },
       { path: 'support', component: SupportComponent },
     ],
   },

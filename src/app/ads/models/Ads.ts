@@ -9,6 +9,13 @@ export interface CreateAdDto {
   fieldValues: AdFieldValue[];
   DynamicFields?: IDynamicField[];
   DynamicFieldValues?: { [key: number]: SelectedValue | SelectedValue[] };
+  isSpecific: boolean;
+  activeMonths?: number;
+}
+
+export interface CreateSpecificAdDto extends CreateAdDto {
+  isSpecific: true;
+  activeMonths: number;
 }
 
 export interface SelectedValue {

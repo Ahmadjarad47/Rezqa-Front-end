@@ -10,4 +10,7 @@ export interface Ad {
   subCategoryId: number;
   createdAt: string;
   isActive: boolean;
+  isSpecific: boolean;
+  activeMonths?: number;
+  isConfirmedByAdmin: boolean;
 }

@@ -6,6 +6,13 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate,
+} from '@angular/animations';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HomeAdsService } from '../home-ads.service';
 import {
@@ -15,6 +22,7 @@ import {
   SubCategory,
 } from '../models/category';
 import { AdFilter } from '../models/ad-filter.model';
+import { IDynamicField, Option } from '../../../../ads/models/Ads';
 import {
   SYRIAN_GOVERNORATES,
   Governorate,
@@ -22,6 +30,7 @@ import {
 } from '../../../../models/governorates-data';
 import {
   BehaviorSubject,
+  Subject,
   combineLatest,
   of,
   Subscription,
@@ -32,15 +41,19 @@ import {
   switchMap,
   catchError,
   tap,
+  filter as rxFilter,
+  map,
 } from 'rxjs/operators';
 import { HomeService } from '@app/core/services/home.service';
 import { WishlistService } from '@app/dashboard/components/wishlist/wishlist.service';
+import { AdsService } from '@app/ads/service/ads.service';
 
 @Component({
   selector: 'app-ads-home',
   standalone: false,
   templateUrl: './ads-home.component.html',
   styleUrl: './ads-home.component.css',
+ 
 })
 export class AdsHomeComponent implements OnInit, OnDestroy {
   // --- State Subjects ---
@@ -49,17 +62,20 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
   private pageSize$ = new BehaviorSubject<number>(10);
   private categoryList$ = new BehaviorSubject<AdCategory[]>([]);
   private subcategoryList$ = new BehaviorSubject<SubCategory[]>([]);
-  public wishlistService=inject(WishlistService)
+  public wishlistService = inject(WishlistService);
   // --- Data ---
   posts: AdPosts[] = [];
   paginationInfo?: Pagnation;
   categories: AdCategory[] = [];
   subcategories: SubCategory[] = [];
+  dynamicFields: IDynamicField[] = [];
   cityList: Governorate[] = SYRIAN_GOVERNORATES;
   neighborhoodList: Neighborhood[] = [];
   selectedCity?: string;
-  selectedNeighborhood?: string;
-
+  selectedNeighborhood?: string='';
+  isMobile = false;
+  // --- Wishlist State ---
+  wishlistAdIds = new Set<number>();
   // --- UI State ---
   hoveredIndex: number | null = null;
   currentImageIndexes: { [key: number]: number } = {};
@@ -70,6 +86,9 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
   isSubcategoriesExpanded = false;
   showMoreCategories = false;
   priceError: string | null = null;
+  showFilters = false;
+  isDynamicFieldsExpanded = false;
+  dynamicFieldFilters: { [key: number]: string } = {};
 
   // --- Loading/Error State ---
   isLoadingCategories = false;
@@ -84,22 +103,41 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
   router = inject(Router);
   homeService = inject(HomeService);
   route = inject(ActivatedRoute);
+  adsService = inject(AdsService);
 
   @ViewChild('listingsSection') listingsSectionRef?: ElementRef;
 
   ngOnInit(): void {
     // Load categories once
+    if (typeof window !== 'undefined') {
+      this.isMobile = window.innerWidth < 768;
+      window.addEventListener('resize', this.handleResize);
+    }
     this.loadCategories();
+
     // React to route changes for category param
     this.handleRouteParams();
     // Reactively load posts when filter/page changes
     this.filter$.next({ categoryId: this.homeService.getCategory()?.id });
     this.setupReactivePostsLoading();
+    // --- Fetch wishlist on init ---
+    this.wishlistService.getWishlist().subscribe((wishlist) => {
+      if (wishlist && wishlist.items) {
+        this.wishlistAdIds = new Set(wishlist.items.map(item => item.adId));
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.handleResize);
+    }
     this.subs.unsubscribe();
   }
+
+  private handleResize = () => {
+    this.isMobile = window.innerWidth < 768;
+  };
 
   // --- Category Loading ---
   private loadCategories() {
@@ -119,6 +157,7 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
         this.categories = categories;
         this.categoryList$.next(categories);
         this.isLoadingCategories = false;
+        this.loadSubcategories(Number(this.homeService.getCategory()?.id));
       });
   }
 
@@ -193,6 +232,7 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
 
   private resetPage() {
     this.pageNumber$.next(1);
+    this.isLoadingPosts = true;
   }
 
   // --- Public Methods for Template ---
@@ -204,7 +244,6 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
   }
 
   selectCategory(category: AdCategory) {
-  
     this.updateFilter({ categoryId: category.id, subCategoryId: undefined });
     this.subcategories = [];
     this.isSubcategoriesExpanded = false;
@@ -218,7 +257,7 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
       .getSubCategory(categoryId)
       .pipe(
         catchError((error) => {
-          this.errorMsg = 'Error loading subcategories';
+          this.errorMsg = null;
           this.subcategories = [];
           return of([]);
         })
@@ -229,29 +268,50 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
         if (subcategories.length > 0) {
           this.isSubcategoriesExpanded = true;
         }
+        // Load dynamic fields for the category
+        this.loadDynamicFields(categoryId, 0);
       });
   }
 
   selectSubcategory(subcategory: SubCategory) {
     this.updateFilter({ subCategoryId: subcategory.id });
     this.resetPage();
+    // Load dynamic fields for the subcategory
+    this.loadDynamicFields(subcategory.categoryId, subcategory.id);
   }
 
   clearSubcategoryFilter() {
     this.updateFilter({ subCategoryId: undefined });
+    this.dynamicFieldFilters = {};
     this.resetPage();
   }
 
+  loadDynamicFields(categoryId: number, subCategoryId: number) {
+    if (this.adsService.getDynamicField) {
+      this.adsService.getDynamicField(categoryId, subCategoryId)?.subscribe({
+        next: (dynamicFields: IDynamicField[]) => {
+          this.dynamicFields = dynamicFields;
+        },
+        error: (error) => {
+          console.error('Error loading dynamic fields:', error);
+          this.dynamicFields = [];
+        }
+      });
+    }
+  }
+
   clearCategoryFilter() {
-    this.updateFilter({ categoryId: undefined, subCategoryId: undefined });
+    this.updateFilter({ categoryId: undefined, subCategoryId: undefined, dynamicFieldFilters: {} });
     this.subcategories = [];
+    this.dynamicFields = [];
+    this.dynamicFieldFilters = {};
     this.isSubcategoriesExpanded = false;
     this.resetPage();
     this.router.navigate(['/all']);
   }
 
   clearLocationFilter() {
-    this.selectedCity = undefined;
+    this.selectedCity = '';
     this.selectedNeighborhood = undefined;
     this.neighborhoodList = [];
     this.updateFilter({ location: undefined });
@@ -264,6 +324,34 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
     this.resetPage();
   }
 
+  clearAllFilters() {
+    this.filterGetter.searchTerm = '';
+    this.filterGetter.categoryId = undefined;
+    this.selectedCity = '';
+    this.filterGetter.minPrice = undefined;
+    this.filterGetter.maxPrice = undefined;
+    this.dynamicFieldFilters = {};
+    this.applyFilters();
+  }
+
+  onDynamicFieldChange(fieldId: number, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const value = target.value;
+    if (value) {
+      this.dynamicFieldFilters[fieldId] = value;
+    } else {
+      delete this.dynamicFieldFilters[fieldId];
+    }
+    this.updateFilter({ dynamicFieldFilters: this.dynamicFieldFilters });
+    this.resetPage();
+  }
+
+  clearDynamicFieldFilters() {
+    this.dynamicFieldFilters = {};
+    this.updateFilter({ dynamicFieldFilters: {} });
+    this.resetPage();
+  }
+
   onPriceInputChange() {
     this.validatePriceRange();
   }
@@ -272,7 +360,11 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
     const minPrice = this.filterGetter.minPrice;
     const maxPrice = this.filterGetter.maxPrice;
 
-    if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
+    if (
+      minPrice !== undefined &&
+      maxPrice !== undefined &&
+      minPrice > maxPrice
+    ) {
       this.priceError = 'الحد الأدنى للسعر لا يمكن أن يكون أكبر من الحد الأعلى';
       return false;
     }
@@ -339,10 +431,15 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
   onCityChange(event: Event) {
     const cityName = (event.target as HTMLSelectElement).value;
     this.selectedCity = cityName;
-    const found = this.cityList.find((c) => c.name === cityName);
-    this.neighborhoodList = found ? found.neighborhoods : [];
+    if (cityName) {
+      const found = this.cityList.find((c) => c.name === cityName);
+      this.neighborhoodList = found ? found.neighborhoods : [];
+      this.updateFilter({ location: cityName });
+    } else {
+      this.neighborhoodList = [];
+      this.updateFilter({ location: undefined });
+    }
     this.selectedNeighborhood = undefined;
-    this.updateFilter({ location: cityName });
     this.resetPage();
   }
 
@@ -393,6 +490,18 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
     this.showMoreCategories = !this.showMoreCategories;
   }
 
+  toggleFilters() {
+    this.showFilters = !this.showFilters;
+  }
+
+  toggleDynamicFields() {
+    this.isDynamicFieldsExpanded = !this.isDynamicFieldsExpanded;
+  }
+
+  getFieldOptions(field: IDynamicField): Option[] {
+    return field.options || [];
+  }
+
   // --- Utility for *ngFor trackBy ---
   trackByAdId(index: number, item: AdPosts) {
     return item.id;
@@ -402,4 +511,52 @@ export class AdsHomeComponent implements OnInit, OnDestroy {
   get filterGetter() {
     return this.filter$.value;
   }
+
+  // --- Wishlist Helpers ---
+  isInWishlist(adId: number): boolean {
+    return this.wishlistAdIds.has(adId);
+  }
+
+  toggleWishlist(adId: number) {
+    if (this.isInWishlist(adId)) {
+      this.wishlistService.removeFromWishlist({ adId }).subscribe(() => {
+        this.wishlistAdIds.delete(adId);
+      });
+    } else {
+      this.wishlistService.addToWishlist({ adId }).subscribe(() => {
+        this.wishlistAdIds.add(adId);
+      });
+    }
+  }
+
+  // Enhanced filter methods
+  onCategoryChange(event: Event) {
+    const categoryId = Number((event.target as HTMLSelectElement).value);
+    if (categoryId) {
+      this.loadSubcategories(categoryId);
+      this.updateFilter({ categoryId, subCategoryId: undefined });
+    } else {
+      this.subcategories = [];
+      this.dynamicFields = [];
+      this.dynamicFieldFilters = {};
+      this.updateFilter({ categoryId: undefined, subCategoryId: undefined, dynamicFieldFilters: {} });
+    }
+    this.resetPage();
+  }
+
+  onSubCategoryChange(event: Event) {
+    const subCategoryId = Number((event.target as HTMLSelectElement).value);
+    const categoryId = this.filterGetter.categoryId;
+    if (subCategoryId && categoryId) {
+      this.updateFilter({ subCategoryId });
+      this.loadDynamicFields(categoryId, subCategoryId);
+    } else if (categoryId) {
+      this.updateFilter({ subCategoryId: undefined });
+      this.loadDynamicFields(categoryId, 0);
+    }
+    this.dynamicFieldFilters = {};
+    this.resetPage();
+  }
+
+  
 }

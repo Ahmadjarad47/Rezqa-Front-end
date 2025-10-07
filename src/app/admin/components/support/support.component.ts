@@ -134,9 +134,9 @@ export class SupportComponent implements OnInit, OnDestroy {
     if (!this.isBrowser) return;
 
     this.loading = true;
-    this.userService.getAllUsers().subscribe({
+    this.userService.getAllUsers(1,1000).subscribe({
       next: (value) => {
-        this.allUsers = value;
+        this.allUsers = value.items;
         this.loading = false;
         
       },

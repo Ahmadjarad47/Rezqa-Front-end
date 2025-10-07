@@ -18,8 +18,10 @@ export class NotificationService {
   public loading$ = this.loadingSubject.asObservable();
   public selectedStatus$ = this.selectedStatusSubject.asObservable();
 
-  public unreadCount$ = this.notifications$.pipe(
-    map((notifications) => notifications.filter((n) => n.status === 0).length)
+  public unreadCount$: Observable<number> = this.notifications$.pipe(
+    map((notifications: Notification[]) =>
+      notifications.filter((n: Notification) => n.status === 0).length
+    )
   );
 
   public filteredNotifications$ = combineLatest([
@@ -43,7 +45,7 @@ export class NotificationService {
     // Subscribe to real-time notifications
     this.signalRService.notificationReceived$.subscribe((notification) => {
       this.addNotification(notification);
-      this.toastService.warning(notification.message);
+      this.info(notification.message);
     });
   }
 
@@ -54,7 +56,6 @@ export class NotificationService {
       this.notificationsSubject.next(notifications);
     } catch (error) {
       console.error('Error loading notifications:', error);
-      this.toastService.error('فشل في تحميل الإشعارات');
     } finally {
       this.loadingSubject.next(false);
     }
@@ -66,7 +67,6 @@ export class NotificationService {
       this.allNotificationsSubject.next(notifications);
     } catch (error) {
       console.error('Error loading notifications:', error);
-      this.toastService.error('فشل في تحميل الإشعارات');
     } finally {
       this.loadingSubject.next(false);
     }
@@ -76,10 +76,10 @@ export class NotificationService {
     try {
       await this.signalRService.deleteNotification(notificationId);
       this.removeNotification(notificationId);
-      this.toastService.success('تم حذف الإشعار');
+      this.success('تم حذف الإشعار');
     } catch (error) {
       console.error('Error deleting notification:', error);
-      this.toastService.error('فشل في حذف الإشعار');
+      this.error('فشل في حذف الإشعار');
     }
   }
 
@@ -140,20 +140,50 @@ export class NotificationService {
     return this.signalRService.connectionEstablished$;
   }
 
+  private getToastHtml(
+    type: 'success' | 'error' | 'info' | 'warning',
+    message: string
+  ): string {
+    let icon = '';
+    switch (type) {
+      case 'success':
+        icon = `<span class="custom-toast-icon" aria-label="Success"><svg fill='none' viewBox='0 0 24 24' width='24' height='24'><circle cx='12' cy='12' r='12' fill='#fff' opacity='0.15'/><path d='M7 13l3 3 7-7' stroke='#fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg></span>`;
+        break;
+      case 'error':
+        icon = `<span class="custom-toast-icon" aria-label="Error"><svg fill='none' viewBox='0 0 24 24' width='24' height='24'><circle cx='12' cy='12' r='12' fill='#fff' opacity='0.15'/><path d='M15 9l-6 6M9 9l6 6' stroke='#fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg></span>`;
+        break;
+      case 'info':
+        icon = `<span class="custom-toast-icon" aria-label="Info"><svg fill='none' viewBox='0 0 24 24' width='24' height='24'><circle cx='12' cy='12' r='12' fill='#fff' opacity='0.15'/><path d='M12 8v4m0 4h.01' stroke='#fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg></span>`;
+        break;
+      case 'warning':
+        icon = `<span class="custom-toast-icon" aria-label="Warning"><svg fill='none' viewBox='0 0 24 24' width='24' height='24'><circle cx='12' cy='12' r='12' fill='#fff' opacity='0.15'/><path d='M12 8v4m0 4h.01' stroke='#fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg></span>`;
+        break;
+    }
+    return `<div style='display:flex;align-items:center;'>${icon}<div style='flex:1;'>${message}</div></div>`;
+  }
+
   public success(message: string, title?: string) {
-    this.toastService.success(message, title);
+    this.toastService.success(this.getToastHtml('success', message), title, {
+      enableHtml: true,
+    });
   }
 
   public error(message: string, title?: string) {
-    this.toastService.error(message, title);
+    this.toastService.error(this.getToastHtml('error', message), title, {
+      enableHtml: true,
+    });
   }
 
   public warning(message: string, title?: string) {
-    this.toastService.warning(message, title);
+    this.toastService.warning(this.getToastHtml('warning', message), title, {
+      enableHtml: true,
+    });
   }
 
   public info(message: string, title?: string) {
-    this.toastService.info(message, title);
+    this.toastService.info(this.getToastHtml('info', message), title, {
+      enableHtml: true,
+    });
   }
 
   public async sendNotificationToUser(
@@ -165,7 +195,7 @@ export class NotificationService {
       // You may need to implement this in SignalRService or use HTTP
       await this.signalRService.sendNotification(userId, title, message);
     } catch (error) {
-      this.toastService.error('فشل في إرسال الإشعار');
+      this.error('فشل في إرسال الإشعار');
       throw error;
     }
   }
@@ -177,21 +207,27 @@ export class NotificationService {
     try {
       await this.signalRService.sendNotificationToAllUsers(title, message);
     } catch (error) {
-      this.toastService.error('فشل في إرسال الإشعار لجميع المستخدمين');
+      this.error('فشل في إرسال الإشعار لجميع المستخدمين');
       throw error;
     }
   }
 
-  public async changeNotificationStatus(notificationId: number, status: number): Promise<void> {
+  public async changeNotificationStatus(
+    notificationId: number,
+    status: number
+  ): Promise<void> {
     try {
-      if (this.signalRService["changeNotificationStatus"]) {
-        await this.signalRService["changeNotificationStatus"](notificationId, status);
+      if (this.signalRService['changeNotificationStatus']) {
+        await this.signalRService['changeNotificationStatus'](
+          notificationId,
+          status
+        );
       }
       this.updateNotificationStatus(notificationId.toString(), status);
-      this.toastService.success('تم تغيير حالة الإشعار');
+      this.success('تم تغيير حالة الإشعار');
     } catch (error) {
       console.error('Error changing notification status:', error);
-      this.toastService.error('فشل في تغيير حالة الإشعار');
+      this.error('فشل في تغيير حالة الإشعار');
     }
   }
 }

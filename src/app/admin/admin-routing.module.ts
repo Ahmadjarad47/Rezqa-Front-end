@@ -10,6 +10,8 @@ import { AdsComponent } from './components/ads/ads.component';
 import { ReportComponent } from './components/report/report.component';
 import { SupportComponent } from './components/support/support.component';
 import { NotificationComponent } from './components/notification/notification.component';
+import { RateLimitingComponent } from './components/rate-limiting/rate-limiting.component';
+import { CarouselComponent } from './components/carousel/carousel.component';
 
 const routes: Routes = [
   {
@@ -48,6 +50,14 @@ const routes: Routes = [
       {
         path: 'notifications',
         component: NotificationComponent,
+      },
+      {
+        path: 'rate-limiting',
+        component: RateLimitingComponent,
+      },
+      {
+        path: 'carousels',
+        component: CarouselComponent,
       },
       
       {

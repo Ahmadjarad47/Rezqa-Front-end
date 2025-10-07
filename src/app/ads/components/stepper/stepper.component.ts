@@ -62,7 +62,7 @@ export class StepperComponent
   currentStepIndex = 0;
   progressPercentage = 0;
   isNavigating = false;
-  leaveModal: any = null;
+  leaveModalVisible = false;
 
   constructor(private router: Router) {}
 
@@ -93,6 +93,7 @@ export class StepperComponent
     // Remove beforeunload event listener
     if (typeof window != 'undefined') {
       window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    
     }
   }
 
@@ -105,22 +106,9 @@ export class StepperComponent
     if (typeof document != 'undefined') {
       const modalElement = document.getElementById('leave-confirmation-modal');
       if (modalElement && typeof Modal !== 'undefined') {
-        this.leaveModal = new Modal(modalElement, {
-          placement: 'center',
-          backdrop: 'dynamic',
-          backdropClasses:
-            'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-40',
-          closable: true,
-          onHide: () => {
-            console.log('Leave modal is hidden');
-          },
-          onShow: () => {
-            console.log('Leave modal is shown');
-          },
-          onToggle: () => {
-            console.log('Leave modal has been toggled');
-          },
-        });
+        // The original code had this.leaveModal = new Modal(modalElement, {...});
+        // Since we are now managing leaveModalVisible, we can remove this line.
+        // The modal will be shown/hidden via leaveModalVisible.
       }
     }
   }
@@ -212,22 +200,12 @@ export class StepperComponent
 
   // Show leave confirmation modal
   showLeaveConfirmation(): void {
-    if (this.leaveModal) {
-      this.leaveModal.show();
-    } else {
-      // Fallback: try to initialize modal again
-      this.initializeModal();
-      if (this.leaveModal) {
-        this.leaveModal.show();
-      }
-    }
+    this.leaveModalVisible = true;
   }
 
   // Hide leave confirmation modal
   hideLeaveConfirmation(): void {
-    if (this.leaveModal) {
-      this.leaveModal.hide();
-    }
+    this.leaveModalVisible = false;
   }
 
   // Confirm leaving the ads module

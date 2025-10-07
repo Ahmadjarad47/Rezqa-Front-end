@@ -21,7 +21,7 @@ export class SelectSubCategoryComponent implements OnInit {
 
   // Pagination properties
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 1000;
   totalPages = 0;
   totalCount = 0;
   hasNextPage = false;

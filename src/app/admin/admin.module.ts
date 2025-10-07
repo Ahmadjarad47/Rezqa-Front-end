@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import { AdminRoutingModule } from './admin-routing.module';
 import { DashboardLayoutComponent } from './components/dashboard-layout/dashboard-layout.component';
 import { UsersComponent } from './components/users/users.component';
@@ -15,6 +16,10 @@ import { AdsComponent } from './components/ads/ads.component';
 import { ReportComponent } from './components/report/report.component';
 import { SupportComponent } from './components/support/support.component';
 import { NotificationComponent } from './components/notification/notification.component';
+import { RateLimitingComponent } from './components/rate-limiting/rate-limiting.component';
+import { CarouselComponent } from './components/carousel/carousel.component';
+import { CarouselFormComponent } from './components/carousel-form/carousel-form.component';
+import { VipAdsComponent } from './components/vip-ads/vip-ads.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +35,10 @@ import { NotificationComponent } from './components/notification/notification.co
     ReportComponent,
     SupportComponent,
     NotificationComponent,
+    RateLimitingComponent,
+    CarouselComponent,
+    CarouselFormComponent,
+    VipAdsComponent,
     
   ],
   imports: [
@@ -37,6 +46,7 @@ import { NotificationComponent } from './components/notification/notification.co
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
+    HttpClientModule,
     AdminRoutingModule,
   ],
   exports: [

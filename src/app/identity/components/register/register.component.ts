@@ -87,9 +87,9 @@ export class RegisterComponent implements OnInit {
       return 'border-red-500 focus:ring-red-500';
     }
     if (this.isFieldValid(fieldName)) {
-      return 'border-green-500 focus:ring-green-500';
+      return 'border-[#0061fe] focus:ring-[#0061fe]';
     }
-    return 'border-gray-300 focus:ring-blue-500';
+    return 'border';
   }
 
   togglePasswordVisibility(): void {
@@ -126,7 +126,7 @@ export class RegisterComponent implements OnInit {
         return 'bg-yellow-500';
       case 4:
       case 5:
-        return 'bg-green-500';
+        return 'bg';
       default:
         return 'bg-gray-200';
     }
@@ -165,13 +165,13 @@ export class RegisterComponent implements OnInit {
   private handleFile(file: File): void {
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      this.notificationService.error('يرجى اختيار ملف صورة صالح');
+      this.errorMessage = 'يرجى اختيار ملف صورة صالح';
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      this.notificationService.error('حجم الصورة يجب أن لا يتجاوز 5 ميجابايت');
+      this.errorMessage = 'حجم الصورة يجب أن لا يتجاوز 5 ميجابايت';
       return;
     }
 
@@ -216,10 +216,7 @@ export class RegisterComponent implements OnInit {
     if (this.registerForm.invalid) {
       const formErrors = this.getFormValidationErrors();
       if (formErrors.length > 0) {
-        this.notificationService.warning(
-          formErrors.join('<br>'),
-          'يرجى تصحيح الأخطاء التالية'
-        );
+        this.errorMessage = formErrors.join('\n');
       }
       return;
     }
@@ -245,17 +242,14 @@ export class RegisterComponent implements OnInit {
 
     this.authService.register(formData).subscribe({
       next: () => {
-        this.notificationService.success(
-          'تم إنشاء حسابك بنجاح! يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.',
-          'تم التسجيل'
-        );
+        // Remove notificationService.success here, as success is shown in the template
         this.router.navigate(['/identity/login'], {
           queryParams: { registered: true },
         });
       },
       error: (error) => {
         this.errorMessage = error.message || 'حدث خطأ أثناء إنشاء الحساب';
-        this.notificationService.error(this.errorMessage);
+        // Remove notificationService.error
         this.isLoading = false;
       },
       complete: () => {

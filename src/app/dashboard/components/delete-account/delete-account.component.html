@@ -1,0 +1,223 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center mb-4">
+      <div class="p-2 bg-red-100 rounded-lg mr-3">
+        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">حذف الحساب</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">إدارة إعدادات الحساب</p>
+      </div>
+    </div>
+    <div class="bg-red-50 border-r-4 border-red-400 p-4 rounded-lg">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="mr-3">
+          <h3 class="text-sm font-medium text-red-800">تحذير: هذا الإجراء لا يمكن التراجع عنه</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <p>سيتم حذف جميع بياناتك نهائياً من النظام.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left Column - Form -->
+    <div class="lg:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white">تفاصيل الحذف</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">أدخل المعلومات المطلوبة لحذف حسابك</p>
+        </div>
+        <div class="p-6">
+
+          <!-- Delete Account Form -->
+          <form [formGroup]="deleteAccountForm" (ngSubmit)="showDeleteConfirmation()" class="space-y-6">
+
+            <!-- Password Field -->
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                كلمة المرور الحالية <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input type="password" id="password" formControlName="password"
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="أدخل كلمة المرور الحالية" [class.border-red-500]="hasError('password', 'required')" />
+              </div>
+              <div *ngIf="hasError('password', 'required')" class="mt-1 text-sm text-red-600">
+                كلمة المرور مطلوبة
+              </div>
+            </div>
+
+            <!-- Confirmation Text Field -->
+            <div>
+              <label for="confirmationText" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                اكتب "{{ confirmationText }}" للتأكيد <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="confirmationText" formControlName="confirmationText"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white font-mono"
+                placeholder="DELETE MY ACCOUNT"
+                [class.border-red-500]="hasError('confirmationText', 'required') || hasError('confirmationText', 'confirmationMismatch')" />
+              <div *ngIf="hasError('confirmationText', 'required')" class="mt-1 text-sm text-red-600">
+                النص التأكيدي مطلوب
+              </div>
+              <div *ngIf="hasError('confirmationText', 'confirmationMismatch')" class="mt-1 text-sm text-red-600">
+                يجب كتابة النص التأكيدي بالضبط كما هو مطلوب
+              </div>
+            </div>
+
+            <!-- Reason Field (Optional) -->
+            <div>
+              <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                سبب الحذف (اختياري)
+              </label>
+              <textarea id="reason" formControlName="reason" rows="3"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white"
+                placeholder="أخبرنا عن سبب حذف حسابك (اختياري)"
+                [class.border-red-500]="hasError('reason', 'maxlength')"></textarea>
+              <div *ngIf="hasError('reason', 'maxlength')" class="mt-1 text-sm text-red-600">
+                السبب لا يمكن أن يتجاوز 500 حرف
+              </div>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ getFormControl('reason')?.value?.length || 0
+                }}/500</p>
+            </div>
+
+            <!-- Agreement Checkbox -->
+            <div class="flex items-start">
+              <input type="checkbox" id="agreeToDataDeletion" formControlName="agreeToDataDeletion"
+                class="mt-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700"
+                [class.border-red-500]="hasError('agreeToDataDeletion', 'required')" />
+              <label for="agreeToDataDeletion" class="mr-2 text-sm text-gray-700 dark:text-gray-300">
+                أؤكد أنني أفهم أن حذف الحساب نهائي ولا يمكن التراجع عنه، وأن جميع بياناتي ستُحذف نهائياً من النظام
+                <span class="text-red-500">*</span>
+              </label>
+            </div>
+            <div *ngIf="hasError('agreeToDataDeletion', 'required')" class="text-sm text-red-600">
+              يجب الموافقة على شروط حذف البيانات
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6">
+              <button type="submit" [disabled]="isLoading"
+                class="flex-1 bg-red-600 text-white py-3 px-6 rounded-md font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <span *ngIf="!isLoading">حذف الحساب نهائياً</span>
+                <span *ngIf="isLoading" class="flex items-center justify-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                  </svg>
+                  جاري المعالجة...
+                </span>
+              </button>
+
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Info Panel -->
+    <div class="lg:col-span-1">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">معلومات الحساب</h3>
+        </div>
+        <div class="p-6">
+          <!-- User Email Display -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">البريد الإلكتروني</label>
+            <p class="text-sm font-medium text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded-md">{{
+              userEmail }}</p>
+          </div>
+
+          <!-- Warning Section -->
+          <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <div class="flex items-start">
+              <svg class="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 mr-3 flex-shrink-0" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+                </path>
+              </svg>
+              <div>
+                <h4 class="text-sm font-semibold text-red-800 dark:text-red-200 mb-2">ما سيتم حذفه</h4>
+                <ul class="text-red-700 dark:text-red-300 space-y-1 text-xs">
+                  <li>• جميع إعلاناتك</li>
+                  <li>• جميع رسائلك ومحادثاتك</li>
+                  <li>• جميع بياناتك الشخصية</li>
+                  <li>• جميع الملفات المرفوعة</li>
+                  <li>• سجل النشاط</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alternative Options -->
+          <div class="mt-6">
+            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">خيارات أخرى</h4>
+            <div class="space-y-2">
+              <a routerLink="/dashboard/settings"
+                class="block text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                تعديل إعدادات الحساب
+              </a>
+              <a routerLink="/dashboard/support"
+                class="block text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                التواصل مع الدعم الفني
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div *ngIf="showConfirmation"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+      <div class="flex items-center mb-4">
+        <div class="p-2 bg-red-100 dark:bg-red-900/20 rounded-lg mr-3">
+          <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z">
+            </path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">تأكيد حذف الحساب</h3>
+      </div>
+
+      <p class="text-gray-600 dark:text-gray-300 mb-6">
+        هل أنت متأكد من أنك تريد حذف حسابك نهائياً؟ هذا الإجراء لا يمكن التراجع عنه.
+      </p>
+
+      <div class="flex gap-3">
+        <button type="button" (click)="confirmDeletion()" [disabled]="isLoading"
+          class="flex-1 bg-red-600 text-white py-2 px-4 rounded-md font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          نعم، احذف الحساب
+        </button>
+
+        <button type="button" (click)="cancelDeletion()" [disabled]="isLoading"
+          class="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 py-2 px-4 rounded-md font-medium hover:bg-gray-400 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
